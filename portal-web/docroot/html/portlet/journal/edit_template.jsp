@@ -92,7 +92,7 @@ if (template == null) {
 
 	<liferay-ui:header
 		backURL="<%= redirect %>"
-		title='<%= (template != null) ? template.getName() : "new-template" %>'
+		title='<%= (template != null) ? template.getName(locale) : "new-template" %>'
 	/>
 
 	<liferay-ui:error exception="<%= DuplicateTemplateIdException.class %>" message="please-enter-a-unique-id" />
