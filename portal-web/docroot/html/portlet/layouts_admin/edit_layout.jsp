@@ -30,7 +30,6 @@ Layout selLayout = (Layout)request.getAttribute("edit_pages.jsp-selLayout");
 long selPlid = ((Long)request.getAttribute("edit_pages.jsp-selPlid")).longValue();
 long layoutId = ((Long)request.getAttribute("edit_pages.jsp-layoutId")).longValue();
 boolean privateLayout = ((Boolean)request.getAttribute("edit_pages.jsp-privateLayout")).booleanValue();
-String friendlyURL = selLayout.getFriendlyURL();
 
 PortletURL portletURL = (PortletURL)request.getAttribute("edit_pages.jsp-portletURL");
 PortletURL redirectURL = (PortletURL)request.getAttribute("edit_pages.jsp-redirectURL");
@@ -64,6 +63,12 @@ if (!group.isUser() && selLayout.isTypePortlet()) {
 }
 
 String[][] categorySections = {mainSections};
+
+String friendlyURL = StringPool.BLANK;
+
+if (selLayout != null) {
+	friendlyURL = selLayout.getFriendlyURL();
+}
 %>
 
 <div class="lfr-header-row title">
@@ -86,8 +91,8 @@ String[][] categorySections = {mainSections};
 	<aui:input name="stagingGroupId" type="hidden" value="<%= stagingGroupId %>" />
 	<aui:input name="privateLayout" type="hidden" value="<%= privateLayout %>" />
 	<aui:input name="layoutId" type="hidden" value="<%= layoutId %>" />
-	<aui:input name="selPlid" type="hidden" value="<%= selPlid %>" />
 	<aui:input name="friendlyURL" type="hidden" value="<%= friendlyURL %>" />
+	<aui:input name="selPlid" type="hidden" value="<%= selPlid %>" />
 	<aui:input name="<%= PortletDataHandlerKeys.SELECTED_LAYOUTS %>" type="hidden" />
 
 	<c:if test="<%= layoutRevision != null && !incomplete%>">
