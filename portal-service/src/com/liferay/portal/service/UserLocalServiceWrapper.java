@@ -925,6 +925,19 @@ public class UserLocalServiceWrapper implements UserLocalService {
 	}
 
 	/**
+	* Returns the user with the primary key.
+	*
+	* @param userId the primary key of the user
+	* @return the user with the primary key, or <code>null</code> if a user
+	with the primary key could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public com.liferay.portal.model.User fetchUserById(long userId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _userLocalService.fetchUserById(userId);
+	}
+
+	/**
 	* Returns a range of all the users belonging to the company.
 	*
 	* <p>

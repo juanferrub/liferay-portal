@@ -175,6 +175,7 @@ public class EditPageAttachmentAction extends EditFileEntryAction {
 		WikiPageServiceUtil.addPageAttachments(nodeId, title, files);
 	}
 
+	@Override
 	protected void addMultipleFileEntries(
 			ActionRequest actionRequest, ActionResponse actionResponse,
 			String selectedFileName, List<String> validFileNames,

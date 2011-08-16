@@ -14,6 +14,8 @@
 
 package com.liferay.portal.service;
 
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.servlet.HttpHeaders;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.Validator;
@@ -152,6 +154,22 @@ public class ServiceContext implements Cloneable, Serializable {
 
 	public String[] getGroupPermissions() {
 		return _groupPermissions;
+	}
+
+	public long getGuestOrUserId() throws PortalException, SystemException {
+		long userId = getUserId();
+
+		if (userId > 0) {
+			return userId;
+		}
+
+		long companyId = getCompanyId();
+
+		if (companyId > 0) {
+			return UserLocalServiceUtil.getDefaultUserId(getCompanyId());
+		}
+
+		return 0;
 	}
 
 	public String[] getGuestPermissions() {

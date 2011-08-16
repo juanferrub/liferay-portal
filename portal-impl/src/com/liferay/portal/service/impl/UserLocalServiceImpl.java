@@ -1763,6 +1763,18 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 	}
 
 	/**
+	 * Returns the user with the primary key.
+	 *
+	 * @param  userId the primary key of the user
+	 * @return the user with the primary key, or <code>null</code> if a user
+	 *         with the primary key could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public User fetchUserById(long userId) throws SystemException {
+		return userPersistence.fetchByPrimaryKey(userId);
+	}
+
+	/**
 	 * Returns a range of all the users belonging to the company.
 	 *
 	 * <p>

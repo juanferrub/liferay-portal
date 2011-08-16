@@ -12,16 +12,18 @@
  * details.
  */
 
-package com.liferay.taglib.core;
+package com.liferay.portal.dao.orm.common;
+
+import com.liferay.portal.kernel.dao.orm.PortalCustomSQL;
+import com.liferay.util.dao.orm.CustomSQLUtil;
 
 /**
- * @author Shuyang Zhou
+ * @author Brian Wing Shun Chan
  */
-public class OtherwiseTag extends WhenTag {
+public class PortalCustomSQLImpl implements PortalCustomSQL {
 
-	@Override
-	protected boolean condition() {
-		return true;
+	public String get(String id) {
+		return CustomSQLUtil.get(id);
 	}
 
 }
