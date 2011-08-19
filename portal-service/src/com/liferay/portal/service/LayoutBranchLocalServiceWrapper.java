@@ -265,6 +265,18 @@ public class LayoutBranchLocalServiceWrapper implements LayoutBranchLocalService
 			name, description, master, serviceContext);
 	}
 
+	public void deleteLayoutBranches(long layoutSetBranchId)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		_layoutBranchLocalService.deleteLayoutBranches(layoutSetBranchId);
+	}
+
+	public java.util.List<com.liferay.portal.model.LayoutBranch> getLayoutBranches(
+		long layoutSetBranchId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _layoutBranchLocalService.getLayoutBranches(layoutSetBranchId);
+	}
+
 	public java.util.List<com.liferay.portal.model.LayoutBranch> getLayoutBranches(
 		long layoutSetBranchId, long plid, int start, int end,
 		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)

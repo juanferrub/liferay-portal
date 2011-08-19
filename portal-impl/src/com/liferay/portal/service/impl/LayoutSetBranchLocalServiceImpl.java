@@ -167,6 +167,11 @@ public class LayoutSetBranchLocalServiceImpl
 			ResourceConstants.SCOPE_INDIVIDUAL,
 			layoutSetBranch.getLayoutSetBranchId());
 
+		// Branches
+
+		layoutBranchLocalService.deleteLayoutBranches(
+			layoutSetBranch.getLayoutSetBranchId());
+
 		// Revisions
 
 		layoutRevisionLocalService.deleteLayoutSetBranchLayoutRevisions(
