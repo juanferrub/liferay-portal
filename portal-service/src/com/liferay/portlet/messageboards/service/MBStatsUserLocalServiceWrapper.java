@@ -297,6 +297,19 @@ public class MBStatsUserLocalServiceWrapper implements MBStatsUserLocalService {
 		return _mbStatsUserLocalService.getStatsUsersByGroupIdCount(groupId);
 	}
 
+	public java.util.List<com.liferay.portlet.messageboards.model.MBStatsUser> getStatsUsersByGroupIdExcludeUser(
+		long groupId, long userId, int start, int end)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _mbStatsUserLocalService.getStatsUsersByGroupIdExcludeUser(groupId,
+			userId, start, end);
+	}
+
+	public int getStatsUsersByGroupIdExcludeUserCount(long groupId, long userId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _mbStatsUserLocalService.getStatsUsersByGroupIdExcludeUserCount(groupId,
+			userId);
+	}
+
 	public java.util.List<com.liferay.portlet.messageboards.model.MBStatsUser> getStatsUsersByUserId(
 		long userId) throws com.liferay.portal.kernel.exception.SystemException {
 		return _mbStatsUserLocalService.getStatsUsersByUserId(userId);

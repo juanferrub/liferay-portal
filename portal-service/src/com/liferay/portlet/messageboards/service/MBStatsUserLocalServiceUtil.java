@@ -305,6 +305,20 @@ public class MBStatsUserLocalServiceUtil {
 		return getService().getStatsUsersByGroupIdCount(groupId);
 	}
 
+	public static java.util.List<com.liferay.portlet.messageboards.model.MBStatsUser> getStatsUsersByGroupIdExcludeUser(
+		long groupId, long userId, int start, int end)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getService()
+				   .getStatsUsersByGroupIdExcludeUser(groupId, userId, start,
+			end);
+	}
+
+	public static int getStatsUsersByGroupIdExcludeUserCount(long groupId,
+		long userId) throws com.liferay.portal.kernel.exception.SystemException {
+		return getService()
+				   .getStatsUsersByGroupIdExcludeUserCount(groupId, userId);
+	}
+
 	public static java.util.List<com.liferay.portlet.messageboards.model.MBStatsUser> getStatsUsersByUserId(
 		long userId) throws com.liferay.portal.kernel.exception.SystemException {
 		return getService().getStatsUsersByUserId(userId);

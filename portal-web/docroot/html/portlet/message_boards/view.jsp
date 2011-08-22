@@ -423,8 +423,8 @@ request.setAttribute("view.jsp-portletURL", portletURL);
 					iteratorURL="<%= portletURL %>"
 				>
 					<liferay-ui:search-container-results
-						results="<%= MBStatsUserLocalServiceUtil.getStatsUsersByGroupId(scopeGroupId, searchContainer.getStart(), searchContainer.getEnd()) %>"
-						total="<%= MBStatsUserLocalServiceUtil.getStatsUsersByGroupIdCount(scopeGroupId) %>"
+						results="<%= MBStatsUserLocalServiceUtil.getStatsUsersByGroupIdExcludeUser(scopeGroupId, themeDisplay.getCompany().getDefaultUser().getUserId(), searchContainer.getStart(), searchContainer.getEnd()) %>"
+						total="<%= MBStatsUserLocalServiceUtil.getStatsUsersByGroupIdExcludeUserCount(scopeGroupId, themeDisplay.getCompany().getDefaultUser().getUserId()) %>"
 					/>
 
 					<liferay-ui:search-container-row
