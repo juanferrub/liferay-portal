@@ -327,12 +327,13 @@ public class EditMessageAction extends PortletAction {
 			new ArrayList<ObjectValuePair<String, File>>();
 
 		if (attachments) {
-			UploadPortletRequest uploadRequest =
+			UploadPortletRequest uploadPortletRequest =
 				PortalUtil.getUploadPortletRequest(actionRequest);
 
 			for (int i = 1; i <= 5; i++) {
-				File file = uploadRequest.getFile("msgFile" + i);
-				String fileName = uploadRequest.getFileName("msgFile" + i);
+				File file = uploadPortletRequest.getFile("msgFile" + i);
+				String fileName = uploadPortletRequest.getFileName(
+					"msgFile" + i);
 
 				if ((file != null) && file.exists()) {
 					ObjectValuePair<String, File> ovp =

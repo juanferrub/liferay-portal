@@ -166,12 +166,12 @@ public class EditLayoutSetAction extends EditLayoutsAction {
 			long stagingGroupId, boolean privateLayout, boolean hasLogo)
 		throws Exception {
 
-		UploadPortletRequest uploadRequest = PortalUtil.getUploadPortletRequest(
-			actionRequest);
+		UploadPortletRequest uploadPortletRequest =
+			PortalUtil.getUploadPortletRequest(actionRequest);
 
 		boolean useLogo = ParamUtil.getBoolean(actionRequest, "useLogo");
 
-		File file = uploadRequest.getFile( "logoFileName");
+		File file = uploadPortletRequest.getFile( "logoFileName");
 		byte[] bytes = FileUtil.getBytes(file);
 
 		if (useLogo && ((bytes == null) || (bytes.length == 0))) {

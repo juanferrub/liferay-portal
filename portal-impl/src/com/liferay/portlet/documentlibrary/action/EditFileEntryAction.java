@@ -401,15 +401,15 @@ public class EditFileEntryAction extends PortletAction {
 	protected void addTempFileEntry(ActionRequest actionRequest)
 		throws Exception {
 
-		UploadPortletRequest uploadRequest = PortalUtil.getUploadPortletRequest(
-			actionRequest);
+		UploadPortletRequest uploadPortletRequest =
+			PortalUtil.getUploadPortletRequest(actionRequest);
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
-		long folderId = ParamUtil.getLong(uploadRequest, "folderId");
-		File file = uploadRequest.getFile("file");
-		String sourceFileName = uploadRequest.getFileName("file");
+		long folderId = ParamUtil.getLong(uploadPortletRequest, "folderId");
+		File file = uploadPortletRequest.getFile("file");
+		String sourceFileName = uploadPortletRequest.getFileName("file");
 
 		DLAppServiceUtil.addTempFileEntry(
 			themeDisplay.getScopeGroupId(), folderId, sourceFileName,
@@ -564,29 +564,33 @@ public class EditFileEntryAction extends PortletAction {
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
-		UploadPortletRequest uploadRequest = PortalUtil.getUploadPortletRequest(
-			actionRequest);
+		UploadPortletRequest uploadPortletRequest =
+			PortalUtil.getUploadPortletRequest(actionRequest);
 
-		String cmd = ParamUtil.getString(uploadRequest, Constants.CMD);
+		String cmd = ParamUtil.getString(uploadPortletRequest, Constants.CMD);
 
-		long fileEntryId = ParamUtil.getLong(uploadRequest, "fileEntryId");
+		long fileEntryId = ParamUtil.getLong(
+			uploadPortletRequest, "fileEntryId");
 
-		long repositoryId = ParamUtil.getLong(uploadRequest, "repositoryId");
-		long folderId = ParamUtil.getLong(uploadRequest, "folderId");
-		String sourceFileName = uploadRequest.getFileName("file");
-		String title = ParamUtil.getString(uploadRequest, "title");
-		String description = ParamUtil.getString(uploadRequest, "description");
-		String changeLog = ParamUtil.getString(uploadRequest, "changeLog");
+		long repositoryId = ParamUtil.getLong(
+			uploadPortletRequest, "repositoryId");
+		long folderId = ParamUtil.getLong(uploadPortletRequest, "folderId");
+		String sourceFileName = uploadPortletRequest.getFileName("file");
+		String title = ParamUtil.getString(uploadPortletRequest, "title");
+		String description = ParamUtil.getString(
+			uploadPortletRequest, "description");
+		String changeLog = ParamUtil.getString(
+			uploadPortletRequest, "changeLog");
 		boolean majorVersion = ParamUtil.getBoolean(
-			uploadRequest, "majorVersion");
+			uploadPortletRequest, "majorVersion");
 
-		File file = uploadRequest.getFile("file");
+		File file = uploadPortletRequest.getFile("file");
 
 		if (Validator.isNotNull(sourceFileName) && !file.exists()) {
 			file.createNewFile();
 		}
 
-		String contentType = uploadRequest.getContentType("file");
+		String contentType = uploadPortletRequest.getContentType("file");
 
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(
 			DLFileEntry.class.getName(), actionRequest);

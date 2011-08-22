@@ -657,13 +657,13 @@ public class EditLayoutsAction extends PortletAction {
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
-		UploadPortletRequest uploadRequest = PortalUtil.getUploadPortletRequest(
-			actionRequest);
+		UploadPortletRequest uploadPortletRequest =
+			PortalUtil.getUploadPortletRequest(actionRequest);
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
-		String cmd = ParamUtil.getString(uploadRequest, Constants.CMD);
+		String cmd = ParamUtil.getString(uploadPortletRequest, Constants.CMD);
 
 		long groupId = ParamUtil.getLong(actionRequest, "groupId");
 		long liveGroupId = ParamUtil.getLong(actionRequest, "liveGroupId");
@@ -673,7 +673,7 @@ public class EditLayoutsAction extends PortletAction {
 			actionRequest, "privateLayout");
 		long layoutId = ParamUtil.getLong(actionRequest, "layoutId");
 		long parentLayoutId = ParamUtil.getLong(
-			uploadRequest, "parentLayoutId");
+			uploadPortletRequest, "parentLayoutId");
 		Map<Locale, String> nameMap =
 			LocalizationUtil.getLocalizationMap(actionRequest, "name");
 		Map<Locale, String> titleMap =
@@ -684,23 +684,26 @@ public class EditLayoutsAction extends PortletAction {
 			LocalizationUtil.getLocalizationMap(actionRequest, "keywords");
 		Map<Locale, String> robotsMap =
 			LocalizationUtil.getLocalizationMap(actionRequest, "robots");
-		String type = ParamUtil.getString(uploadRequest, "type");
-		boolean hidden = ParamUtil.getBoolean(uploadRequest, "hidden");
-		String friendlyURL = ParamUtil.getString(uploadRequest, "friendlyURL");
-		boolean iconImage = ParamUtil.getBoolean(uploadRequest, "iconImage");
+		String type = ParamUtil.getString(uploadPortletRequest, "type");
+		boolean hidden = ParamUtil.getBoolean(uploadPortletRequest, "hidden");
+		String friendlyURL = ParamUtil.getString(
+			uploadPortletRequest, "friendlyURL");
+		boolean iconImage = ParamUtil.getBoolean(
+			uploadPortletRequest, "iconImage");
 		byte[] iconBytes = FileUtil.getBytes(
-			uploadRequest.getFile("iconFileName"));
-		boolean locked = ParamUtil.getBoolean(uploadRequest, "locked");
+			uploadPortletRequest.getFile("iconFileName"));
+		boolean locked = ParamUtil.getBoolean(uploadPortletRequest, "locked");
 		long layoutPrototypeId = ParamUtil.getLong(
-			uploadRequest, "layoutPrototypeId");
+			uploadPortletRequest, "layoutPrototypeId");
 
 		boolean inheritFromParentLayoutId = ParamUtil.getBoolean(
-			uploadRequest, "inheritFromParentLayoutId");
+			uploadPortletRequest, "inheritFromParentLayoutId");
 
-		long copyLayoutId = ParamUtil.getLong(uploadRequest, "copyLayoutId");
+		long copyLayoutId = ParamUtil.getLong(
+			uploadPortletRequest, "copyLayoutId");
 
 		String layoutTemplateId = ParamUtil.getString(
-			uploadRequest, "layoutTemplateId");
+			uploadPortletRequest, "layoutTemplateId");
 
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(
 			Layout.class.getName(), actionRequest);
@@ -850,8 +853,8 @@ public class EditLayoutsAction extends PortletAction {
 
 			EventsProcessorUtil.process(
 				PropsKeys.LAYOUT_CONFIGURATION_ACTION_UPDATE,
-				layoutSettings.getConfigurationActionUpdate(), uploadRequest,
-				response);
+				layoutSettings.getConfigurationActionUpdate(),
+				uploadPortletRequest, response);
 		}
 
 		updateLookAndFeel(

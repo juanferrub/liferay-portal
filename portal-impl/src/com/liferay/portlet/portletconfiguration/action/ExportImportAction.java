@@ -259,12 +259,12 @@ public class ExportImportAction extends EditConfigurationAction {
 		throws Exception {
 
 		try {
-			UploadPortletRequest uploadRequest =
+			UploadPortletRequest uploadPortletRequest =
 				PortalUtil.getUploadPortletRequest(actionRequest);
 
-			long plid = ParamUtil.getLong(uploadRequest, "plid");
-			long groupId = ParamUtil.getLong(uploadRequest, "groupId");
-			File file = uploadRequest.getFile("importFileName");
+			long plid = ParamUtil.getLong(uploadPortletRequest, "plid");
+			long groupId = ParamUtil.getLong(uploadPortletRequest, "groupId");
+			File file = uploadPortletRequest.getFile("importFileName");
 
 			if (!file.exists()) {
 				throw new LARFileException("Import file does not exist");
