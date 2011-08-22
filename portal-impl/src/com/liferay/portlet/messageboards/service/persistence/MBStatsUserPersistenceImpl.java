@@ -112,6 +112,7 @@ public class MBStatsUserPersistenceImpl extends BasePersistenceImpl<MBStatsUser>
 			FINDER_CLASS_NAME_LIST, "findByG_NotM",
 			new String[] {
 				Long.class.getName(), Integer.class.getName(),
+				Long.class.getName(),
 				
 			"java.lang.Integer", "java.lang.Integer",
 				"com.liferay.portal.kernel.util.OrderByComparator"
@@ -119,7 +120,10 @@ public class MBStatsUserPersistenceImpl extends BasePersistenceImpl<MBStatsUser>
 	public static final FinderPath FINDER_PATH_COUNT_BY_G_NOTM = new FinderPath(MBStatsUserModelImpl.ENTITY_CACHE_ENABLED,
 			MBStatsUserModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST, "countByG_NotM",
-			new String[] { Long.class.getName(), Integer.class.getName() });
+			new String[] {
+				Long.class.getName(), Integer.class.getName(),
+				Long.class.getName()
+			});
 	public static final FinderPath FINDER_PATH_FIND_ALL = new FinderPath(MBStatsUserModelImpl.ENTITY_CACHE_ENABLED,
 			MBStatsUserModelImpl.FINDER_CACHE_ENABLED, MBStatsUserImpl.class,
 			FINDER_CLASS_NAME_LIST, "findAll", new String[0]);
@@ -1306,21 +1310,22 @@ public class MBStatsUserPersistenceImpl extends BasePersistenceImpl<MBStatsUser>
 	}
 
 	/**
-	 * Returns all the message boards stats users where groupId = &#63; and messageCount &ne; &#63;.
+	 * Returns all the message boards stats users where groupId = &#63; and messageCount &ne; &#63; and userId &ne; &#63;.
 	 *
 	 * @param groupId the group ID
 	 * @param messageCount the message count
+	 * @param userId the user ID
 	 * @return the matching message boards stats users
 	 * @throws SystemException if a system exception occurred
 	 */
-	public List<MBStatsUser> findByG_NotM(long groupId, int messageCount)
-		throws SystemException {
-		return findByG_NotM(groupId, messageCount, QueryUtil.ALL_POS,
+	public List<MBStatsUser> findByG_NotM(long groupId, int messageCount,
+		long userId) throws SystemException {
+		return findByG_NotM(groupId, messageCount, userId, QueryUtil.ALL_POS,
 			QueryUtil.ALL_POS, null);
 	}
 
 	/**
-	 * Returns a range of all the message boards stats users where groupId = &#63; and messageCount &ne; &#63;.
+	 * Returns a range of all the message boards stats users where groupId = &#63; and messageCount &ne; &#63; and userId &ne; &#63;.
 	 *
 	 * <p>
 	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
@@ -1328,18 +1333,19 @@ public class MBStatsUserPersistenceImpl extends BasePersistenceImpl<MBStatsUser>
 	 *
 	 * @param groupId the group ID
 	 * @param messageCount the message count
+	 * @param userId the user ID
 	 * @param start the lower bound of the range of message boards stats users
 	 * @param end the upper bound of the range of message boards stats users (not inclusive)
 	 * @return the range of matching message boards stats users
 	 * @throws SystemException if a system exception occurred
 	 */
 	public List<MBStatsUser> findByG_NotM(long groupId, int messageCount,
-		int start, int end) throws SystemException {
-		return findByG_NotM(groupId, messageCount, start, end, null);
+		long userId, int start, int end) throws SystemException {
+		return findByG_NotM(groupId, messageCount, userId, start, end, null);
 	}
 
 	/**
-	 * Returns an ordered range of all the message boards stats users where groupId = &#63; and messageCount &ne; &#63;.
+	 * Returns an ordered range of all the message boards stats users where groupId = &#63; and messageCount &ne; &#63; and userId &ne; &#63;.
 	 *
 	 * <p>
 	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
@@ -1347,6 +1353,7 @@ public class MBStatsUserPersistenceImpl extends BasePersistenceImpl<MBStatsUser>
 	 *
 	 * @param groupId the group ID
 	 * @param messageCount the message count
+	 * @param userId the user ID
 	 * @param start the lower bound of the range of message boards stats users
 	 * @param end the upper bound of the range of message boards stats users (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
@@ -1354,10 +1361,10 @@ public class MBStatsUserPersistenceImpl extends BasePersistenceImpl<MBStatsUser>
 	 * @throws SystemException if a system exception occurred
 	 */
 	public List<MBStatsUser> findByG_NotM(long groupId, int messageCount,
-		int start, int end, OrderByComparator orderByComparator)
+		long userId, int start, int end, OrderByComparator orderByComparator)
 		throws SystemException {
 		Object[] finderArgs = new Object[] {
-				groupId, messageCount,
+				groupId, messageCount, userId,
 				
 				String.valueOf(start), String.valueOf(end),
 				String.valueOf(orderByComparator)
@@ -1370,11 +1377,11 @@ public class MBStatsUserPersistenceImpl extends BasePersistenceImpl<MBStatsUser>
 			StringBundler query = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(4 +
+				query = new StringBundler(5 +
 						(orderByComparator.getOrderByFields().length * 3));
 			}
 			else {
-				query = new StringBundler(4);
+				query = new StringBundler(5);
 			}
 
 			query.append(_SQL_SELECT_MBSTATSUSER_WHERE);
@@ -1382,6 +1389,8 @@ public class MBStatsUserPersistenceImpl extends BasePersistenceImpl<MBStatsUser>
 			query.append(_FINDER_COLUMN_G_NOTM_GROUPID_2);
 
 			query.append(_FINDER_COLUMN_G_NOTM_MESSAGECOUNT_2);
+
+			query.append(_FINDER_COLUMN_G_NOTM_USERID_2);
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(query, _ORDER_BY_ENTITY_ALIAS,
@@ -1406,6 +1415,8 @@ public class MBStatsUserPersistenceImpl extends BasePersistenceImpl<MBStatsUser>
 				qPos.add(groupId);
 
 				qPos.add(messageCount);
+
+				qPos.add(userId);
 
 				list = (List<MBStatsUser>)QueryUtil.list(q, getDialect(),
 						start, end);
@@ -1433,7 +1444,7 @@ public class MBStatsUserPersistenceImpl extends BasePersistenceImpl<MBStatsUser>
 	}
 
 	/**
-	 * Returns the first message boards stats user in the ordered set where groupId = &#63; and messageCount &ne; &#63;.
+	 * Returns the first message boards stats user in the ordered set where groupId = &#63; and messageCount &ne; &#63; and userId &ne; &#63;.
 	 *
 	 * <p>
 	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
@@ -1441,19 +1452,20 @@ public class MBStatsUserPersistenceImpl extends BasePersistenceImpl<MBStatsUser>
 	 *
 	 * @param groupId the group ID
 	 * @param messageCount the message count
+	 * @param userId the user ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching message boards stats user
 	 * @throws com.liferay.portlet.messageboards.NoSuchStatsUserException if a matching message boards stats user could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
 	public MBStatsUser findByG_NotM_First(long groupId, int messageCount,
-		OrderByComparator orderByComparator)
+		long userId, OrderByComparator orderByComparator)
 		throws NoSuchStatsUserException, SystemException {
-		List<MBStatsUser> list = findByG_NotM(groupId, messageCount, 0, 1,
-				orderByComparator);
+		List<MBStatsUser> list = findByG_NotM(groupId, messageCount, userId, 0,
+				1, orderByComparator);
 
 		if (list.isEmpty()) {
-			StringBundler msg = new StringBundler(6);
+			StringBundler msg = new StringBundler(8);
 
 			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
 
@@ -1462,6 +1474,9 @@ public class MBStatsUserPersistenceImpl extends BasePersistenceImpl<MBStatsUser>
 
 			msg.append(", messageCount=");
 			msg.append(messageCount);
+
+			msg.append(", userId=");
+			msg.append(userId);
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
@@ -1473,7 +1488,7 @@ public class MBStatsUserPersistenceImpl extends BasePersistenceImpl<MBStatsUser>
 	}
 
 	/**
-	 * Returns the last message boards stats user in the ordered set where groupId = &#63; and messageCount &ne; &#63;.
+	 * Returns the last message boards stats user in the ordered set where groupId = &#63; and messageCount &ne; &#63; and userId &ne; &#63;.
 	 *
 	 * <p>
 	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
@@ -1481,21 +1496,22 @@ public class MBStatsUserPersistenceImpl extends BasePersistenceImpl<MBStatsUser>
 	 *
 	 * @param groupId the group ID
 	 * @param messageCount the message count
+	 * @param userId the user ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching message boards stats user
 	 * @throws com.liferay.portlet.messageboards.NoSuchStatsUserException if a matching message boards stats user could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
 	public MBStatsUser findByG_NotM_Last(long groupId, int messageCount,
-		OrderByComparator orderByComparator)
+		long userId, OrderByComparator orderByComparator)
 		throws NoSuchStatsUserException, SystemException {
-		int count = countByG_NotM(groupId, messageCount);
+		int count = countByG_NotM(groupId, messageCount, userId);
 
-		List<MBStatsUser> list = findByG_NotM(groupId, messageCount, count - 1,
-				count, orderByComparator);
+		List<MBStatsUser> list = findByG_NotM(groupId, messageCount, userId,
+				count - 1, count, orderByComparator);
 
 		if (list.isEmpty()) {
-			StringBundler msg = new StringBundler(6);
+			StringBundler msg = new StringBundler(8);
 
 			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
 
@@ -1504,6 +1520,9 @@ public class MBStatsUserPersistenceImpl extends BasePersistenceImpl<MBStatsUser>
 
 			msg.append(", messageCount=");
 			msg.append(messageCount);
+
+			msg.append(", userId=");
+			msg.append(userId);
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
@@ -1515,7 +1534,7 @@ public class MBStatsUserPersistenceImpl extends BasePersistenceImpl<MBStatsUser>
 	}
 
 	/**
-	 * Returns the message boards stats users before and after the current message boards stats user in the ordered set where groupId = &#63; and messageCount &ne; &#63;.
+	 * Returns the message boards stats users before and after the current message boards stats user in the ordered set where groupId = &#63; and messageCount &ne; &#63; and userId &ne; &#63;.
 	 *
 	 * <p>
 	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
@@ -1524,13 +1543,15 @@ public class MBStatsUserPersistenceImpl extends BasePersistenceImpl<MBStatsUser>
 	 * @param statsUserId the primary key of the current message boards stats user
 	 * @param groupId the group ID
 	 * @param messageCount the message count
+	 * @param userId the user ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next message boards stats user
 	 * @throws com.liferay.portlet.messageboards.NoSuchStatsUserException if a message boards stats user with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
 	public MBStatsUser[] findByG_NotM_PrevAndNext(long statsUserId,
-		long groupId, int messageCount, OrderByComparator orderByComparator)
+		long groupId, int messageCount, long userId,
+		OrderByComparator orderByComparator)
 		throws NoSuchStatsUserException, SystemException {
 		MBStatsUser mbStatsUser = findByPrimaryKey(statsUserId);
 
@@ -1542,12 +1563,12 @@ public class MBStatsUserPersistenceImpl extends BasePersistenceImpl<MBStatsUser>
 			MBStatsUser[] array = new MBStatsUserImpl[3];
 
 			array[0] = getByG_NotM_PrevAndNext(session, mbStatsUser, groupId,
-					messageCount, orderByComparator, true);
+					messageCount, userId, orderByComparator, true);
 
 			array[1] = mbStatsUser;
 
 			array[2] = getByG_NotM_PrevAndNext(session, mbStatsUser, groupId,
-					messageCount, orderByComparator, false);
+					messageCount, userId, orderByComparator, false);
 
 			return array;
 		}
@@ -1560,7 +1581,7 @@ public class MBStatsUserPersistenceImpl extends BasePersistenceImpl<MBStatsUser>
 	}
 
 	protected MBStatsUser getByG_NotM_PrevAndNext(Session session,
-		MBStatsUser mbStatsUser, long groupId, int messageCount,
+		MBStatsUser mbStatsUser, long groupId, int messageCount, long userId,
 		OrderByComparator orderByComparator, boolean previous) {
 		StringBundler query = null;
 
@@ -1577,6 +1598,8 @@ public class MBStatsUserPersistenceImpl extends BasePersistenceImpl<MBStatsUser>
 		query.append(_FINDER_COLUMN_G_NOTM_GROUPID_2);
 
 		query.append(_FINDER_COLUMN_G_NOTM_MESSAGECOUNT_2);
+
+		query.append(_FINDER_COLUMN_G_NOTM_USERID_2);
 
 		if (orderByComparator != null) {
 			String[] orderByFields = orderByComparator.getOrderByFields();
@@ -1648,6 +1671,8 @@ public class MBStatsUserPersistenceImpl extends BasePersistenceImpl<MBStatsUser>
 		qPos.add(groupId);
 
 		qPos.add(messageCount);
+
+		qPos.add(userId);
 
 		if (orderByComparator != null) {
 			Object[] values = orderByComparator.getOrderByValues(mbStatsUser);
@@ -1815,15 +1840,17 @@ public class MBStatsUserPersistenceImpl extends BasePersistenceImpl<MBStatsUser>
 	}
 
 	/**
-	 * Removes all the message boards stats users where groupId = &#63; and messageCount &ne; &#63; from the database.
+	 * Removes all the message boards stats users where groupId = &#63; and messageCount &ne; &#63; and userId &ne; &#63; from the database.
 	 *
 	 * @param groupId the group ID
 	 * @param messageCount the message count
+	 * @param userId the user ID
 	 * @throws SystemException if a system exception occurred
 	 */
-	public void removeByG_NotM(long groupId, int messageCount)
+	public void removeByG_NotM(long groupId, int messageCount, long userId)
 		throws SystemException {
-		for (MBStatsUser mbStatsUser : findByG_NotM(groupId, messageCount)) {
+		for (MBStatsUser mbStatsUser : findByG_NotM(groupId, messageCount,
+				userId)) {
 			mbStatsUserPersistence.remove(mbStatsUser);
 		}
 	}
@@ -2004,28 +2031,31 @@ public class MBStatsUserPersistenceImpl extends BasePersistenceImpl<MBStatsUser>
 	}
 
 	/**
-	 * Returns the number of message boards stats users where groupId = &#63; and messageCount &ne; &#63;.
+	 * Returns the number of message boards stats users where groupId = &#63; and messageCount &ne; &#63; and userId &ne; &#63;.
 	 *
 	 * @param groupId the group ID
 	 * @param messageCount the message count
+	 * @param userId the user ID
 	 * @return the number of matching message boards stats users
 	 * @throws SystemException if a system exception occurred
 	 */
-	public int countByG_NotM(long groupId, int messageCount)
+	public int countByG_NotM(long groupId, int messageCount, long userId)
 		throws SystemException {
-		Object[] finderArgs = new Object[] { groupId, messageCount };
+		Object[] finderArgs = new Object[] { groupId, messageCount, userId };
 
 		Long count = (Long)FinderCacheUtil.getResult(FINDER_PATH_COUNT_BY_G_NOTM,
 				finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(3);
+			StringBundler query = new StringBundler(4);
 
 			query.append(_SQL_COUNT_MBSTATSUSER_WHERE);
 
 			query.append(_FINDER_COLUMN_G_NOTM_GROUPID_2);
 
 			query.append(_FINDER_COLUMN_G_NOTM_MESSAGECOUNT_2);
+
+			query.append(_FINDER_COLUMN_G_NOTM_USERID_2);
 
 			String sql = query.toString();
 
@@ -2041,6 +2071,8 @@ public class MBStatsUserPersistenceImpl extends BasePersistenceImpl<MBStatsUser>
 				qPos.add(groupId);
 
 				qPos.add(messageCount);
+
+				qPos.add(userId);
 
 				count = (Long)q.uniqueResult();
 			}
@@ -2162,7 +2194,8 @@ public class MBStatsUserPersistenceImpl extends BasePersistenceImpl<MBStatsUser>
 	private static final String _FINDER_COLUMN_G_U_GROUPID_2 = "mbStatsUser.groupId = ? AND ";
 	private static final String _FINDER_COLUMN_G_U_USERID_2 = "mbStatsUser.userId = ?";
 	private static final String _FINDER_COLUMN_G_NOTM_GROUPID_2 = "mbStatsUser.groupId = ? AND ";
-	private static final String _FINDER_COLUMN_G_NOTM_MESSAGECOUNT_2 = "mbStatsUser.messageCount != ?";
+	private static final String _FINDER_COLUMN_G_NOTM_MESSAGECOUNT_2 = "mbStatsUser.messageCount != ? AND ";
+	private static final String _FINDER_COLUMN_G_NOTM_USERID_2 = "mbStatsUser.userId != ?";
 	private static final String _ORDER_BY_ENTITY_ALIAS = "mbStatsUser.";
 	private static final String _NO_SUCH_ENTITY_WITH_PRIMARY_KEY = "No MBStatsUser exists with the primary key ";
 	private static final String _NO_SUCH_ENTITY_WITH_KEY = "No MBStatsUser exists with the key {";
