@@ -795,7 +795,7 @@ public class LayoutAction extends Action {
 				_log.debug("Content type " + contentType);
 			}
 
-			UploadServletRequest uploadRequest = null;
+			UploadServletRequest uploadServletRequest = null;
 
 			try {
 				if ((contentType != null) &&
@@ -809,9 +809,10 @@ public class LayoutAction extends Action {
 						((invokerPortletConfigImpl != null) &&
 						 (!invokerPortletConfigImpl.isWARFile()))) {
 
-						uploadRequest = new UploadServletRequestImpl(request);
+						uploadServletRequest = new UploadServletRequestImpl(
+							request);
 
-						request = uploadRequest;
+						request = uploadServletRequest;
 					}
 				}
 
@@ -877,8 +878,8 @@ public class LayoutAction extends Action {
 				}
 			}
 			finally {
-				if (uploadRequest != null) {
-					uploadRequest.cleanUp();
+				if (uploadServletRequest != null) {
+					uploadServletRequest.cleanUp();
 				}
 
 				ServiceContextThreadLocal.popServiceContext();

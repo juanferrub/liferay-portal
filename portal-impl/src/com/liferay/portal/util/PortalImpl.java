@@ -3592,15 +3592,15 @@ public class PortalImpl implements Portal {
 			requestWrapper = (HttpServletRequestWrapper)request;
 		}
 
-		UploadServletRequest uploadRequest = null;
+		UploadServletRequest uploadServletRequest = null;
 
-		while (uploadRequest == null) {
+		while (uploadServletRequest == null) {
 
 			// Find the underlying UploadServletRequest wrapper. For example,
 			// WebSphere wraps all requests with ProtectedServletRequest.
 
 			if (requestWrapper instanceof UploadServletRequest) {
-				uploadRequest = (UploadServletRequest)requestWrapper;
+				uploadServletRequest = (UploadServletRequest)requestWrapper;
 			}
 			else {
 				HttpServletRequest parentRequest =
@@ -3611,7 +3611,8 @@ public class PortalImpl implements Portal {
 					// This block should never be reached unless this method is
 					// called from a hot deployable portlet. See LayoutAction.
 
-					uploadRequest = new UploadServletRequestImpl(parentRequest);
+					uploadServletRequest = new UploadServletRequestImpl(
+						parentRequest);
 
 					break;
 				}
@@ -3621,7 +3622,7 @@ public class PortalImpl implements Portal {
 			}
 		}
 
-		return uploadRequest;
+		return uploadServletRequest;
 	}
 
 	public UploadPortletRequest getUploadPortletRequest(
@@ -3636,11 +3637,11 @@ public class PortalImpl implements Portal {
 		HttpServletRequestWrapper requestWrapper =
 			(HttpServletRequestWrapper)dynamicRequest.getRequest();
 
-		UploadServletRequest uploadRequest = getUploadServletRequest(
+		UploadServletRequest uploadServletRequest = getUploadServletRequest(
 			requestWrapper);
 
 		return new UploadPortletRequestImpl(
-			uploadRequest,
+			uploadServletRequest,
 			PortalUtil.getPortletNamespace(
 				portletRequestImpl.getPortletName()));
 	}
