@@ -14,7 +14,6 @@
 
 package com.liferay.portlet.mobiledevicerules.model.impl;
 
-import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portlet.mobiledevicerules.model.MDRAction;
@@ -31,6 +30,15 @@ public class MDRRuleImpl extends MDRRuleBaseImpl {
 	public MDRRuleImpl() {
 	}
 
+	public List<MDRAction> getActions() throws SystemException {
+		if (getRuleId() > 0) {
+			return MDRActionLocalServiceUtil.getActions(getRuleId());
+		}
+		else {
+			return Collections.emptyList();
+		}
+	}
+
 	public UnicodeProperties getTypeSettingsProperties() {
 		if (_typeSettingsProperties == null) {
 			_typeSettingsProperties = new UnicodeProperties(true);
@@ -41,6 +49,7 @@ public class MDRRuleImpl extends MDRRuleBaseImpl {
 		return _typeSettingsProperties;
 	}
 
+	@Override
 	public void setTypeSettings(String typeSettings) {
 		super.setTypeSettings(typeSettings);
 
@@ -48,24 +57,13 @@ public class MDRRuleImpl extends MDRRuleBaseImpl {
 	}
 
 	public void setTypeSettingsProperties(
-			UnicodeProperties typeSettingsProperties) {
+		UnicodeProperties typeSettingsProperties) {
 
 		_typeSettingsProperties = typeSettingsProperties;
 
 		super.setTypeSettings(_typeSettingsProperties.toString());
 	}
 
-	public List<MDRAction> getActions()
-		throws PortalException, SystemException {
-
-		if (getRuleId() > 0) {
-			return MDRActionLocalServiceUtil.getActions(getRuleId());
-		}
-		else {
-			return Collections.emptyList();
-		}
-	}
-
-	private UnicodeProperties _typeSettingsProperties = null;
+	private UnicodeProperties _typeSettingsProperties;
 
 }

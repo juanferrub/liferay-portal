@@ -38,20 +38,6 @@ public class MDRRuleLocalServiceImpl extends MDRRuleLocalServiceBaseImpl {
 	public MDRRule addRule(
 			long groupId, long ruleGroupId, Map<Locale, String> nameMap,
 			Map<Locale, String> descriptionMap, String type,
-			UnicodeProperties typeSettingsProperties,
-			ServiceContext serviceContext)
-		throws PortalException, SystemException {
-
-		String typeSettings = typeSettingsProperties.toString();
-
-		return addRule(
-			groupId, ruleGroupId, nameMap, descriptionMap, type, typeSettings,
-			serviceContext);
-	}
-
-	public MDRRule addRule(
-			long groupId, long ruleGroupId, Map<Locale, String> nameMap,
-			Map<Locale, String> descriptionMap, String type,
 			String typeSettings, ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
@@ -63,111 +49,110 @@ public class MDRRuleLocalServiceImpl extends MDRRuleLocalServiceBaseImpl {
 		MDRRule rule = mdrRulePersistence.create(ruleId);
 
 		rule.setUuid(serviceContext.getUuid());
+		rule.setGroupId(groupId);
 		rule.setCompanyId(serviceContext.getCompanyId());
 		rule.setCreateDate(serviceContext.getCreateDate(now));
 		rule.setModifiedDate(serviceContext.getModifiedDate(now));
 		rule.setUserId(user.getUserId());
 		rule.setUserName(user.getFullName());
-		rule.setDescriptionMap(descriptionMap);
-		rule.setGroupId(groupId);
-		rule.setNameMap(nameMap);
 		rule.setRuleGroupId(ruleGroupId);
+		rule.setNameMap(nameMap);
+		rule.setDescriptionMap(descriptionMap);
 		rule.setType(type);
 		rule.setTypeSettings(typeSettings);
 
 		return updateMDRRule(rule, false);
 	}
 
-	public MDRRule cloneRule(
-			long ruleId, long targetRuleGroupId, ServiceContext serviceContext)
+	public MDRRule addRule(
+			long groupId, long ruleGroupId, Map<Locale, String> nameMap,
+			Map<Locale, String> descriptionMap, String type,
+			UnicodeProperties typeSettingsProperties,
+			ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
-		MDRRule rule = getMDRRule(ruleId);
-
-		return cloneRule(rule, targetRuleGroupId, serviceContext);
+		return addRule(
+			groupId, ruleGroupId, nameMap, descriptionMap, type,
+			typeSettingsProperties.toString(), serviceContext);
 	}
 
-	public MDRRule cloneRule(
-			MDRRule rule, long targetRuleGroupId, ServiceContext serviceContext)
+	public MDRRule copyRule(
+			long ruleId, long ruleGroupId, ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
-		MDRRuleGroup ruleGroup = mdrRuleGroupLocalService.getMDRRuleGroup(
-			targetRuleGroupId);
+		MDRRule rule = mdrRulePersistence.findByPrimaryKey(ruleId);
+
+		return copyRule(rule, ruleGroupId, serviceContext);
+	}
+
+	public MDRRule copyRule(
+			MDRRule rule, long ruleGroupId, ServiceContext serviceContext)
+		throws PortalException, SystemException {
+
+		MDRRuleGroup ruleGroup = mdrRuleGroupPersistence.findByPrimaryKey(
+			ruleGroupId);
 
 		MDRRule newRule = addRule(
 			ruleGroup.getGroupId(), ruleGroup.getRuleGroupId(),
 			rule.getNameMap(), rule.getDescriptionMap(), rule.getType(),
 			rule.getTypeSettings(), serviceContext);
 
-		for (MDRAction action : rule.getActions()) {
+		List<MDRAction> actions = mdrActionPersistence.findByRuleId(
+			rule.getRuleId());
+
+		for (MDRAction action : actions) {
 			serviceContext.setUuid(PortalUUIDUtil.generate());
 
-			mdrActionLocalService.cloneAction(
+			mdrActionLocalService.copyAction(
 				action, newRule.getRuleId(), serviceContext);
 		}
 
 		return newRule;
 	}
 
-	public void deleteRule(MDRRule rule)
-		throws PortalException, SystemException {
-
-		mdrActionLocalService.deleteActions(rule.getRuleId());
-
-		deleteMDRRule(rule);
-	}
-
-	public void deleteRule(long ruleId)
-		throws PortalException, SystemException {
-
-		MDRRule rule = fetchRule(ruleId);
+	public void deleteRule(long ruleId) throws SystemException {
+		MDRRule rule = mdrRulePersistence.fetchByPrimaryKey(ruleId);
 
 		if (rule != null) {
 			deleteRule(rule);
 		}
 	}
 
-	public void deleteRules(long ruleGroupId)
-		throws PortalException, SystemException {
+	public void deleteRule(MDRRule rule) throws SystemException {
 
-		List<MDRRule> rules = getRules(ruleGroupId);
+		// Rule
 
-		for (MDRRule mdrRule : rules) {
-			deleteRule(mdrRule);
+		mdrRulePersistence.remove(rule);
+
+		// Actions
+
+		mdrActionLocalService.deleteActions(rule.getRuleId());
+	}
+
+	public void deleteRules(long ruleGroupId) throws SystemException {
+		List<MDRRule> rules = mdrRulePersistence.findByRuleGroupId(ruleGroupId);
+
+		for (MDRRule rule : rules) {
+			deleteRule(rule);
 		}
 	}
 
-	public MDRRule fetchRule(long deviceRuleId) throws SystemException {
-		return mdrRulePersistence.fetchByPrimaryKey(deviceRuleId);
+	public MDRRule fetchRule(long ruleId) throws SystemException {
+		return mdrRulePersistence.fetchByPrimaryKey(ruleId);
 	}
 
 	public List<MDRRule> getRules(long ruleGroupId) throws SystemException {
 		return mdrRulePersistence.findByRuleGroupId(ruleGroupId);
 	}
 
-	public List<MDRRule> getRules(long deviceRuleGroupId, int start, int end)
+	public List<MDRRule> getRules(long ruleGroupId, int start, int end)
 		throws SystemException {
 
-		return mdrRulePersistence.findByRuleGroupId(
-			deviceRuleGroupId, start, end);
+		return mdrRulePersistence.findByRuleGroupId(ruleGroupId, start, end);
 	}
 
 	public int getRulesCount(long ruleGroupId) throws SystemException {
 		return mdrRulePersistence.countByRuleGroupId(ruleGroupId);
-	}
-
-	public MDRRule updateRule(
-			long ruleId, Map<Locale, String> nameMap,
-			Map<Locale, String> descriptionMap, String type,
-			UnicodeProperties typeSettingsProperties,
-			ServiceContext serviceContext)
-		throws PortalException, SystemException {
-
-		String typeSettings = typeSettingsProperties.toString();
-
-		return updateRule(
-			ruleId, nameMap, descriptionMap, type, typeSettings,
-			serviceContext);
 	}
 
 	public MDRRule updateRule(
@@ -178,15 +163,27 @@ public class MDRRuleLocalServiceImpl extends MDRRuleLocalServiceBaseImpl {
 
 		MDRRule rule = mdrRulePersistence.findByPrimaryKey(ruleId);
 
+		rule.setModifiedDate(serviceContext.getModifiedDate(null));
 		rule.setNameMap(nameMap);
 		rule.setDescriptionMap(descriptionMap);
 		rule.setType(type);
 		rule.setTypeSettings(typeSettings);
-		rule.setModifiedDate(serviceContext.getModifiedDate(null));
 
 		mdrRulePersistence.update(rule, false);
 
 		return rule;
+	}
+
+	public MDRRule updateRule(
+			long ruleId, Map<Locale, String> nameMap,
+			Map<Locale, String> descriptionMap, String type,
+			UnicodeProperties typeSettingsProperties,
+			ServiceContext serviceContext)
+		throws PortalException, SystemException {
+
+		return updateRule(
+			ruleId, nameMap, descriptionMap, type,
+			typeSettingsProperties.toString(), serviceContext);
 	}
 
 }

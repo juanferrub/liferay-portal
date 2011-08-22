@@ -34,6 +34,7 @@ public class MDRActionImpl extends MDRActionBaseImpl {
 		return _typeSettingsProperties;
 	}
 
+	@Override
 	public void setTypeSettings(String typeSettings) {
 		super.setTypeSettings(typeSettings);
 
@@ -48,6 +49,6 @@ public class MDRActionImpl extends MDRActionBaseImpl {
 		super.setTypeSettings(_typeSettingsProperties.toString());
 	}
 
-	private UnicodeProperties _typeSettingsProperties = null;
+	private UnicodeProperties _typeSettingsProperties;
 
 }

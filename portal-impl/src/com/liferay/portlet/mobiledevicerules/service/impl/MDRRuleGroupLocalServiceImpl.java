@@ -17,7 +17,6 @@ package com.liferay.portlet.mobiledevicerules.service.impl;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.language.LanguageUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
@@ -53,90 +52,93 @@ public class MDRRuleGroupLocalServiceImpl
 		MDRRuleGroup ruleGroup = createMDRRuleGroup(ruleGroupId);
 
 		ruleGroup.setUuid(serviceContext.getUuid());
+		ruleGroup.setGroupId(groupId);
 		ruleGroup.setCompanyId(serviceContext.getCompanyId());
 		ruleGroup.setCreateDate(serviceContext.getCreateDate(now));
 		ruleGroup.setModifiedDate(serviceContext.getModifiedDate(now));
 		ruleGroup.setUserId(user.getUserId());
 		ruleGroup.setUserName(user.getFullName());
-		ruleGroup.setGroupId(groupId);
 		ruleGroup.setNameMap(nameMap);
 		ruleGroup.setDescriptionMap(descriptionMap);
 
 		return updateMDRRuleGroup(ruleGroup, false);
 	}
 
-	public MDRRuleGroup cloneRuleGroup(
-			long ruleGroupId, long targetGroupId, ServiceContext serviceContext)
+	public MDRRuleGroup copyRuleGroup(
+			long ruleGroupId, long groupId, ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
-		MDRRuleGroup ruleGroup = getMDRRuleGroup(ruleGroupId);
+		MDRRuleGroup ruleGroup = mdrRuleGroupPersistence.findByPrimaryKey(
+			ruleGroupId);
 
-		return cloneRuleGroup(ruleGroup, targetGroupId, serviceContext);
+		return copyRuleGroup(ruleGroup, groupId, serviceContext);
 	}
 
-	public MDRRuleGroup cloneRuleGroup(
-			MDRRuleGroup ruleGroup, long targetGroupId,
-			ServiceContext serviceContext)
+	public MDRRuleGroup copyRuleGroup(
+			MDRRuleGroup ruleGroup, long groupId, ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
-		Group targetGroup = groupLocalService.getGroup(targetGroupId);
+		Group group = groupPersistence.findByPrimaryKey(groupId);
 
 		Map<Locale, String> nameMap = ruleGroup.getNameMap();
 
-		String prefixProp = PropsValues.MOBILE_DEVICE_RULE_GROUP_CLONE_POSTFIX;
+		for (Map.Entry<Locale, String> entry : nameMap.entrySet()) {
+			Locale locale = entry.getKey();
+			String name = entry.getValue();
 
-		for (Map.Entry<Locale, String> nameMapEntry : nameMap.entrySet()) {
-			if (Validator.isNotNull(nameMapEntry.getValue())) {
-				String prefix = LanguageUtil.get(
-					nameMapEntry.getKey(), prefixProp);
-
-				StringBundler newName = new StringBundler(3);
-
-				newName.append(nameMapEntry.getValue());
-				newName.append(StringPool.SPACE);
-				newName.append(prefix);
-
-				nameMap.put(nameMapEntry.getKey(), newName.toString());
+			if (Validator.isNull(name)) {
+				continue;
 			}
+
+			String postfix = LanguageUtil.get(
+				locale,
+				PropsValues.MOBILE_DEVICE_RULES_RULE_GROUP_COPY_POSTFIX);
+
+			nameMap.put(locale, name.concat(StringPool.SPACE).concat(postfix));
 		}
 
 		MDRRuleGroup newRuleGroup = addRuleGroup(
-			targetGroup.getGroupId(), nameMap, ruleGroup.getDescriptionMap(),
+			group.getGroupId(), nameMap, ruleGroup.getDescriptionMap(),
 			serviceContext);
 
-		for (MDRRule rule : ruleGroup.getRules()) {
+		List<MDRRule> rules = mdrRulePersistence.findByRuleGroupId(
+			ruleGroup.getRuleGroupId());
+
+		for (MDRRule rule : rules) {
 			serviceContext.setUuid(PortalUUIDUtil.generate());
 
-			mdrRuleLocalService.cloneRule(
+			mdrRuleLocalService.copyRule(
 				rule, newRuleGroup.getRuleGroupId(), serviceContext);
 		}
 
 		return newRuleGroup;
 	}
 
-	public void deleteRuleGroup(MDRRuleGroup ruleGroup)
-		throws PortalException, SystemException {
+	public void deleteRuleGroup(long ruleGroupId) throws SystemException {
+		MDRRuleGroup ruleGroup = mdrRuleGroupPersistence.fetchByPrimaryKey(
+			ruleGroupId);
 
-		mdrRuleLocalService.deleteRules(ruleGroup.getRuleGroupId());
-
-		deleteMDRRuleGroup(ruleGroup);
-	}
-
-	public void deleteRuleGroup(long ruleGroupId)
-		throws PortalException, SystemException {
-
-		MDRRuleGroup deviceRuleGroup =
-			mdrRuleGroupPersistence.fetchByPrimaryKey(ruleGroupId);
-
-		if (deviceRuleGroup != null) {
-			deleteRuleGroup(deviceRuleGroup);
+		if (ruleGroup != null) {
+			deleteRuleGroup(ruleGroup);
 		}
 	}
 
-	public void deleteRuleGroups(long groupId)
-		throws PortalException, SystemException {
+	public void deleteRuleGroup(MDRRuleGroup ruleGroup) throws SystemException {
 
-		for (MDRRuleGroup ruleGroup : getRuleGroups(groupId)) {
+		// Rule group
+
+		deleteMDRRuleGroup(ruleGroup);
+
+		// Rules
+
+		mdrRuleLocalService.deleteRules(ruleGroup.getRuleGroupId());
+	}
+
+	public void deleteRuleGroups(long groupId) throws SystemException {
+		List<MDRRuleGroup> ruleGroups = mdrRuleGroupPersistence.findByGroupId(
+			groupId);
+
+		for (MDRRuleGroup ruleGroup : ruleGroups) {
 			deleteRuleGroup(ruleGroup);
 		}
 	}
@@ -188,6 +190,7 @@ public class MDRRuleGroupLocalServiceImpl
 		MDRRuleGroup ruleGroup = mdrRuleGroupPersistence.findByPrimaryKey(
 			ruleGroupId);
 
+		ruleGroup.setModifiedDate(serviceContext.getModifiedDate(null));
 		ruleGroup.setNameMap(nameMap);
 		ruleGroup.setDescriptionMap(descriptionMap);
 

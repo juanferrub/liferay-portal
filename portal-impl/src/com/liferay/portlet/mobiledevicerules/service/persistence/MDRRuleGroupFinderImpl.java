@@ -24,8 +24,6 @@ import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portlet.mobiledevicerules.model.MDRRuleGroup;
 import com.liferay.util.dao.orm.CustomSQLUtil;
 
-import java.math.BigInteger;
-
 import java.util.Iterator;
 import java.util.List;
 
@@ -60,13 +58,12 @@ public class MDRRuleGroupFinderImpl extends BasePersistenceImpl<MDRRuleGroup>
 			QueryPos qPos = QueryPos.getInstance(q);
 
 			qPos.add(groupId);
-
 			qPos.add(names, 2);
 
-			Iterator<BigInteger> itr = q.list().iterator();
+			Iterator<Long> itr = q.list().iterator();
 
 			if (itr.hasNext()) {
-				BigInteger count = itr.next();
+				Long count = itr.next();
 
 				if (count != null) {
 					return count.intValue();
@@ -86,7 +83,7 @@ public class MDRRuleGroupFinderImpl extends BasePersistenceImpl<MDRRuleGroup>
 	public List<MDRRuleGroup> findByG_N(long groupId, String name)
 		throws SystemException {
 
-		return findByG_N(groupId, name, 0, Integer.MAX_VALUE);
+		return findByG_N(groupId, name, QueryUtil.ALL_POS, QueryUtil.ALL_POS);
 	}
 
 	public List<MDRRuleGroup> findByG_N(
@@ -113,7 +110,6 @@ public class MDRRuleGroupFinderImpl extends BasePersistenceImpl<MDRRuleGroup>
 			QueryPos qPos = QueryPos.getInstance(q);
 
 			qPos.add(groupId);
-
 			qPos.add(names, 2);
 
 			return (List<MDRRuleGroup>) QueryUtil.list(
@@ -126,4 +122,5 @@ public class MDRRuleGroupFinderImpl extends BasePersistenceImpl<MDRRuleGroup>
 			closeSession(session);
 		}
 	}
+
 }
