@@ -250,8 +250,7 @@ public interface MDRActionLocalService extends PersistedModelLocalService {
 		long groupId, long ruleGroupId, long ruleId,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
-		java.lang.String type,
-		com.liferay.portal.kernel.util.UnicodeProperties typeSettingsProperties,
+		java.lang.String type, java.lang.String typeSettings,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException;
@@ -260,23 +259,30 @@ public interface MDRActionLocalService extends PersistedModelLocalService {
 		long groupId, long ruleGroupId, long ruleId,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
-		java.lang.String type, java.lang.String typeSettings,
+		java.lang.String type,
+		com.liferay.portal.kernel.util.UnicodeProperties typeSettingsProperties,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException;
 
-	public com.liferay.portlet.mobiledevicerules.model.MDRAction cloneAction(
-		long actionId, long targetRuleId,
+	public com.liferay.portlet.mobiledevicerules.model.MDRAction copyAction(
+		long actionId, long ruleId,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException;
 
-	public com.liferay.portlet.mobiledevicerules.model.MDRAction cloneAction(
+	public com.liferay.portlet.mobiledevicerules.model.MDRAction copyAction(
 		com.liferay.portlet.mobiledevicerules.model.MDRAction action,
-		long targetRuleId,
-		com.liferay.portal.service.ServiceContext serviceContext)
+		long ruleId, com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException;
+
+	public void deleteAction(long ruleId)
+		throws com.liferay.portal.kernel.exception.SystemException;
+
+	public void deleteAction(
+		com.liferay.portlet.mobiledevicerules.model.MDRAction action)
+		throws com.liferay.portal.kernel.exception.SystemException;
 
 	public void deleteActions(long ruleId)
 		throws com.liferay.portal.kernel.exception.SystemException;
@@ -303,8 +309,7 @@ public interface MDRActionLocalService extends PersistedModelLocalService {
 		long actionId,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
-		java.lang.String type,
-		com.liferay.portal.kernel.util.UnicodeProperties typeSettingsProperties,
+		java.lang.String type, java.lang.String typeSettings,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException;
@@ -313,7 +318,8 @@ public interface MDRActionLocalService extends PersistedModelLocalService {
 		long actionId,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
-		java.lang.String type, java.lang.String typeSettings,
+		java.lang.String type,
+		com.liferay.portal.kernel.util.UnicodeProperties typeSettingsProperties,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException;

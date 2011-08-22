@@ -283,41 +283,35 @@ public class MDRRuleGroupLocalServiceUtil {
 			serviceContext);
 	}
 
-	public static com.liferay.portlet.mobiledevicerules.model.MDRRuleGroup cloneRuleGroup(
-		long ruleGroupId, long targetGroupId,
+	public static com.liferay.portlet.mobiledevicerules.model.MDRRuleGroup copyRuleGroup(
+		long ruleGroupId, long groupId,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
-		return getService()
-				   .cloneRuleGroup(ruleGroupId, targetGroupId, serviceContext);
+		return getService().copyRuleGroup(ruleGroupId, groupId, serviceContext);
 	}
 
-	public static com.liferay.portlet.mobiledevicerules.model.MDRRuleGroup cloneRuleGroup(
+	public static com.liferay.portlet.mobiledevicerules.model.MDRRuleGroup copyRuleGroup(
 		com.liferay.portlet.mobiledevicerules.model.MDRRuleGroup ruleGroup,
-		long targetGroupId,
-		com.liferay.portal.service.ServiceContext serviceContext)
+		long groupId, com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
-		return getService()
-				   .cloneRuleGroup(ruleGroup, targetGroupId, serviceContext);
+		return getService().copyRuleGroup(ruleGroup, groupId, serviceContext);
+	}
+
+	public static void deleteRuleGroup(long ruleGroupId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		getService().deleteRuleGroup(ruleGroupId);
 	}
 
 	public static void deleteRuleGroup(
 		com.liferay.portlet.mobiledevicerules.model.MDRRuleGroup ruleGroup)
-		throws com.liferay.portal.kernel.exception.PortalException,
-			com.liferay.portal.kernel.exception.SystemException {
+		throws com.liferay.portal.kernel.exception.SystemException {
 		getService().deleteRuleGroup(ruleGroup);
 	}
 
-	public static void deleteRuleGroup(long ruleGroupId)
-		throws com.liferay.portal.kernel.exception.PortalException,
-			com.liferay.portal.kernel.exception.SystemException {
-		getService().deleteRuleGroup(ruleGroupId);
-	}
-
 	public static void deleteRuleGroups(long groupId)
-		throws com.liferay.portal.kernel.exception.PortalException,
-			com.liferay.portal.kernel.exception.SystemException {
+		throws com.liferay.portal.kernel.exception.SystemException {
 		getService().deleteRuleGroups(groupId);
 	}
 

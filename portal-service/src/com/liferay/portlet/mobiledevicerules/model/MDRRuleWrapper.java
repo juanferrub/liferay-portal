@@ -580,6 +580,11 @@ public class MDRRuleWrapper implements MDRRule {
 		_mdrRule.persist();
 	}
 
+	public java.util.List<com.liferay.portlet.mobiledevicerules.model.MDRAction> getActions()
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _mdrRule.getActions();
+	}
+
 	public com.liferay.portal.kernel.util.UnicodeProperties getTypeSettingsProperties() {
 		return _mdrRule.getTypeSettingsProperties();
 	}
@@ -587,12 +592,6 @@ public class MDRRuleWrapper implements MDRRule {
 	public void setTypeSettingsProperties(
 		com.liferay.portal.kernel.util.UnicodeProperties typeSettingsProperties) {
 		_mdrRule.setTypeSettingsProperties(typeSettingsProperties);
-	}
-
-	public java.util.List<com.liferay.portlet.mobiledevicerules.model.MDRAction> getActions()
-		throws com.liferay.portal.kernel.exception.PortalException,
-			com.liferay.portal.kernel.exception.SystemException {
-		return _mdrRule.getActions();
 	}
 
 	public MDRRule getWrappedMDRRule() {
