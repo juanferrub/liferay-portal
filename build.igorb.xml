@@ -1,0 +1,17 @@
+<project>
+	<property name="git.repo.bin" value="./bin" />
+	<import file="build.xml" />
+	<target name="all">
+		<antcall target="clean" />
+		<antcall target="start" />
+		<antcall target="deploy" />
+		<antcall target="setup-jrebel" />
+	</target>
+	<target name="setup-jrebel">
+		<mkdir dir="${git.repo.bin}/WEB-INF" />
+		<mkdir dir="${git.repo.bin}/WEB-INF/sass" />
+		<copy todir="${git.repo.bin}/WEB-INF/sass" overwrite="true">
+			<fileset dir="./portal-web/docroot/WEB-INF/sass/" includes="*.rb" />
+		</copy>
+	</target>
+</project>
