@@ -134,7 +134,7 @@ public class MBStatsUserLocalServiceImpl
 			long groupId, long excludedUserId, int start, int end)
 		throws SystemException {
 
-		return mbStatsUserPersistence.findByG_NotM(
+		return mbStatsUserPersistence.findByG_NotM_NotU(
 				groupId, 0, excludedUserId, start, end);
 	}
 
@@ -147,7 +147,8 @@ public class MBStatsUserLocalServiceImpl
 	public int getStatsUsersByGroupIdCount(long groupId, long excludedUserId)
 	throws SystemException {
 
-		return mbStatsUserPersistence.countByG_NotM(groupId, 0, excludedUserId);
+		return mbStatsUserPersistence.countByG_NotM_NotU(
+				groupId, 0, excludedUserId);
 	}
 
 	public List<MBStatsUser> getStatsUsersByUserId(long userId)
