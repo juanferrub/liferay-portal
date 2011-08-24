@@ -362,7 +362,7 @@ public interface MBStatsUserPersistence extends BasePersistence<MBStatsUser> {
 	* @return the matching message boards stats users
 	* @throws SystemException if a system exception occurred
 	*/
-	public java.util.List<com.liferay.portlet.messageboards.model.MBStatsUser> findByG_NotM(
+	public java.util.List<com.liferay.portlet.messageboards.model.MBStatsUser> findByG_NotM_NotU(
 		long groupId, int messageCount, long userId)
 		throws com.liferay.portal.kernel.exception.SystemException;
 
@@ -381,7 +381,7 @@ public interface MBStatsUserPersistence extends BasePersistence<MBStatsUser> {
 	* @return the range of matching message boards stats users
 	* @throws SystemException if a system exception occurred
 	*/
-	public java.util.List<com.liferay.portlet.messageboards.model.MBStatsUser> findByG_NotM(
+	public java.util.List<com.liferay.portlet.messageboards.model.MBStatsUser> findByG_NotM_NotU(
 		long groupId, int messageCount, long userId, int start, int end)
 		throws com.liferay.portal.kernel.exception.SystemException;
 
@@ -401,7 +401,7 @@ public interface MBStatsUserPersistence extends BasePersistence<MBStatsUser> {
 	* @return the ordered range of matching message boards stats users
 	* @throws SystemException if a system exception occurred
 	*/
-	public java.util.List<com.liferay.portlet.messageboards.model.MBStatsUser> findByG_NotM(
+	public java.util.List<com.liferay.portlet.messageboards.model.MBStatsUser> findByG_NotM_NotU(
 		long groupId, int messageCount, long userId, int start, int end,
 		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
 		throws com.liferay.portal.kernel.exception.SystemException;
@@ -421,7 +421,7 @@ public interface MBStatsUserPersistence extends BasePersistence<MBStatsUser> {
 	* @throws com.liferay.portlet.messageboards.NoSuchStatsUserException if a matching message boards stats user could not be found
 	* @throws SystemException if a system exception occurred
 	*/
-	public com.liferay.portlet.messageboards.model.MBStatsUser findByG_NotM_First(
+	public com.liferay.portlet.messageboards.model.MBStatsUser findByG_NotM_NotU_First(
 		long groupId, int messageCount, long userId,
 		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
 		throws com.liferay.portal.kernel.exception.SystemException,
@@ -442,7 +442,7 @@ public interface MBStatsUserPersistence extends BasePersistence<MBStatsUser> {
 	* @throws com.liferay.portlet.messageboards.NoSuchStatsUserException if a matching message boards stats user could not be found
 	* @throws SystemException if a system exception occurred
 	*/
-	public com.liferay.portlet.messageboards.model.MBStatsUser findByG_NotM_Last(
+	public com.liferay.portlet.messageboards.model.MBStatsUser findByG_NotM_NotU_Last(
 		long groupId, int messageCount, long userId,
 		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
 		throws com.liferay.portal.kernel.exception.SystemException,
@@ -464,7 +464,7 @@ public interface MBStatsUserPersistence extends BasePersistence<MBStatsUser> {
 	* @throws com.liferay.portlet.messageboards.NoSuchStatsUserException if a message boards stats user with the primary key could not be found
 	* @throws SystemException if a system exception occurred
 	*/
-	public com.liferay.portlet.messageboards.model.MBStatsUser[] findByG_NotM_PrevAndNext(
+	public com.liferay.portlet.messageboards.model.MBStatsUser[] findByG_NotM_NotU_PrevAndNext(
 		long statsUserId, long groupId, int messageCount, long userId,
 		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
 		throws com.liferay.portal.kernel.exception.SystemException,
@@ -550,7 +550,7 @@ public interface MBStatsUserPersistence extends BasePersistence<MBStatsUser> {
 	* @param userId the user ID
 	* @throws SystemException if a system exception occurred
 	*/
-	public void removeByG_NotM(long groupId, int messageCount, long userId)
+	public void removeByG_NotM_NotU(long groupId, int messageCount, long userId)
 		throws com.liferay.portal.kernel.exception.SystemException;
 
 	/**
@@ -601,7 +601,7 @@ public interface MBStatsUserPersistence extends BasePersistence<MBStatsUser> {
 	* @return the number of matching message boards stats users
 	* @throws SystemException if a system exception occurred
 	*/
-	public int countByG_NotM(long groupId, int messageCount, long userId)
+	public int countByG_NotM_NotU(long groupId, int messageCount, long userId)
 		throws com.liferay.portal.kernel.exception.SystemException;
 
 	/**
