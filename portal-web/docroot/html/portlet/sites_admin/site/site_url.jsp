@@ -29,8 +29,11 @@ String publicVirtualHost = ParamUtil.getString(request, "publicVirtualHost", Bea
 String privateVirtualHost = ParamUtil.getString(request, "privateVirtualHost", BeanParamUtil.getString(privateLayoutSet, request, "virtualHostname"));
 %>
 
-<liferay-ui:error exception="<%= GroupFriendlyURLException.class %>">
+<liferay-ui:error exception="<%= DuplicateVirtualHostNameException.class %>">
+ 	<liferay-ui:message key="please-enter-different-virtualhost-names" />
+</liferay-ui:error>
 
+<liferay-ui:error exception="<%= GroupFriendlyURLException.class %>">
 	<%
 	GroupFriendlyURLException gfurle = (GroupFriendlyURLException)errorException;
 	%>
