@@ -14,6 +14,7 @@
 
 package com.liferay.portal.service.impl;
 
+import com.liferay.portal.DuplicateVirtualHostNameException;
 import com.liferay.portal.LayoutSetVirtualHostException;
 import com.liferay.portal.NoSuchLayoutException;
 import com.liferay.portal.NoSuchVirtualHostException;
@@ -318,6 +319,8 @@ public class LayoutSetLocalServiceImpl extends LayoutSetLocalServiceBaseImpl {
 			long groupId, boolean privateLayout, String virtualHostname)
 		throws PortalException, SystemException {
 
+		validate(groupId, privateLayout, virtualHostname);
+
 		virtualHostname = virtualHostname.trim().toLowerCase();
 
 		if (virtualHostname.startsWith(Http.HTTP_WITH_SLASH) ||
@@ -359,4 +362,32 @@ public class LayoutSetLocalServiceImpl extends LayoutSetLocalServiceBaseImpl {
 		return layoutSet;
 	}
 
+	/**
+	 * Validates if the virtualHostname for public/private layout defined by
+	 * <code>privateLayoutSet</code> has the same name that the opposite layout
+	 * (private/public, respect.)
+	 *
+	 * @param groupId the primaryKey of the layoutSet's group to get
+	 * @param privateLayout if layout is private or not
+	 * @param virtualHostname the virtualhost's name
+	 * @throws PortalException if oppositeLayoutSet is not found, or
+	 * virtualHostName already exits for <code>groupId</code>
+	 * @throws SystemException
+	 */
+	private void validate(
+			long groupId, boolean privateLayout, String virtualHostname)
+		throws PortalException, SystemException {
+
+		LayoutSet oppositeLayoutSet = layoutSetPersistence.findByG_P(
+				groupId, !privateLayout);
+
+		VirtualHost oppositeVirtualHost = virtualHostPersistence.fetchByC_L(
+				oppositeLayoutSet.getCompanyId(),
+				oppositeLayoutSet.getLayoutSetId() );
+
+		if (oppositeVirtualHost != null &&
+				oppositeVirtualHost.getHostname().equals(virtualHostname)) {
+			throw new DuplicateVirtualHostNameException();
+		}
+	}
 }
