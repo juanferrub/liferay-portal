@@ -755,6 +755,9 @@ public interface Portal {
 	public String getPortalURL(
 		String serverName, int serverPort, boolean secure);
 
+	public String getPortalURL(Layout layout, ThemeDisplay themeDisplay)
+		throws PortalException, SystemException;
+
 	public String getPortalURL(ThemeDisplay themeDisplay)
 		throws PortalException, SystemException;
 

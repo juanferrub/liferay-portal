@@ -171,6 +171,7 @@ import com.liferay.portlet.journal.model.JournalArticleConstants;
 import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
 import com.liferay.portlet.login.util.LoginUtil;
 import com.liferay.portlet.messageboards.model.MBMessage;
+import com.liferay.portlet.messageboards.model.MBThread;
 import com.liferay.portlet.social.model.SocialRelationConstants;
 import com.liferay.portlet.social.util.FacebookUtil;
 import com.liferay.portlet.wiki.model.WikiPage;
@@ -991,7 +992,7 @@ public class PortalImpl implements Portal {
 		pos = layoutFriendlyURL.indexOf(groupFriendlyURL);
 
 		if (pos != -1) {
-			host = PortalUtil.getPortalURL(request);
+			host = getPortalURL(request);
 		}
 
 		if (layout.isFirstParent() && Validator.isNull(url)) {
@@ -1232,7 +1233,7 @@ public class PortalImpl implements Portal {
 		sb.append(
 			getPortalURL(
 				company.getVirtualHostname(), getPortalPort(false), false));
-		sb.append(PortalUtil.getPathFriendlyURLPrivateGroup());
+		sb.append(getPathFriendlyURLPrivateGroup());
 		sb.append(GroupConstants.CONTROL_PANEL_FRIENDLY_URL);
 		sb.append(PropsValues.CONTROL_PANEL_LAYOUT_FRIENDLY_URL);
 
@@ -1542,7 +1543,7 @@ public class PortalImpl implements Portal {
 		else if (type == ExpandoColumnConstants.BOOLEAN_ARRAY) {
 		}
 		else if (type == ExpandoColumnConstants.DATE) {
-			User user = PortalUtil.getUser(portletRequest);
+			User user = getUser(portletRequest);
 
 			int valueDateMonth = ParamUtil.getInteger(
 				portletRequest, name + "Month");
@@ -1561,7 +1562,7 @@ public class PortalImpl implements Portal {
 				valueDateHour += 12;
 			}
 
-			value = PortalUtil.getDate(
+			value = getDate(
 				valueDateMonth, valueDateDay, valueDateYear, valueDateHour,
 				valueDateMinute, user.getTimeZone(), new ValueDataException());
 		}
@@ -2146,7 +2147,7 @@ public class PortalImpl implements Portal {
 		throws PortalException, SystemException {
 
 		String layoutURL = getLayoutURL(layout, themeDisplay, doAsUser);
-		String portalURL = themeDisplay.getPortalURL();
+		String portalURL = getPortalURL(layout, themeDisplay);
 
 		if (StringUtil.startsWith(layoutURL, portalURL)) {
 			return layoutURL;
@@ -2207,14 +2208,14 @@ public class PortalImpl implements Portal {
 
 		if (layout.isPrivateLayout()) {
 			if (group.isUser()) {
-				sb.append(PortalUtil.getPathFriendlyURLPrivateUser());
+				sb.append(getPathFriendlyURLPrivateUser());
 			}
 			else {
-				sb.append(PortalUtil.getPathFriendlyURLPrivateGroup());
+				sb.append(getPathFriendlyURLPrivateGroup());
 			}
 		}
 		else {
-			sb.append(PortalUtil.getPathFriendlyURLPublic());
+			sb.append(getPathFriendlyURLPublic());
 		}
 
 		sb.append(group.getFriendlyURL());
@@ -2797,12 +2798,14 @@ public class PortalImpl implements Portal {
 		return sb.toString();
 	}
 
-	public String getPortalURL(ThemeDisplay themeDisplay)
+	public String getPortalURL(Layout layout, ThemeDisplay themeDisplay)
 		throws PortalException, SystemException {
 
 		String serverName = themeDisplay.getServerName();
 
-		Layout layout = themeDisplay.getLayout();
+		if (layout == null) {
+			layout = themeDisplay.getLayout();
+		}
 
 		if (layout != null) {
 			LayoutSet layoutSet = layout.getLayoutSet();
@@ -2816,6 +2819,12 @@ public class PortalImpl implements Portal {
 
 		return getPortalURL(
 			serverName, themeDisplay.getServerPort(), themeDisplay.isSecure());
+	}
+
+	public String getPortalURL(ThemeDisplay themeDisplay)
+		throws PortalException, SystemException {
+
+		return getPortalURL(null, themeDisplay);
 	}
 
 	public String getPortalWebDir() {
@@ -3642,8 +3651,7 @@ public class PortalImpl implements Portal {
 
 		return new UploadPortletRequestImpl(
 			uploadServletRequest,
-			PortalUtil.getPortletNamespace(
-				portletRequestImpl.getPortletName()));
+			getPortletNamespace(portletRequestImpl.getPortletName()));
 	}
 
 	public Date getUptime() {
@@ -4080,36 +4088,45 @@ public class PortalImpl implements Portal {
 			}
 		}
 
-		if (portlet.isAddDefaultResource()) {
-			if (!PropsValues.PORTLET_ADD_DEFAULT_RESOURCE_CHECK_ENABLED) {
+		if (!portlet.isAddDefaultResource()) {
+			return false;
+		}
+
+		if (!PropsValues.PORTLET_ADD_DEFAULT_RESOURCE_CHECK_ENABLED) {
+			return true;
+		}
+
+		if (_portletAddDefaultResourceCheckWhitelist.contains(portletId)) {
+			return true;
+		}
+
+		String strutsAction = ParamUtil.getString(request, "struts_action");
+
+		if (_portletAddDefaultResourceCheckWhitelistActions.contains(
+				strutsAction)) {
+
+			return true;
+		}
+
+		String requestPortletAuthenticationToken = ParamUtil.getString(
+			request, "p_p_auth");
+
+		if (Validator.isNull(requestPortletAuthenticationToken)) {
+			HttpServletRequest originalRequest = getOriginalServletRequest(
+				request);
+
+			requestPortletAuthenticationToken = ParamUtil.getString(
+				originalRequest, "p_p_auth");
+		}
+
+		if (Validator.isNotNull(requestPortletAuthenticationToken)) {
+			String actualPortletAuthenticationToken = AuthTokenUtil.getToken(
+				request, layout.getPlid(), portletId);
+
+			if (requestPortletAuthenticationToken.equals(
+					actualPortletAuthenticationToken)) {
+
 				return true;
-			}
-
-			if (_portletAddDefaultResourceCheckWhitelist.contains(portletId)) {
-				return true;
-			}
-
-			String strutsAction = ParamUtil.getString(request, "struts_action");
-
-			if (_portletAddDefaultResourceCheckWhitelistActions.contains(
-					strutsAction)) {
-
-				return true;
-			}
-
-			String requestPortletAuthenticationToken = ParamUtil.getString(
-				request, "p_p_auth");
-
-			if (Validator.isNotNull(requestPortletAuthenticationToken)) {
-				String actualPortletAuthenticationToken =
-					AuthTokenUtil.getToken(
-						request, layout.getPlid(), portletId);
-
-				if (requestPortletAuthenticationToken.equals(
-						actualPortletAuthenticationToken)) {
-
-					return true;
-				}
 			}
 		}
 
@@ -4609,7 +4626,7 @@ public class PortalImpl implements Portal {
 		sb.append("&exception=");
 		sb.append(e.getClass().getName());
 		sb.append("&previousURL=");
-		sb.append(HttpUtil.encodeURL(PortalUtil.getCurrentURL(actionRequest)));
+		sb.append(HttpUtil.encodeURL(getCurrentURL(actionRequest)));
 
 		actionResponse.sendRedirect(sb.toString());
 	}
@@ -5109,7 +5126,7 @@ public class PortalImpl implements Portal {
 
 		long doAsGroupId = 0;
 
-		Collection<Portlet> portlets = PortalUtil.getControlPanelPortlets(
+		Collection<Portlet> portlets = getControlPanelPortlets(
 			companyId, PortletCategoryKeys.CONTENT);
 
 		List<Group> groups = GroupServiceUtil.getManageableSites(portlets, 1);
@@ -5446,6 +5463,8 @@ public class PortalImpl implements Portal {
 				"DLFILEENTRY$]",
 			"[$CLASS_NAME_ID_COM.LIFERAY.PORTLET.MESSAGEBOARDS.MODEL." +
 				"MBMESSAGE$]",
+			"[$CLASS_NAME_ID_COM.LIFERAY.PORTLET.MESSAGEBOARDS.MODEL." +
+				"MBTHREAD$]",
 			"[$CLASS_NAME_ID_COM.LIFERAY.PORTLET.WIKI.MODEL.WIKIPAGE$]",
 			"[$RESOURCE_SCOPE_COMPANY$]",
 			"[$RESOURCE_SCOPE_GROUP$]",
@@ -5469,18 +5488,19 @@ public class PortalImpl implements Portal {
 		DB db = DBFactoryUtil.getDB();
 
 		Object[] customSqlValues = new Object[] {
-			PortalUtil.getClassNameId(Group.class),
-			PortalUtil.getClassNameId(Layout.class),
-			PortalUtil.getClassNameId(Organization.class),
-			PortalUtil.getClassNameId(Role.class),
-			PortalUtil.getClassNameId(User.class),
-			PortalUtil.getClassNameId(UserGroup.class),
-			PortalUtil.getClassNameId(BlogsEntry.class),
-			PortalUtil.getClassNameId(BookmarksEntry.class),
-			PortalUtil.getClassNameId(CalEvent.class),
-			PortalUtil.getClassNameId(DLFileEntry.class),
-			PortalUtil.getClassNameId(MBMessage.class),
-			PortalUtil.getClassNameId(WikiPage.class),
+			getClassNameId(Group.class),
+			getClassNameId(Layout.class),
+			getClassNameId(Organization.class),
+			getClassNameId(Role.class),
+			getClassNameId(User.class),
+			getClassNameId(UserGroup.class),
+			getClassNameId(BlogsEntry.class),
+			getClassNameId(BookmarksEntry.class),
+			getClassNameId(CalEvent.class),
+			getClassNameId(DLFileEntry.class),
+			getClassNameId(MBMessage.class),
+			getClassNameId(MBThread.class),
+			getClassNameId(WikiPage.class),
 			ResourceConstants.SCOPE_COMPANY,
 			ResourceConstants.SCOPE_GROUP,
 			ResourceConstants.SCOPE_GROUP_TEMPLATE,

@@ -821,6 +821,12 @@ public class PortalUtil {
 		return getPortal().getPortalURL(serverName, serverPort, secure);
 	}
 
+	public static String getPortalURL(Layout layout, ThemeDisplay themeDisplay)
+		throws PortalException, SystemException {
+
+		return getPortal().getPortalURL(layout, themeDisplay);
+	}
+
 	public static String getPortalURL(ThemeDisplay themeDisplay)
 		throws PortalException, SystemException {
 

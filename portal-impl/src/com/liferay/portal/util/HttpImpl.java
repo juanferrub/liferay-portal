@@ -43,6 +43,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.portlet.ActionRequest;
@@ -546,14 +547,15 @@ public class HttpImpl implements Http {
 	}
 
 	public boolean isNonProxyHost(String host) {
-		if (_nonProxyHostsPattern == null ||
-			_nonProxyHostsPattern.matcher(host).matches()) {
+		if (_nonProxyHostsPattern != null) {
+			Matcher matcher = _nonProxyHostsPattern.matcher(host);
 
-			return true;
+			if (matcher.matches()) {
+				return true;
+			}
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	public boolean isProxyHost(String host) {

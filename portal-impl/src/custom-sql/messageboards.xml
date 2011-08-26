@@ -165,6 +165,24 @@
 				(Subscription.userId = ?)
 		]]>
 	</sql>
+	<sql id="com.liferay.portlet.messageboards.service.persistence.MBThreadFinder.findByNoAssets">
+		<![CDATA[
+			SELECT
+				{MBThread.*}
+			FROM
+				MBThread
+			WHERE
+				(threadId NOT IN(
+					SELECT
+						classPK
+					FROM
+						AssetEntry
+					WHERE
+						classNameId = [$CLASS_NAME_ID_COM.LIFERAY.PORTLET.MESSAGEBOARDS.MODEL.MBTHREAD$]
+				)) AND
+				(categoryId >= 0)
+		]]>
+	</sql>
 	<sql id="com.liferay.portlet.messageboards.service.persistence.MBThreadFinder.findByG_C">
 		<![CDATA[
 			SELECT
