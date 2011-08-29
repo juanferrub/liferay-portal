@@ -17,6 +17,7 @@ package com.liferay.portlet.sites.action;
 import com.liferay.portal.DuplicateGroupException;
 import com.liferay.portal.GroupFriendlyURLException;
 import com.liferay.portal.GroupNameException;
+import com.liferay.portal.LayoutSetVirtualHostException;
 import com.liferay.portal.NoSuchGroupException;
 import com.liferay.portal.NoSuchLayoutException;
 import com.liferay.portal.RequiredGroupException;
@@ -306,11 +307,16 @@ public class EditGroupAction extends PortletAction {
 		String privateVirtualHost = ParamUtil.getString(
 			actionRequest, "privateVirtualHost");
 
-		LayoutSetServiceUtil.updateVirtualHost(
-			liveGroup.getGroupId(), false, publicVirtualHost);
+		try {
+			LayoutSetServiceUtil.updateVirtualHost(
+				liveGroup.getGroupId(), false, publicVirtualHost);
 
-		LayoutSetServiceUtil.updateVirtualHost(
-			liveGroup.getGroupId(), true, privateVirtualHost);
+			LayoutSetServiceUtil.updateVirtualHost(
+				liveGroup.getGroupId(), true, privateVirtualHost);
+		}
+		catch(LayoutSetVirtualHostException lsvhne) {
+			SessionErrors.add(actionRequest, lsvhne.getClass().getName());
+		}
 
 		if (liveGroup.hasStagingGroup()) {
 			Group stagingGroup = liveGroup.getStagingGroup();
