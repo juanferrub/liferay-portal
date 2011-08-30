@@ -745,7 +745,7 @@ public class PortletLocalServiceImpl extends PortletLocalServiceBaseImpl {
 		return portlets;
 	}
 
-	public Map<String, Portlet> loadPortletsPool(long companyId)
+	public Map<String, Portlet> loadGetPortletsPool(long companyId)
 		throws SystemException {
 
 		Map<String, Portlet> portletsPool =
@@ -945,7 +945,7 @@ public class PortletLocalServiceImpl extends PortletLocalServiceBaseImpl {
 		Map<String, Portlet> portletsPool = _companyPortletsPool.get(companyId);
 
 		if (portletsPool == null) {
-			portletsPool = portletLocalService.loadPortletsPool(companyId);
+			portletsPool = portletLocalService.loadGetPortletsPool(companyId);
 
 			_companyPortletsPool.put(companyId, portletsPool);
 		}

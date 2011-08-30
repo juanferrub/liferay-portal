@@ -1839,18 +1839,11 @@ public class UserLocalServiceUtil {
 		return getService().isPasswordExpiringSoon(user);
 	}
 
-	/**
-	* Returns the default user.
-	*
-	* @param companyId the primary key of the company
-	* @return the default user
-	* @throws PortalException if a portal exception occurred
-	* @throws SystemException if a system exception occurred
-	*/
-	public static com.liferay.portal.model.User loadDefaultUser(long companyId)
+	public static com.liferay.portal.model.User loadGetDefaultUser(
+		long companyId)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
-		return getService().loadDefaultUser(companyId);
+		return getService().loadGetDefaultUser(companyId);
 	}
 
 	/**
@@ -2879,8 +2872,8 @@ public class UserLocalServiceUtil {
 	*
 	* @param ticketKey the ticket key
 	* @throws PortalException if a ticket matching the ticket key could not be
-	found, if the ticket expired, if the ticket was not an email
-	address ticket, or if the email address was invalid
+	found, if the ticket has expired, if the ticket is an email
+	address ticket, or if the email address is invalid
 	* @throws SystemException if a system exception occurred
 	*/
 	public static void verifyEmailAddress(java.lang.String ticketKey)

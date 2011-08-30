@@ -395,10 +395,10 @@ public class PortletLocalServiceUtil {
 			pluginPackage);
 	}
 
-	public static java.util.Map<java.lang.String, com.liferay.portal.model.Portlet> loadPortletsPool(
+	public static java.util.Map<java.lang.String, com.liferay.portal.model.Portlet> loadGetPortletsPool(
 		long companyId)
 		throws com.liferay.portal.kernel.exception.SystemException {
-		return getService().loadPortletsPool(companyId);
+		return getService().loadGetPortletsPool(companyId);
 	}
 
 	public static void removeCompanyPortletsPool(long companyId) {
