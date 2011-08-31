@@ -40,9 +40,9 @@ public class DLProcessorRegistryImpl implements DLProcessorRegistry {
 			return;
 		}
 
-		for (String processorClassName : _DL_FILE_ENTRY_PROCESSORS) {
+		for (String dlProcessorClassName : _DL_FILE_ENTRY_PROCESSORS) {
 			DLProcessor dlProcessor = (DLProcessor)InstancePool.get(
-				processorClassName);
+				dlProcessorClassName);
 
 			dlProcessor.trigger(fileEntry);
 		}

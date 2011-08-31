@@ -199,7 +199,7 @@ public class CMISQueryBuilder {
 					cmisJunction = anyCMISConjunction;
 				}
 				else if (booleanClauseOccur.equals(
-						BooleanClauseOccur.MUST_NOT)) {
+							BooleanClauseOccur.MUST_NOT)) {
 
 					cmisJunction = notCMISConjunction;
 				}
@@ -215,6 +215,10 @@ public class CMISQueryBuilder {
 
 			if (!cmisDisjunction.isEmpty()) {
 				criterion.add(cmisDisjunction);
+			}
+
+			if (!notCMISConjunction.isEmpty()) {
+				criterion.add(new CMISNotExpression(notCMISConjunction));
 			}
 		}
 		else if (query instanceof TermQuery) {

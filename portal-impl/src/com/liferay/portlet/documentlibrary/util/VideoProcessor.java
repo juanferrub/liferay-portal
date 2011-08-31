@@ -119,6 +119,11 @@ public class VideoProcessor extends DLPreviewableProcessor {
 		return false;
 	}
 
+	public VideoProcessor() {
+		FileUtil.mkdirs(PREVIEW_TMP_PATH);
+		FileUtil.mkdirs(THUMBNAIL_TMP_PATH);
+	}
+
 	public void trigger(FileEntry fileEntry) {
 		try {
 			FileVersion fileVersion = fileEntry.getLatestFileVersion();
@@ -138,11 +143,6 @@ public class VideoProcessor extends DLPreviewableProcessor {
 	@Override
 	protected String getThumbnailType() {
 		return THUMBNAIL_TYPE;
-	}
-
-	private VideoProcessor() {
-		FileUtil.mkdirs(PREVIEW_TMP_PATH);
-		FileUtil.mkdirs(THUMBNAIL_TMP_PATH);
 	}
 
 	private void _generateThumbnailXuggler(
@@ -388,9 +388,8 @@ public class VideoProcessor extends DLPreviewableProcessor {
 
 	private static VideoProcessor _instance = new VideoProcessor();
 
+	private static List<Long> _fileVersionIds = new Vector<Long>();
 	private static Set<String> _videoMimeTypes = SetUtil.fromArray(
 		PropsValues.DL_FILE_ENTRY_PREVIEW_VIDEO_MIME_TYPES);
-
-	private List<Long> _fileVersionIds = new Vector<Long>();
 
 }

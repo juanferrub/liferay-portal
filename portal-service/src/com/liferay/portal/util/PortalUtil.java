@@ -265,12 +265,12 @@ public class PortalUtil {
 		return getPortal().getCDNHost(secure);
 	}
 
-	public static String getCDNHostHttp() {
-		return getPortal().getCDNHostHttp();
+	public static String getCDNHostHttp(long companyId) {
+		return getPortal().getCDNHostHttp(companyId);
 	}
 
-	public static String getCDNHostHttps() {
-		return getPortal().getCDNHostHttps();
+	public static String getCDNHostHttps(long companyId) {
+		return getPortal().getCDNHostHttps(companyId);
 	}
 
 	public static String getClassName(long classNameId) {
@@ -1402,6 +1402,10 @@ public class PortalUtil {
 		return getPortal().renderPortlet(
 			servletContext, request, response, portlet, queryString, columnId,
 			columnPos, columnCount, path, writeOutput);
+	}
+
+	public static void resetCDNHosts() {
+		getPortal().resetCDNHosts();
 	}
 
 	public static Set<String> resetPortletAddDefaultResourceCheckWhitelist() {

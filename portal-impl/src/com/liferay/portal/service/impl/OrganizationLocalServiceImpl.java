@@ -967,6 +967,16 @@ public class OrganizationLocalServiceImpl
 		organizationPersistence.rebuildTree(companyId, force);
 	}
 
+	public List<Organization> search(
+			long companyId, LinkedHashMap<String, Object> params, int start,
+			int end)
+		throws SystemException {
+
+		return organizationFinder.findByCompanyId(
+			companyId, params, start, end,
+			new OrganizationNameComparator(true));
+	}
+
 	/**
 	 * Returns an ordered range of all the organizations that match the
 	 * keywords, using the indexer. It is preferable to use this method instead

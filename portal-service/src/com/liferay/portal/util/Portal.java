@@ -381,7 +381,7 @@ public interface Portal {
 	 *
 	 * @return the CDN host address
 	 */
-	public String getCDNHostHttp();
+	public String getCDNHostHttp(long companyId);
 
 	/**
 	 * Returns the secure (HTTPS) content distribution network (CDN) host
@@ -389,7 +389,7 @@ public interface Portal {
 	 *
 	 * @return the CDN host address
 	 */
-	public String getCDNHostHttps();
+	public String getCDNHostHttps(long companyId);
 
 	/**
 	 * Returns the fully qualified name of the class from its ID.
@@ -1040,6 +1040,8 @@ public interface Portal {
 			String columnId, Integer columnPos, Integer columnCount,
 			String path, boolean writeOutput)
 		throws IOException, ServletException;
+
+	public void resetCDNHosts();
 
 	public Set<String> resetPortletAddDefaultResourceCheckWhitelist();
 

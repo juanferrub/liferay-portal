@@ -127,6 +127,33 @@ public class PDFProcessor extends DLPreviewableProcessor {
 		return hasImages;
 	}
 
+	public PDFProcessor() {
+		FileUtil.mkdirs(PREVIEW_TMP_PATH);
+		FileUtil.mkdirs(THUMBNAIL_TMP_PATH);
+
+		if (PropsValues.IMAGEMAGICK_ENABLED && (_convertCmd == null)) {
+			String filterName = null;
+
+			if (OSDetector.isApple()) {
+				filterName = "apple";
+			}
+			else if (OSDetector.isWindows()) {
+				filterName = "windows";
+			}
+			else {
+				filterName = "unix";
+			}
+
+			String globalSearchPath = PropsUtil.get(
+				PropsKeys.IMAGEMAGICK_GLOBAL_SEARCH_PATH,
+				new Filter(filterName));
+
+			ProcessStarter.setGlobalSearchPath(globalSearchPath);
+
+			_convertCmd = new ConvertCmd();
+		}
+	}
+
 	public void trigger(FileEntry fileEntry) {
 		try {
 			FileVersion fileVersion = fileEntry.getLatestFileVersion();
@@ -150,33 +177,6 @@ public class PDFProcessor extends DLPreviewableProcessor {
 	@Override
 	protected String getThumbnailType() {
 		return THUMBNAIL_TYPE;
-	}
-
-	private PDFProcessor() {
-		FileUtil.mkdirs(PREVIEW_TMP_PATH);
-		FileUtil.mkdirs(THUMBNAIL_TMP_PATH);
-
-		if (PropsValues.IMAGEMAGICK_ENABLED) {
-			String filterName = null;
-
-			if (OSDetector.isApple()) {
-				filterName = "apple";
-			}
-			else if (OSDetector.isWindows()) {
-				filterName = "windows";
-			}
-			else {
-				filterName = "unix";
-			}
-
-			String globalSearchPath = PropsUtil.get(
-				PropsKeys.IMAGEMAGICK_GLOBAL_SEARCH_PATH,
-				new Filter(filterName));
-
-			ProcessStarter.setGlobalSearchPath(globalSearchPath);
-
-			_convertCmd = new ConvertCmd();
-		}
 	}
 
 	private void _generateImages(FileVersion fileVersion)
@@ -580,6 +580,7 @@ public class PDFProcessor extends DLPreviewableProcessor {
 			return false;
 		}
 	}
+
 	private void _queueGeneration(FileVersion fileVersion) {
 		if (_fileVersionIds.contains(fileVersion.getFileVersionId())) {
 			return;
@@ -617,7 +618,7 @@ public class PDFProcessor extends DLPreviewableProcessor {
 
 	private static PDFProcessor _instance = new PDFProcessor();
 
-	private ConvertCmd _convertCmd;
-	private List<Long> _fileVersionIds = new Vector<Long>();
+	private static ConvertCmd _convertCmd;
+	private static List<Long> _fileVersionIds = new Vector<Long>();
 
 }

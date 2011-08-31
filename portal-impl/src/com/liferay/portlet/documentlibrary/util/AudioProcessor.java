@@ -101,6 +101,10 @@ public class AudioProcessor extends DLPreviewableProcessor {
 		return false;
 	}
 
+	public AudioProcessor() {
+		FileUtil.mkdirs(PREVIEW_TMP_PATH);
+	}
+
 	public void trigger(FileEntry fileEntry) {
 		try {
 			FileVersion fileVersion = fileEntry.getLatestFileVersion();
@@ -115,10 +119,6 @@ public class AudioProcessor extends DLPreviewableProcessor {
 	@Override
 	protected String getPreviewType() {
 		return PREVIEW_TYPE;
-	}
-
-	private AudioProcessor() {
-		FileUtil.mkdirs(PREVIEW_TMP_PATH);
 	}
 
 	private void _generateAudio(FileVersion fileVersion) throws Exception {
@@ -275,7 +275,6 @@ public class AudioProcessor extends DLPreviewableProcessor {
 
 	private static Set<String> _audioMimeTypes = SetUtil.fromArray(
 		PropsValues.DL_FILE_ENTRY_PREVIEW_AUDIO_MIME_TYPES);
-
-	private List<Long> _fileVersionIds = new Vector<Long>();
+	private static List<Long> _fileVersionIds = new Vector<Long>();
 
 }

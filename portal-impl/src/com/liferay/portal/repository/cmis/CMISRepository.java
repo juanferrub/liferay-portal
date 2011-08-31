@@ -745,6 +745,23 @@ public class CMISRepository extends BaseCmisRepository {
 		return session;
 	}
 
+	public void getSubfolderIds(List<Long> folderIds, long folderId)
+		throws SystemException {
+
+		try {
+			List<Folder> subfolders = getFolders(
+				folderId, false, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
+
+			getSubfolderIds(folderIds, subfolders, true);
+		}
+		catch (SystemException se) {
+			throw se;
+		}
+		catch (Exception e) {
+			throw new RepositoryException(e);
+		}
+	}
+
 	public List<Long> getSubfolderIds(long folderId, boolean recurse)
 		throws SystemException {
 
@@ -757,23 +774,6 @@ public class CMISRepository extends BaseCmisRepository {
 			getSubfolderIds(subfolderIds, subfolders, recurse);
 
 			return subfolderIds;
-		}
-		catch (SystemException se) {
-			throw se;
-		}
-		catch (Exception e) {
-			throw new RepositoryException(e);
-		}
-	}
-
-	public void getSubfolderIds(List<Long> folderIds, long folderId)
-		throws SystemException {
-
-		try {
-			List<Folder> subfolders = getFolders(
-				folderId, false, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
-
-			getSubfolderIds(folderIds, subfolders, true);
 		}
 		catch (SystemException se) {
 			throw se;
@@ -1045,6 +1045,17 @@ public class CMISRepository extends BaseCmisRepository {
 		}
 	}
 
+	public Hits search(SearchContext searchContext, Query query)
+		throws SearchException {
+
+		try {
+			return doSearch(searchContext, query);
+		}
+		catch (Exception e) {
+			throw new SearchException(e);
+		}
+	}
+
 	public FileEntry toFileEntry(Document document) throws SystemException {
 		Object[] ids = null;
 
@@ -1059,17 +1070,6 @@ public class CMISRepository extends BaseCmisRepository {
 		String uuid = (String)ids[1];
 
 		return new CMISFileEntry(this, uuid, fileEntryId, document);
-	}
-
-	public Hits search(SearchContext searchContext, Query query)
-		throws SearchException {
-
-		try {
-			return doSearch(searchContext, query);
-		}
-		catch (Exception e) {
-			throw new SearchException(e);
-		}
 	}
 
 	@Override
@@ -1817,35 +1817,38 @@ public class CMISRepository extends BaseCmisRepository {
 		RepositoryEntry repositoryEntry =
 			RepositoryEntryUtil.fetchByPrimaryKey(folderId);
 
+		if (repositoryEntry != null) {
+			return repositoryEntry.getMappedId();
+		}
+
+		DLFolder dlFolder = DLFolderUtil.fetchByPrimaryKey(folderId);
+
+		if (dlFolder == null) {
+			throw new NoSuchFolderException(
+				"No CMIS folder with {folderId=" + folderId + "}");
+		}
+		else if (!dlFolder.isMountPoint()) {
+			throw new RepositoryException(
+				"CMIS repository should not be used for folder ID " + folderId);
+		}
+
+		RepositoryInfo repositoryInfo = session.getRepositoryInfo();
+
+		String rootFolderId = repositoryInfo.getRootFolderId();
+
+		repositoryEntry = RepositoryEntryUtil.fetchByR_M(
+			getRepositoryId(), rootFolderId);
+
 		if (repositoryEntry == null) {
-			DLFolder dlFolder = DLFolderUtil.fetchByPrimaryKey(folderId);
+			long repositoryEntryId = counterLocalService.increment();
 
-			if (dlFolder == null) {
-				throw new NoSuchFolderException(
-					"No CMIS folder with {folderId=" + folderId + "}");
-			}
-			else if (!dlFolder.isMountPoint()) {
-				throw new RepositoryException(
-					"CMIS repository should not be used for folder ID " +
-						folderId);
-			}
+			repositoryEntry = RepositoryEntryUtil.create(repositoryEntryId);
 
-			String rootFolderId = session.getRepositoryInfo().getRootFolderId();
+			repositoryEntry.setGroupId(getGroupId());
+			repositoryEntry.setRepositoryId(getRepositoryId());
+			repositoryEntry.setMappedId(rootFolderId);
 
-			repositoryEntry = RepositoryEntryUtil.fetchByR_M(
-				getRepositoryId(), rootFolderId);
-
-			if (repositoryEntry == null) {
-				long repositoryEntryId = counterLocalService.increment();
-
-				repositoryEntry = RepositoryEntryUtil.create(repositoryEntryId);
-
-				repositoryEntry.setGroupId(getGroupId());
-				repositoryEntry.setRepositoryId(getRepositoryId());
-				repositoryEntry.setMappedId(rootFolderId);
-
-				RepositoryEntryUtil.update(repositoryEntry, false);
-			}
+			RepositoryEntryUtil.update(repositoryEntry, false);
 		}
 
 		return repositoryEntry.getMappedId();
@@ -1880,7 +1883,7 @@ public class CMISRepository extends BaseCmisRepository {
 		RepositoryEntry repositoryEntry = RepositoryEntryUtil.findByPrimaryKey(
 			repositoryEntryId);
 
-		if (!repositoryEntry.getMappedId().equals(mappedId)) {
+		if (!mappedId.equals(repositoryEntry.getMappedId())) {
 			repositoryEntry.setMappedId(mappedId);
 
 			RepositoryEntryUtil.update(repositoryEntry, false);
