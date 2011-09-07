@@ -61,7 +61,7 @@ SearchContainer searchContainer = new SearchContainer(liferayPortletRequest, nul
 
 List<String> headerNames = new ArrayList<String>();
 
-headerNames.add("name");
+headerNames.add("title");
 headerNames.add("description");
 headerNames.add("size");
 headerNames.add("create-date");
@@ -75,7 +75,7 @@ searchContainer.setRowChecker(new EntriesChecker(liferayPortletRequest, liferayP
 
 Map<String, String> orderableHeaders = new HashMap<String, String>();
 
-orderableHeaders.put("name", "name");
+orderableHeaders.put("title", "title");
 orderableHeaders.put("size", "size");
 orderableHeaders.put("create-date", "creationDate");
 orderableHeaders.put("modified-date", "modifiedDate");
@@ -170,14 +170,10 @@ searchContainer.setTotal(total);
 request.setAttribute("view_entries.jsp-total", String.valueOf(total));
 %>
 
-<c:if test='<%= !displayStyle.equals("list") %>'>
-	<c:choose>
-		<c:when test="<%= results.isEmpty() %>">
-			<div class="portlet-msg-info">
-				<%= LanguageUtil.get(pageContext, "there-are-no-documents-in-this-folder") %>
-			</div>
-		</c:when>
-	</c:choose>
+<c:if test="<%= results.isEmpty() %>">
+	<div class="portlet-msg-info">
+		<%= LanguageUtil.get(pageContext, "there-are-no-documents-in-this-folder") %>
+	</div>
 </c:if>
 
 <%
