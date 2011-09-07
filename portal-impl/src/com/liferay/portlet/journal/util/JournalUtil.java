@@ -29,6 +29,7 @@ import com.liferay.portal.kernel.util.HttpUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Time;
@@ -353,9 +354,15 @@ public class JournalUtil {
 			catch (NoSuchArticleException nsae) {
 				corruptIndex = true;
 
-				_log.error(
-					"Article " + articleId +
-						" does not exist in the search index");
+				StringBundler sb = new StringBundler();
+
+				sb.append("Article ");
+				sb.append(articleId);
+				sb.append(" exists in the search index but not in the ");
+				sb.append("database. The search index is corrupt. Reindexing ");
+				sb.append("of articles may be required.");
+
+				_log.error(sb.toString());
 			}
 		}
 
