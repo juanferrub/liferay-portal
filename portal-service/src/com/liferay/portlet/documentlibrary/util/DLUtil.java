@@ -117,7 +117,8 @@ public class DLUtil {
 			Folder folder, HttpServletRequest request,
 			LiferayPortletResponse liferayPortletResponse)
 		throws Exception {
-        addPortletBreadcrumbEntries(folder, request, liferayPortletResponse ,true);
+        addPortletBreadcrumbEntries(folder, request, liferayPortletResponse,
+            true);
     }
 
 	public static void addPortletBreadcrumbEntries(
