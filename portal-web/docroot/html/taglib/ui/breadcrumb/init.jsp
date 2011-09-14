@@ -185,6 +185,10 @@ private void _buildPortletBreadcrumb(HttpServletRequest request, boolean showCur
 		String breadcrumbTitle = breadcrumbEntry.getTitle();
 		String breadcrumbURL = breadcrumbEntry.getURL();
 
+        if (showCurrentGroup && showCurrentPortlet && !GetterUtil.get((String)data.get("show-globally"), true)) {
+			continue;
+		}
+
 		if (!showCurrentGroup) {
 			String parentGroupName = themeDisplay.getParentGroupName();
 
