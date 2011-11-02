@@ -69,10 +69,24 @@ if (Validator.isNotNull(className)) {
 			curCategoryNames = ListUtil.toString(categories, AssetCategory.NAME_ACCESSOR);
 		}
 
-		String curCategoryIdsParam = request.getParameter(hiddenInput + StringPool.UNDERLINE + vocabulary.getVocabularyId());
+		String curCategoryIdsParam = request.getParameter(hiddenInput);
 
 		if (curCategoryIdsParam != null) {
-			curCategoryIds = curCategoryIdsParam;
+			long[] categoryIds = StringUtil.split(curCategoryIdsParam, 0L);
+
+			List<AssetCategory> tmpCategoryIds = new ArrayList<AssetCategory>();
+
+			for (long categoryId : categoryIds) {
+				if (categoryId > 0) {
+					AssetCategory category = AssetCategoryLocalServiceUtil.getCategory(categoryId);
+
+					if (category.getVocabularyId() == vocabulary.getVocabularyId()) {
+						tmpCategoryIds.add(category);
+					}
+				}
+			}
+
+			curCategoryIds = ListUtil.toString(tmpCategoryIds, AssetCategory.CATEGORY_ID_ACCESSOR);
 			curCategoryNames = StringPool.BLANK;
 		}
 
