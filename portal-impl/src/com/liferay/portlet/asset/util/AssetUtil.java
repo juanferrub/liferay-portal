@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.model.LayoutRevision;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.WebKeys;
 import com.liferay.portlet.asset.NoSuchCategoryException;
@@ -36,6 +37,9 @@ import com.liferay.portlet.asset.service.AssetCategoryLocalServiceUtil;
 import com.liferay.portlet.asset.service.AssetCategoryPropertyLocalServiceUtil;
 import com.liferay.portlet.asset.service.AssetTagLocalServiceUtil;
 import com.liferay.portlet.asset.service.AssetTagPropertyLocalServiceUtil;
+import com.liferay.portlet.dynamicdatalists.model.DDLRecord;
+import com.liferay.portlet.messageboards.model.MBCategory;
+import com.liferay.portlet.messageboards.model.MBDiscussion;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -61,6 +65,11 @@ public class AssetUtil {
 		CharPool.PIPE, CharPool.PLUS, CharPool.POUND, CharPool.QUESTION,
 		CharPool.QUOTE, CharPool.RETURN, CharPool.SEMICOLON, CharPool.SLASH,
 		CharPool.STAR, CharPool.TILDE
+	};
+
+	public static String[] INVALID_CLASSNAMES = new String[] {
+		DDLRecord.class.getName(), LayoutRevision.class.getName(),
+		MBCategory.class.getName(), MBDiscussion.class.getName()
 	};
 
 	public static Set<String> addLayoutTags(
@@ -154,6 +163,10 @@ public class AssetUtil {
 		}
 
 		return tagNames;
+	}
+
+	public static String[] getAssetEntryValidatorIgnoredClasses() {
+		return INVALID_CLASSNAMES;
 	}
 
 	public static boolean isValidWord(String word) {
