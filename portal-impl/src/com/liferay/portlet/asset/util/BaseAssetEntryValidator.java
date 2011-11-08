@@ -25,6 +25,7 @@ import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.service.ClassNameServiceUtil;
 import com.liferay.portal.service.GroupLocalServiceUtil;
+import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.asset.AssetCategoryException;
 import com.liferay.portlet.asset.model.AssetCategory;
 import com.liferay.portlet.asset.model.AssetCategoryConstants;
@@ -89,6 +90,13 @@ public class BaseAssetEntryValidator implements AssetEntryValidator {
 		if ((selectedClassNameIds[0] !=
 				AssetCategoryConstants.ALL_CLASS_NAME_IDS) &&
 			!ArrayUtil.contains(selectedClassNameIds, classNameId)) {
+
+			return;
+		}
+
+		if (ArrayUtil.contains(
+			AssetUtil.getAssetEntryValidatorIgnoredClasses(),
+			PortalUtil.getClassName(classNameId))) {
 
 			return;
 		}
