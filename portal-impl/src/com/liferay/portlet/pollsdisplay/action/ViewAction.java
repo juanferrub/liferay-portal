@@ -19,6 +19,7 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.struts.PortletAction;
 import com.liferay.portal.util.WebKeys;
+import com.liferay.portlet.polls.NoSuchQuestionException;
 import com.liferay.portlet.polls.model.PollsQuestion;
 import com.liferay.portlet.polls.service.PollsQuestionServiceUtil;
 
@@ -54,8 +55,14 @@ public class ViewAction extends PortletAction {
 
 				renderRequest.setAttribute(WebKeys.POLLS_QUESTION, question);
 			}
-		}
-		catch (Exception e) {
+			else {
+				return mapping.findForward("/portal/portlet_not_setup");
+			}
+		}catch (Exception e) {
+			if (e instanceof NoSuchQuestionException) {
+				return mapping.findForward("/portal/portlet_not_setup");
+			}
+
 			SessionErrors.add(renderRequest, e.getClass().getName());
 
 			return mapping.findForward("portlet.polls_display.error");
