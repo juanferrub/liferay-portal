@@ -65,7 +65,9 @@ if ((requiredClassNameIds == null) || (requiredClassNameIds.length == 0)) {
 						for (long availableClassNameId : availableClassNameIds) {
 						%>
 
-							<aui:option label="<%= ResourceActionsUtil.getModelResource(locale, PortalUtil.getClassName(availableClassNameId)) %>" selected="<%= false %>" value="<%= availableClassNameId %>" />
+							<c:if test="<%= !ArrayUtil.contains(AssetUtil.getAssetEntryValidatorIgnoredClasses(), PortalUtil.getClassName(availableClassNameId)) %>">
+								<aui:option label="<%= ResourceActionsUtil.getModelResource(locale, PortalUtil.getClassName(availableClassNameId)) %>" selected="<%= false %>" value="<%= availableClassNameId %>" />
+							</c:if>
 
 						<%
 						}
