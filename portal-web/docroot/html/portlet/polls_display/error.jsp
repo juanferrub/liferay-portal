@@ -1,3 +1,5 @@
+<%@ page import="com.liferay.portlet.polls.NoSuchQuestionException" %>
+
 <%--
 /**
  * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
@@ -17,3 +19,4 @@
 <%@ include file="/html/portlet/polls_display/init.jsp" %>
 
 <liferay-ui:error exception="<%= PrincipalException.class %>" message="you-do-not-have-the-required-permissions" />
+<liferay-ui:error exception="<%= NoSuchQuestionException.class %>" message="polls-current-question-is-deleted" />
