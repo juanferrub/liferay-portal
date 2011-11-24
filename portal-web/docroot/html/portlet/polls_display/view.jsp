@@ -20,74 +20,57 @@
 PollsQuestion question = (PollsQuestion)request.getAttribute(WebKeys.POLLS_QUESTION);
 %>
 
-<c:choose>
-	<c:when test="<%= question == null %>">
+<%
+String redirect = StringPool.BLANK;
 
-		<%
-		renderRequest.setAttribute(WebKeys.PORTLET_CONFIGURATOR_VISIBILITY, Boolean.TRUE);
-		%>
+question = question.toEscapedModel();
 
-		<div class="portlet-configuration portlet-msg-info">
-			<a href="<%= portletDisplay.getURLConfiguration() %>" onClick="<%= portletDisplay.getURLConfigurationJS() %>">
-				<liferay-ui:message key="please-configure-this-portlet-to-make-it-visible-to-all-users" />
-			</a>
-		</div>
-	</c:when>
-	<c:otherwise>
+List<PollsChoice> choices = question.getChoices();
 
-		<%
-		String redirect = StringPool.BLANK;
+boolean hasVoted = PollsUtil.hasVoted(request, question.getQuestionId());
+%>
 
-		question = question.toEscapedModel();
+<portlet:actionURL var="voteQuestionURL">
+	<portlet:param name="struts_action" value="/polls_display/vote_question" />
+</portlet:actionURL>
 
-		List<PollsChoice> choices = question.getChoices();
+<aui:form action="<%= voteQuestionURL %>" method="post" name="fm">
+	<aui:input name="<%= Constants.CMD %>" type="hidden" value="<%= Constants.VOTE %>" />
+	<aui:input name="redirect" type="hidden" value="<%= currentURL %>" />
+	<aui:input name="questionId" type="hidden" value="<%= question.getQuestionId() %>" />
+	<aui:input name="successMessage" type="hidden" value='<%= LanguageUtil.get(pageContext, "thank-you-for-your-vote") %>' />
 
-		boolean hasVoted = PollsUtil.hasVoted(request, question.getQuestionId());
-		%>
+	<liferay-ui:error exception="<%= DuplicateVoteException.class %>" message="you-may-only-vote-once" />
+	<liferay-ui:error exception="<%= NoSuchChoiceException.class %>" message="please-select-an-option" />
 
-		<portlet:actionURL var="voteQuestionURL">
-			<portlet:param name="struts_action" value="/polls_display/vote_question" />
-		</portlet:actionURL>
+	<%= StringUtil.replace(HtmlUtil.escape(question.getDescription(locale)), StringPool.NEW_LINE, "<br />") %>
 
-		<aui:form action="<%= voteQuestionURL %>" method="post" name="fm">
-			<aui:input name="<%= Constants.CMD %>" type="hidden" value="<%= Constants.VOTE %>" />
-			<aui:input name="redirect" type="hidden" value="<%= currentURL %>" />
-			<aui:input name="questionId" type="hidden" value="<%= question.getQuestionId() %>" />
-			<aui:input name="successMessage" type="hidden" value='<%= LanguageUtil.get(pageContext, "thank-you-for-your-vote") %>' />
+	<c:choose>
+		<c:when test="<%= !question.isExpired() && !hasVoted && PollsQuestionPermission.contains(permissionChecker, question, ActionKeys.ADD_VOTE) %>">
+			<aui:fieldset>
+				<aui:field-wrapper>
 
-			<liferay-ui:error exception="<%= DuplicateVoteException.class %>" message="you-may-only-vote-once" />
-			<liferay-ui:error exception="<%= NoSuchChoiceException.class %>" message="please-select-an-option" />
+					<%
+					for (PollsChoice choice : choices) {
+						choice = choice.toEscapedModel();
+					%>
 
-			<%= StringUtil.replace(HtmlUtil.escape(question.getDescription(locale)), StringPool.NEW_LINE, "<br />") %>
+						<aui:input inlineLabel="left" label='<%= "<strong>" + choice.getName() + ".</strong> " + choice.getDescription(locale) %>' name="choiceId" type="radio" value="<%= choice.getChoiceId() %>" />
 
-			<c:choose>
-				<c:when test="<%= !question.isExpired() && !hasVoted && PollsQuestionPermission.contains(permissionChecker, question, ActionKeys.ADD_VOTE) %>">
-					<aui:fieldset>
-						<aui:field-wrapper>
+					<%
+					}
+					%>
 
-							<%
-							for (PollsChoice choice : choices) {
-								choice = choice.toEscapedModel();
-							%>
+				</aui:field-wrapper>
 
-								<aui:input inlineLabel="left" label='<%= "<strong>" + choice.getName() + ".</strong> " + choice.getDescription(locale) %>' name="choiceId" type="radio" value="<%= choice.getChoiceId() %>" />
-
-							<%
-							}
-							%>
-
-						</aui:field-wrapper>
-
-						<aui:button type="submit" value="vote" />
-					</aui:fieldset>
-				</c:when>
-				<c:otherwise>
-					<%@ include file="/html/portlet/polls/view_question_results.jspf" %>
-				</c:otherwise>
-			</c:choose>
-		</aui:form>
-	</c:otherwise>
-</c:choose>
+				<aui:button type="submit" value="vote" />
+			</aui:fieldset>
+		</c:when>
+		<c:otherwise>
+			<%@ include file="/html/portlet/polls/view_question_results.jspf" %>
+		</c:otherwise>
+	</c:choose>
+</aui:form>
 
 <%
 boolean hasViewPermission = true;
