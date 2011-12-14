@@ -113,6 +113,8 @@ public PortletURL getAddPortletURL(LiferayPortletRequest liferayPortletRequest, 
 
 	addPortletURL.setParameter("redirect", redirectURL.toString());
 
+    addPortletURL.setParameter("originalRedirect", redirectURL.toString());
+
 	String referringPortletResource = ParamUtil.getString(liferayPortletRequest, "portletResource");
 
 	if (Validator.isNotNull(referringPortletResource)) {
