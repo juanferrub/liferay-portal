@@ -156,6 +156,7 @@
 ## ---------- Page ---------- ##
 
 #set ($the_title = "")
+#set ($the_escaped_title = "")
 #set ($selectable = $theme_display.isTilesSelectable())
 #set ($is_maximized = $layoutTypePortlet.hasStateMax())
 #set ($is_freeform = $themeDisplay.isFreeformLayout())
@@ -287,7 +288,7 @@
 	#set ($the_title = $page_group.getDescriptiveName())
 #end
 
-#set ($the_title = $htmlUtil.escape($the_title))
+#set ($the_escaped_title = $htmlUtil.escape($the_title))
 
 #if ($layouts)
 	#set ($pages = $layouts)

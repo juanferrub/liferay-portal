@@ -5,7 +5,7 @@
 <html dir="<@liferay.language key="lang.dir" />" lang="${w3c_language_id}">
 
 <head>
-	<title>${the_title}</title>
+	<title>${the_escaped_title}</title>
 
 	${theme.include(top_head_include)}
 </head>

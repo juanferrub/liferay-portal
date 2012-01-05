@@ -156,6 +156,7 @@
 <#-- ---------- Page ---------- -->
 
 <#assign the_title = "" />
+<#assign the_escaped_title = "" />
 <#assign selectable = theme_display.isTilesSelectable() />
 <#assign is_maximized = layoutTypePortlet.hasStateMax() />
 <#assign is_freeform = themeDisplay.isFreeformLayout() />
