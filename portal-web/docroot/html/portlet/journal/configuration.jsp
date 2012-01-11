@@ -77,7 +77,7 @@ else if (tabs2.equals("web-content-updated-email")) {
 String availableTabs = "email-from,web-content-added-email,web-content-updated-email";
 
 if (WorkflowDefinitionLinkLocalServiceUtil.hasWorkflowDefinitionLink(themeDisplay.getCompanyId(), scopeGroupId, JournalArticle.class.getName())) {
-	availableTabs = "email-from,web-content-added-email,web-content-approval-denied-email,web-content-approval-granted-email,web-content-approval-requested-email,web-content-review-email,web-content-updated-email";
+	availableTabs = availableTabs.concat("web-content-approval-denied-email,web-content-approval-granted-email,web-content-approval-requested-email,web-content-review-email");
 }
 %>
 
