@@ -269,11 +269,23 @@ for (String portletId : PropsValues.DOCKBAR_ADD_PORTLETS) {
 
 		<li class="user-avatar <%= themeDisplay.isImpersonated() ? "impersonating-user has-submenu" : "" %>" id="<portlet:namespace />userAvatar">
 			<span class="user-links <%= themeDisplay.isImpersonated() ? "menu-button": "" %>">
-				<aui:a cssClass="user-portrait use-dialog" data-controlPanelCategory="<%= PortletCategoryKeys.MY %>" href="<%= themeDisplay.getURLMyAccount().toString() %>" title="manage-my-account">
-					<img alt="<%= HtmlUtil.escape(user.getFullName()) %>" src="<%= HtmlUtil.escape(user.getPortraitURL(themeDisplay)) %>" />
-				</aui:a>
 
-				<aui:a cssClass="user-fullname use-dialog" data-controlPanelCategory="<%= PortletCategoryKeys.MY %>" href="<%= themeDisplay.getURLMyAccount().toString() %>" title="manage-my-account"><%= HtmlUtil.escape(user.getFullName()) %></aui:a>
+                <c:choose>
+                    <c:when test="<%= group.isControlPanel() %>">
+                        <aui:a cssClass="user-portrait" href="<%= themeDisplay.getURLMyAccount().toString() %>" title="manage-my-account">
+                            <img alt="<%= HtmlUtil.escape(user.getFullName()) %>" src="<%= HtmlUtil.escape(user.getPortraitURL(themeDisplay)) %>" />
+                        </aui:a>
+
+                        <aui:a cssClass="user-fullname" href="<%= themeDisplay.getURLMyAccount().toString() %>" title="manage-my-account"><%= HtmlUtil.escape(user.getFullName()) %></aui:a>
+                    </c:when>
+                    <c:otherwise>
+                        <aui:a cssClass="user-portrait use-dialog" data-controlPanelCategory="<%= PortletCategoryKeys.MY %>" href="<%= themeDisplay.getURLMyAccount().toString() %>" title="manage-my-account">
+                            <img alt="<%= HtmlUtil.escape(user.getFullName()) %>" src="<%= HtmlUtil.escape(user.getPortraitURL(themeDisplay)) %>" />
+                        </aui:a>
+
+                        <aui:a cssClass="user-fullname use-dialog" data-controlPanelCategory="<%= PortletCategoryKeys.MY %>" href="<%= themeDisplay.getURLMyAccount().toString() %>" title="manage-my-account"><%= HtmlUtil.escape(user.getFullName()) %></aui:a>
+                    </c:otherwise>
+                </c:choose>
 
 				<c:if test="<%= themeDisplay.isShowSignOutIcon() %>">
 					<span class="sign-out">(<aui:a href="<%= themeDisplay.getURLSignOut() %>" label="sign-out" />)</span>
