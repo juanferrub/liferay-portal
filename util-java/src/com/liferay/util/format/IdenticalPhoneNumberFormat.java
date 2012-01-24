@@ -34,7 +34,7 @@ public class IdenticalPhoneNumberFormat implements PhoneNumberFormat {
 		if (Validator.isNull(phoneNumber)) {
 			return false;
 		}
-		
+
 		return true;
 	}
 }

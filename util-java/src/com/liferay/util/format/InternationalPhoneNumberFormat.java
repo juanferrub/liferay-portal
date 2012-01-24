@@ -17,8 +17,6 @@ package com.liferay.util.format;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 
-import java.util.Set;
-
 /**
  * @author Brian Wing Shun Chan
  * @author Manuel de la Peña
@@ -32,14 +30,14 @@ public class InternationalPhoneNumberFormat implements PhoneNumberFormat {
 	public String strip(String phoneNumber) {
 		StringBuilder sb = new StringBuilder(phoneNumber);
 		String temporaryPhoneNumber = sb.toString();
-		
+
 		//remove valid characters
-		
-		for(int i = 0;i < VALID_CHARACTERS.length;i++) {
+
+		for (int i = 0;i < VALID_CHARACTERS.length;i++) {
 			temporaryPhoneNumber = temporaryPhoneNumber.replace(
 				VALID_CHARACTERS[i], "");
 		}
-		
+
 		return temporaryPhoneNumber;
 	}
 
@@ -47,32 +45,32 @@ public class InternationalPhoneNumberFormat implements PhoneNumberFormat {
 		if (Validator.isNull(phoneNumber)) {
 			return false;
 		}
-		
+
 		//String strippedPhoneNumber = strip(phoneNumber);
-		
+
 		//return strippedPhoneNumber.matches(
 		//	PropsValues.PHONE_VALIDATOR_REGEXP_INTERNATIONAL);
-		
+
 		int plusPosition = phoneNumber.indexOf(StringPool.PLUS);
-		
+
 		if (plusPosition > 0) {
 			return false;
 		}
 		else {
 			int start = plusPosition + 1;
-			
+
 			String strippedPhoneNumber = strip(phoneNumber.substring(start));
-			
+
 			for (int i = start;i < strippedPhoneNumber.length(); i++) {
 				if (!Character.isDigit(strippedPhoneNumber.charAt(i))) {
 					return false;
 				}
 			}
 		}
-		
+
 		return true;
 	}
-	
+
 	private static final String VALID_CHARACTERS[] = {
 		StringPool.CLOSE_PARENTHESIS,
 		StringPool.DASH,

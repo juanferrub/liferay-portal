@@ -35,7 +35,7 @@ public class PhoneNumberUtil {
 	public boolean validate(String phoneNumber) {
 		return _format.validate(phoneNumber);
 	}
-	
+
 	private static PhoneNumberFormat _format =
 		(PhoneNumberFormat)InstancePool.get(PhoneNumberUtil._formatClass);
 

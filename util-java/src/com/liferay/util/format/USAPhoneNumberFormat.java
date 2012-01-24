@@ -74,7 +74,7 @@ public class USAPhoneNumberFormat implements PhoneNumberFormat {
 		if (Validator.isNull(phoneNumber)) {
 			return false;
 		}
-		
+
 		return phoneNumber.matches(PropsValues.PHONE_VALIDATOR_REGEXP_USA);
 	}
 }

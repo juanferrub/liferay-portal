@@ -27,21 +27,21 @@ public class USAPhoneNumberFormatTest extends TestCase {
 	}
 
 	public void testValidate() {
-		String phoneNumbers[] = {"1234567890", "123-456-7890", "123.456.7890", 
-			"123 456 7890", "(123) 456 7890", "(012) 345-6789", 
-			"(123) 456-7890", "012-3456", "+1 (123) 456-7890", 
+		String phoneNumbers[] = {"1234567890", "123-456-7890", "123.456.7890",
+			"123 456 7890", "(123) 456 7890", "(012) 345-6789",
+			"(123) 456-7890", "012-3456", "+1 (123) 456-7890",
 			"1-123-456-7890", "1.123.456.7890"};
-		
-		for(String phoneNumber : phoneNumbers) {
+
+		for (String phoneNumber : phoneNumbers) {
 			testValidate(phoneNumber);
 		}
-	}	
+	}
 
 	private void testValidate(String phoneNumber) {
 		USAPhoneNumberFormat format = new USAPhoneNumberFormat();
-		
+
 		if (!format.validate(phoneNumber)) {
-			fail("Validation for [" + phoneNumber + "] failed");	
+			fail("Validation for [" + phoneNumber + "] failed");
 		}
 	}
 
