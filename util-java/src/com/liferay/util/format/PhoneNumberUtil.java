@@ -20,6 +20,7 @@ import com.liferay.portal.kernel.util.SystemProperties;
 
 /**
  * @author Brian Wing Shun Chan
+ * @author Manuel de la Peña
  */
 public class PhoneNumberUtil {
 
@@ -31,6 +32,10 @@ public class PhoneNumberUtil {
 		return _format.strip(phoneNumber);
 	}
 
+	public boolean validate(String phoneNumber) {
+		return _format.validate(phoneNumber);
+	}
+	
 	private static PhoneNumberFormat _format =
 		(PhoneNumberFormat)InstancePool.get(PhoneNumberUtil._formatClass);
 

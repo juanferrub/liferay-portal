@@ -16,6 +16,7 @@ package com.liferay.util.format;
 
 /**
  * @author Brian Wing Shun Chan
+ * @author Manuel de la Peña
  */
 public interface PhoneNumberFormat {
 
@@ -23,4 +24,5 @@ public interface PhoneNumberFormat {
 
 	public String strip(String phoneNumber);
 
+	public boolean validate(String phoneNumber);
 }
