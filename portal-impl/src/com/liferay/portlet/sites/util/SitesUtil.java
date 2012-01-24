@@ -1025,12 +1025,16 @@ public class SitesUtil {
 			boolean privateLayoutSetPrototypeLinkEnabled)
 		throws Exception {
 
-		updateLayoutSetPrototypeLink(
-			group.getGroupId(), true, privateLayoutSetPrototypeId,
-			privateLayoutSetPrototypeLinkEnabled);
-		updateLayoutSetPrototypeLink(
-			group.getGroupId(), false, publicLayoutSetPrototypeId,
-			publicLayoutSetPrototypeLinkEnabled);
+		if (privateLayoutSetPrototypeId != 0) {
+			updateLayoutSetPrototypeLink(
+				group.getGroupId(), true, privateLayoutSetPrototypeId,
+				privateLayoutSetPrototypeLinkEnabled);
+		}
+		if (publicLayoutSetPrototypeId != 0) {
+			updateLayoutSetPrototypeLink(
+				group.getGroupId(), false, publicLayoutSetPrototypeId,
+				publicLayoutSetPrototypeLinkEnabled);
+		}
 	}
 
 	protected static Map<String, String[]> getLayoutSetPrototypesParameters(

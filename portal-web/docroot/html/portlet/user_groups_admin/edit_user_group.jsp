@@ -116,13 +116,18 @@ long userGroupId = BeanParamUtil.getLong(userGroup, request, "userGroupId");
 			<c:choose>
 				<c:when test="<%= ((userGroupGroup == null) || (userGroupGroup.getPublicLayoutsPageCount() == 0)) && !layoutSetPrototypes.isEmpty() %>">
 					<aui:select label="public-pages" name="publicLayoutSetPrototypeId">
-						<aui:option label="none" selected="<%= true %>" value="" />
+						<aui:option label="none" value="" />
 
 						<%
 						for (LayoutSetPrototype layoutSetPrototype : layoutSetPrototypes) {
+							boolean selected = false;
+
+							if (publicLayoutSetPrototype != null && layoutSetPrototype.getLayoutSetPrototypeId() == publicLayoutSetPrototype.getLayoutSetPrototypeId()) {
+								selected = true;
+							}
 						%>
 
-							<aui:option value="<%= layoutSetPrototype.getLayoutSetPrototypeId() %>"><%= layoutSetPrototype.getName(user.getLanguageId()) %></aui:option>
+							<aui:option value="<%= layoutSetPrototype.getLayoutSetPrototypeId() %>" selected="<%= selected %>"><%= layoutSetPrototype.getName(user.getLanguageId()) %></aui:option>
 
 						<%
 						}
@@ -161,6 +166,10 @@ long userGroupId = BeanParamUtil.getLong(userGroup, request, "userGroupId");
 									url="<%= publicPagesURL.toString() %>"
 								/>
 
+								<c:if test="<%= publicLayoutSetPrototype != null %>">
+									<aui:input name="publicLayoutSetPrototypeId" type="hidden" value="<%= publicLayoutSetPrototype.getLayoutSetPrototypeId() %>" />
+								</c:if>
+
 								<c:choose>
 									<c:when test="<%= (publicLayoutSetPrototype != null) && PortalPermissionUtil.contains(permissionChecker, ActionKeys.UNLINK_LAYOUT_SET_PROTOTYPE) %>">
 										<aui:input label='<%= LanguageUtil.format(pageContext, "enable-propagation-of-changes-from-the-site-template-x", publicLayoutSetPrototype.getName(user.getLanguageId())) %>' name="publicLayoutSetPrototypeLinkEnabled" type="checkbox" value="<%= publicLayoutSetPrototypeLinkEnabled %>" />
@@ -183,13 +192,18 @@ long userGroupId = BeanParamUtil.getLong(userGroup, request, "userGroupId");
 			<c:choose>
 				<c:when test="<%= ((userGroup == null) || (userGroup.getPrivateLayoutsPageCount() == 0)) && !layoutSetPrototypes.isEmpty() %>">
 					<aui:select label="private-pages" name="privateLayoutSetPrototypeId">
-						<aui:option label="none" selected="<%= true %>" value="" />
+						<aui:option label="none" value="" />
 
 						<%
 						for (LayoutSetPrototype layoutSetPrototype : layoutSetPrototypes) {
+							boolean selected = false;
+
+							if (privateLayoutSetPrototype != null && layoutSetPrototype.getLayoutSetPrototypeId() == privateLayoutSetPrototype.getLayoutSetPrototypeId()) {
+								selected = true;
+							}
 						%>
 
-							<aui:option value="<%= layoutSetPrototype.getLayoutSetPrototypeId() %>"><%= layoutSetPrototype.getName(user.getLanguageId()) %></aui:option>
+							<aui:option value="<%= layoutSetPrototype.getLayoutSetPrototypeId() %>" selected="<%= selected %>"><%= layoutSetPrototype.getName(user.getLanguageId()) %></aui:option>
 
 						<%
 						}
@@ -226,6 +240,10 @@ long userGroupId = BeanParamUtil.getLong(userGroup, request, "userGroupId");
 									target="_blank"
 									url="<%= privatePagesURL.toString() %>"
 								/>
+
+								<c:if test="<%= privateLayoutSetPrototype != null %>">
+									<aui:input name="privateLayoutSetPrototypeId" type="hidden" value="<%= privateLayoutSetPrototype.getLayoutSetPrototypeId() %>" />
+								</c:if>
 
 								<c:choose>
 									<c:when test="<%= (privateLayoutSetPrototype != null) && PortalPermissionUtil.contains(permissionChecker, ActionKeys.UNLINK_LAYOUT_SET_PROTOTYPE) %>">
