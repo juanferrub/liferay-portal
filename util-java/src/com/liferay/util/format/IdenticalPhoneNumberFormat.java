@@ -14,8 +14,11 @@
 
 package com.liferay.util.format;
 
+import com.liferay.portal.kernel.util.Validator;
+
 /**
  * @author Brian Wing Shun Chan
+ * @author Manuel de la Peña
  */
 public class IdenticalPhoneNumberFormat implements PhoneNumberFormat {
 
@@ -27,4 +30,11 @@ public class IdenticalPhoneNumberFormat implements PhoneNumberFormat {
 		return phoneNumber;
 	}
 
+	public boolean validate(String phoneNumber) {
+		if (Validator.isNull(phoneNumber)) {
+			return false;
+		}
+
+		return true;
+	}
 }
