@@ -454,7 +454,7 @@ else if (dlFileEntryType != null) {
 
 <liferay-ui:upload-progress
 	id="<%= uploadProgressId %>"
-	message="uploading"
+	message="uploading"                         asd adsa
 	redirect="<%= redirect %>"
 />
 
