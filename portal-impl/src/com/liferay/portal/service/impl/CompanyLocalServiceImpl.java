@@ -19,6 +19,7 @@ import com.liferay.portal.CompanyMxException;
 import com.liferay.portal.CompanyVirtualHostException;
 import com.liferay.portal.CompanyWebIdException;
 import com.liferay.portal.LocaleException;
+import com.liferay.portal.NoSuchGroupException;
 import com.liferay.portal.NoSuchShardException;
 import com.liferay.portal.NoSuchUserException;
 import com.liferay.portal.NoSuchVirtualHostException;
@@ -925,7 +926,7 @@ public class CompanyLocalServiceImpl extends CompanyLocalServiceBaseImpl {
 		Company company = companyPersistence.findByPrimaryKey(companyId);
 
 		validate(company.getWebId(), virtualHostname, mx);
-		validate(name);
+		validate(name, companyId);
 
 		if (PropsValues.MAIL_MX_UPDATE) {
 			company.setMx(mx);
@@ -1230,8 +1231,16 @@ public class CompanyLocalServiceImpl extends CompanyLocalServiceBaseImpl {
 		}
 	}
 
-	protected void validate(String name) throws PortalException {
-		if (Validator.isNull(name)) {
+	protected void validate(String name, long companyId)
+			throws PortalException, SystemException {
+
+		Group group = null;
+		try {
+			group = groupLocalService.getGroup(companyId, name);
+		} catch (NoSuchGroupException e) {
+		}
+
+		if (Validator.isNull(name) || group != null) {
 			throw new AccountNameException();
 		}
 	}
