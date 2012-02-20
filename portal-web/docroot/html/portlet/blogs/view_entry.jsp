@@ -19,6 +19,13 @@
 <%
 String redirect = ParamUtil.getString(request, "redirect");
 
+String portletId = (String) request.getAttribute(WebKeys.PORTLET_ID);
+String ppid = HttpUtil.getParameter(redirect, "p_p_id", false);
+
+if (!portletId.equals(ppid)) {
+    redirect = null;
+}
+
 if (Validator.isNull(redirect)) {
 	redirect = PortalUtil.getLayoutURL(layout, themeDisplay) + Portal.FRIENDLY_URL_SEPARATOR + "blogs";
 }
