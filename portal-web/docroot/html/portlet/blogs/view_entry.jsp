@@ -19,6 +19,10 @@
 <%
 String redirect = ParamUtil.getString(request, "redirect");
 
+if (layoutTypePortlet.hasPortletId(PortletKeys.BLOGS_AGGREGATOR)) {
+    redirect = null;
+}
+
 if (Validator.isNull(redirect)) {
 	redirect = PortalUtil.getLayoutURL(layout, themeDisplay) + Portal.FRIENDLY_URL_SEPARATOR + "blogs";
 }
