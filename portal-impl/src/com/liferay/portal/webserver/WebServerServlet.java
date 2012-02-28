@@ -1048,7 +1048,7 @@ public class WebServerServlet extends HttpServlet {
 		freeMarkerContext.put("entries", webServerEntries);
 		freeMarkerContext.put("path", HttpUtil.encodePath(path));
 
-		if (!_HTTP_HEADER_VERSION_VERBOSITY_PARTIAL) {
+		if (!PropsValues.HTTP_HEADER_VERSION_VERBOSITY_PARTIAL) {
 			freeMarkerContext.put("serverInfo", ReleaseInfo.getServerInfo());
 		}
 
@@ -1209,9 +1209,6 @@ public class WebServerServlet extends HttpServlet {
 	}
 
 	private static final String _DATE_FORMAT_PATTERN = "d MMM yyyy HH:mm z";
-
-	private static final boolean _HTTP_HEADER_VERSION_VERBOSITY_PARTIAL =
-		PropsValues.HTTP_HEADER_VERSION_VERBOSITY.equalsIgnoreCase("partial");
 
 	private static final String _PATH_DDM = "ddm";
 
