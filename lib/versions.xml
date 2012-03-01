@@ -826,6 +826,17 @@
 		</licenses>
 	</library>
 	<library>
+		<file-name>development/sonar-ant-task.jar</file-name>
+		<version>1.3</version>
+		<project-name>Sonar Source</project-name>
+		<project-url>http://www.sonarsource.org</project-url>
+		<licenses>
+			<license>
+				<license-name>LGPL 2.1</license-name>
+			</license>
+		</licenses>
+	</library>
+	<library>
 		<file-name>development/spring-instrument.jar</file-name>
 		<version>3.0.6</version>
 		<project-name>Spring</project-name>
@@ -2634,17 +2645,6 @@
 			<license>
 				<license-name>Apache License 2.0</license-name>
 				<copyright-notice>Copyright (c) 2001-2004 The Apache Software Foundation.</copyright-notice>
-			</license>
-		</licenses>
-	</library>
-	<library>
-		<file-name>portal/primrose.jar</file-name>
-		<version>3.0.14</version>
-		<project-name>Primrose</project-name>
-		<project-url>http://www.primrose.org.uk</project-url>
-		<licenses>
-			<license>
-				<license-name>LGPL 2.1</license-name>
 			</license>
 		</licenses>
 	</library>

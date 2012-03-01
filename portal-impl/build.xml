@@ -421,7 +421,7 @@ public class Creole10Parser]]></replacevalue>
 			<arg value="service.sql.sequences.file=sequences.sql" />
 			<arg value="service.bean.locator.util=com.liferay.portal.kernel.bean.PortalBeanLocatorUtil" />
 			<arg value="service.props.util=com.liferay.portal.util.PropsUtil" />
-			<arg value="service.test.dir=${basedir}/test" />
+			<arg value="service.test.dir=${basedir}/test/integration" />
 		</java>
 
 		<delete file="ServiceBuilder.temp" />

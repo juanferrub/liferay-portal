@@ -89,16 +89,21 @@ public class StartupHelper {
 		}
 
 		String[] upgradeProcessClassNames = getUpgradeProcessClassNames(
-			PropsKeys.UPGRADE_PROCESSES + StringPool.PERIOD + buildNumber);
+			PropsKeys.UPGRADE_PROCESSES);
 
 		if (upgradeProcessClassNames.length == 0) {
-			if (_log.isInfoEnabled()) {
-				_log.info(
-					"Upgrading from " + buildNumber + " to " +
-						ReleaseInfo.getBuildNumber() + " is not supported");
-			}
+			upgradeProcessClassNames = getUpgradeProcessClassNames(
+				PropsKeys.UPGRADE_PROCESSES + StringPool.PERIOD + buildNumber);
 
-			System.exit(0);
+			if (upgradeProcessClassNames.length == 0) {
+				if (_log.isInfoEnabled()) {
+					_log.info(
+						"Upgrading from " + buildNumber + " to " +
+							ReleaseInfo.getBuildNumber() + " is not supported");
+				}
+
+				System.exit(0);
+			}
 		}
 
 		_upgraded = UpgradeProcessUtil.upgradeProcess(

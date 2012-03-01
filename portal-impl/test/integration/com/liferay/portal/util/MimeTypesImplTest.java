@@ -16,7 +16,6 @@ package com.liferay.portal.util;
 
 import com.liferay.portal.kernel.util.MimeTypesUtil;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
 
 /**
@@ -187,9 +186,9 @@ public class MimeTypesImplTest extends BaseTestCase {
 	}
 
 	protected InputStream getInputStream(String fileName) throws Exception {
-		return new FileInputStream(
-			"portal-impl/test/com/liferay/portal/util/dependencies/" +
-				fileName);
+		Class<?> clazz = getClass();
+
+		return clazz.getResourceAsStream("dependencies/" + fileName);
 	}
 
 }
