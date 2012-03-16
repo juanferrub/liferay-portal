@@ -84,7 +84,9 @@ public class DDMTemplatePersistenceTest extends BasePersistenceTestCase {
 
 		newDDMTemplate.setModifiedDate(nextDate());
 
-		newDDMTemplate.setStructureId(nextLong());
+		newDDMTemplate.setClassNameId(nextLong());
+
+		newDDMTemplate.setClassPK(nextLong());
 
 		newDDMTemplate.setName(randomString());
 
@@ -117,8 +119,10 @@ public class DDMTemplatePersistenceTest extends BasePersistenceTestCase {
 		assertEquals(Time.getShortTimestamp(
 				existingDDMTemplate.getModifiedDate()),
 			Time.getShortTimestamp(newDDMTemplate.getModifiedDate()));
-		assertEquals(existingDDMTemplate.getStructureId(),
-			newDDMTemplate.getStructureId());
+		assertEquals(existingDDMTemplate.getClassNameId(),
+			newDDMTemplate.getClassNameId());
+		assertEquals(existingDDMTemplate.getClassPK(),
+			newDDMTemplate.getClassPK());
 		assertEquals(existingDDMTemplate.getName(), newDDMTemplate.getName());
 		assertEquals(existingDDMTemplate.getDescription(),
 			newDDMTemplate.getDescription());
@@ -247,6 +251,13 @@ public class DDMTemplatePersistenceTest extends BasePersistenceTestCase {
 				existingDDMTemplateModelImpl.getOriginalUuid()));
 		assertEquals(existingDDMTemplateModelImpl.getGroupId(),
 			existingDDMTemplateModelImpl.getOriginalGroupId());
+
+		assertEquals(existingDDMTemplateModelImpl.getGroupId(),
+			existingDDMTemplateModelImpl.getOriginalGroupId());
+		assertEquals(existingDDMTemplateModelImpl.getClassNameId(),
+			existingDDMTemplateModelImpl.getOriginalClassNameId());
+		assertEquals(existingDDMTemplateModelImpl.getClassPK(),
+			existingDDMTemplateModelImpl.getOriginalClassPK());
 	}
 
 	protected DDMTemplate addDDMTemplate() throws Exception {
@@ -268,7 +279,9 @@ public class DDMTemplatePersistenceTest extends BasePersistenceTestCase {
 
 		ddmTemplate.setModifiedDate(nextDate());
 
-		ddmTemplate.setStructureId(nextLong());
+		ddmTemplate.setClassNameId(nextLong());
+
+		ddmTemplate.setClassPK(nextLong());
 
 		ddmTemplate.setName(randomString());
 
