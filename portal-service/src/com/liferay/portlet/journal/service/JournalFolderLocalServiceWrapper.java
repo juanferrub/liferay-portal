@@ -61,25 +61,28 @@ public class JournalFolderLocalServiceWrapper
 	* Deletes the journal folder with the primary key from the database. Also notifies the appropriate model listeners.
 	*
 	* @param folderId the primary key of the journal folder
+	* @return the journal folder that was removed
 	* @throws PortalException if a journal folder with the primary key could not be found
 	* @throws SystemException if a system exception occurred
 	*/
-	public void deleteJournalFolder(long folderId)
+	public com.liferay.portlet.journal.model.JournalFolder deleteJournalFolder(
+		long folderId)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
-		_journalFolderLocalService.deleteJournalFolder(folderId);
+		return _journalFolderLocalService.deleteJournalFolder(folderId);
 	}
 
 	/**
 	* Deletes the journal folder from the database. Also notifies the appropriate model listeners.
 	*
 	* @param journalFolder the journal folder
+	* @return the journal folder that was removed
 	* @throws SystemException if a system exception occurred
 	*/
-	public void deleteJournalFolder(
+	public com.liferay.portlet.journal.model.JournalFolder deleteJournalFolder(
 		com.liferay.portlet.journal.model.JournalFolder journalFolder)
 		throws com.liferay.portal.kernel.exception.SystemException {
-		_journalFolderLocalService.deleteJournalFolder(journalFolder);
+		return _journalFolderLocalService.deleteJournalFolder(journalFolder);
 	}
 
 	/**

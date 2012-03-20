@@ -23,11 +23,8 @@ import com.liferay.portal.kernel.dao.jdbc.SqlUpdateFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.search.Indexer;
-import com.liferay.portal.kernel.search.IndexerRegistryUtil;
-import com.liferay.portal.kernel.search.SearchException;
+import com.liferay.portal.kernel.search.Indexable;
+import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.model.PersistedModel;
 import com.liferay.portal.service.GroupLocalService;
@@ -108,26 +105,12 @@ public abstract class JournalFolderLocalServiceBaseImpl
 	 * @return the journal folder that was added
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Indexable(type = IndexableType.REINDEX)
 	public JournalFolder addJournalFolder(JournalFolder journalFolder)
 		throws SystemException {
 		journalFolder.setNew(true);
 
-		journalFolder = journalFolderPersistence.update(journalFolder, false);
-
-		Indexer indexer = IndexerRegistryUtil.getIndexer(getModelClassName());
-
-		if (indexer != null) {
-			try {
-				indexer.reindex(journalFolder);
-			}
-			catch (SearchException se) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(se, se);
-				}
-			}
-		}
-
-		return journalFolder;
+		return journalFolderPersistence.update(journalFolder, false);
 	}
 
 	/**
@@ -144,49 +127,27 @@ public abstract class JournalFolderLocalServiceBaseImpl
 	 * Deletes the journal folder with the primary key from the database. Also notifies the appropriate model listeners.
 	 *
 	 * @param folderId the primary key of the journal folder
+	 * @return the journal folder that was removed
 	 * @throws PortalException if a journal folder with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
-	public void deleteJournalFolder(long folderId)
+	@Indexable(type = IndexableType.DELETE)
+	public JournalFolder deleteJournalFolder(long folderId)
 		throws PortalException, SystemException {
-		JournalFolder journalFolder = journalFolderPersistence.remove(folderId);
-
-		Indexer indexer = IndexerRegistryUtil.getIndexer(getModelClassName());
-
-		if (indexer != null) {
-			try {
-				indexer.delete(journalFolder);
-			}
-			catch (SearchException se) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(se, se);
-				}
-			}
-		}
+		return journalFolderPersistence.remove(folderId);
 	}
 
 	/**
 	 * Deletes the journal folder from the database. Also notifies the appropriate model listeners.
 	 *
 	 * @param journalFolder the journal folder
+	 * @return the journal folder that was removed
 	 * @throws SystemException if a system exception occurred
 	 */
-	public void deleteJournalFolder(JournalFolder journalFolder)
+	@Indexable(type = IndexableType.DELETE)
+	public JournalFolder deleteJournalFolder(JournalFolder journalFolder)
 		throws SystemException {
-		journalFolderPersistence.remove(journalFolder);
-
-		Indexer indexer = IndexerRegistryUtil.getIndexer(getModelClassName());
-
-		if (indexer != null) {
-			try {
-				indexer.delete(journalFolder);
-			}
-			catch (SearchException se) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(se, se);
-				}
-			}
-		}
+		return journalFolderPersistence.remove(journalFolder);
 	}
 
 	/**
@@ -326,6 +287,7 @@ public abstract class JournalFolderLocalServiceBaseImpl
 	 * @return the journal folder that was updated
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Indexable(type = IndexableType.REINDEX)
 	public JournalFolder updateJournalFolder(JournalFolder journalFolder)
 		throws SystemException {
 		return updateJournalFolder(journalFolder, true);
@@ -339,26 +301,12 @@ public abstract class JournalFolderLocalServiceBaseImpl
 	 * @return the journal folder that was updated
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Indexable(type = IndexableType.REINDEX)
 	public JournalFolder updateJournalFolder(JournalFolder journalFolder,
 		boolean merge) throws SystemException {
 		journalFolder.setNew(false);
 
-		journalFolder = journalFolderPersistence.update(journalFolder, merge);
-
-		Indexer indexer = IndexerRegistryUtil.getIndexer(getModelClassName());
-
-		if (indexer != null) {
-			try {
-				indexer.reindex(journalFolder);
-			}
-			catch (SearchException se) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(se, se);
-				}
-			}
-		}
-
-		return journalFolder;
+		return journalFolderPersistence.update(journalFolder, merge);
 	}
 
 	/**
@@ -1290,6 +1238,5 @@ public abstract class JournalFolderLocalServiceBaseImpl
 	protected ExpandoValuePersistence expandoValuePersistence;
 	@BeanReference(type = PersistedModelLocalServiceRegistry.class)
 	protected PersistedModelLocalServiceRegistry persistedModelLocalServiceRegistry;
-	private static Log _log = LogFactoryUtil.getLog(JournalFolderLocalServiceBaseImpl.class);
 	private String _beanIdentifier;
 }
