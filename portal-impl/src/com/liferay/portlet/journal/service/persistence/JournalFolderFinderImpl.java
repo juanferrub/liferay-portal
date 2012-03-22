@@ -111,7 +111,7 @@ public class JournalFolderFinderImpl extends BasePersistenceImpl<JournalFolder>
 
 			sql = sb.toString();
 
-			sql = updateSQL(sql, folderId);
+			sql = updateSQL(sql);
 
 			SQLQuery q = session.createSQLQuery(sql);
 
@@ -199,7 +199,7 @@ public class JournalFolderFinderImpl extends BasePersistenceImpl<JournalFolder>
 			sb.append(getJournalArticlesSQL(groupId, inlineSQLHelper));
 			sb.append(StringPool.CLOSE_PARENTHESIS);
 
-			sql = updateSQL(sb.toString(), folderId);
+			sql = updateSQL(sb.toString());
 
 			sql = CustomSQLUtil.replaceOrderBy(sql, obc);
 
@@ -232,9 +232,10 @@ public class JournalFolderFinderImpl extends BasePersistenceImpl<JournalFolder>
 				}
 				else {
 					String articleId = (String)array[5];
+					Double version = (Double) array[6];
 
-					obj = JournalArticleUtil.findByG_A_Last(
-						groupId, articleId, null);
+					obj = JournalArticleUtil.fetchByG_A_V(
+						groupId, articleId, version);
 				}
 
 				models.add(obj);
@@ -268,7 +269,7 @@ public class JournalFolderFinderImpl extends BasePersistenceImpl<JournalFolder>
 		return sb.toString();
 	}
 
-	protected String updateSQL(String sql, long folderId) {
+	protected String updateSQL(String sql) {
 		sql = StringUtil.replace(sql, "[$FOLDER_PARENT_FOLDER_ID$]",
 			getFolderId("JournalFolder"));
 
