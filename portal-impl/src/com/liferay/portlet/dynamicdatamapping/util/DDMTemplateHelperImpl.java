@@ -14,7 +14,6 @@
 
 package com.liferay.portlet.dynamicdatamapping.util;
 
-import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.model.DDMTemplate;
@@ -34,7 +33,7 @@ public class DDMTemplateHelperImpl implements DDMTemplateHelper {
 					template.getClassPK());
 			}
 		}
-		catch (SystemException e) {
+		catch (Exception e) {
 		}
 
 		return null;

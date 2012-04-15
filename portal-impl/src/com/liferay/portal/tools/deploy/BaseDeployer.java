@@ -770,7 +770,7 @@ public class BaseDeployer implements Deployer {
 		// after the prefix, or 3.) the recommended deployment context as
 		// specified in liferay-plugin-package.properties, or 4.) the file name.
 
-		if ((specifiedContext != null) &&
+		if (Validator.isNull(specifiedContext) &&
 			srcFile.getName().startsWith(DEPLOY_TO_PREFIX)) {
 
 			displayName = srcFile.getName().substring(

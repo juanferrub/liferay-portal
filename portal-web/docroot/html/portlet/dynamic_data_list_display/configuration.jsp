@@ -55,13 +55,15 @@ request.setAttribute("record_set_action.jsp-selRecordSet", selRecordSet);
 
 	<c:if test="<%= selRecordSet != null %>">
 
+		<%
+		long structureClassNameId = PortalUtil.getClassNameId(DDMStructure.class);
+		%>
+
 		<aui:fieldset label="templates">
 			<aui:select helpMessage="select-the-list-template-used-to-diplay-the-list-records" label="list-template" name="listTemplateId" onChange='<%= "document." + renderResponse.getNamespace() + "fm." + renderResponse.getNamespace() + "listDDMTemplateId.value = this.value;" %>'>
 				<aui:option label="default" value="<%= 0 %>" />
 
 				<%
-				long structureClassNameId = PortalUtil.getClassNameId(DDMStructure.class);
-
 				List<DDMTemplate> templates = DDMTemplateLocalServiceUtil.getTemplates(structureClassNameId, selRecordSet.getDDMStructureId(), DDMTemplateConstants.TEMPLATE_TYPE_LIST);
 
 				for (DDMTemplate template : templates) {
