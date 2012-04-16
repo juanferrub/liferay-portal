@@ -34,6 +34,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -98,7 +99,7 @@ public class IndexAccessorImpl implements IndexAccessor {
 		try {
 			_indexWriter.deleteDocuments(term);
 
-			_batchCount++;
+			_batchCount.getAndIncrement();
 		}
 		finally {
 			_commit();
@@ -202,7 +203,7 @@ public class IndexAccessorImpl implements IndexAccessor {
 
 	private void _commit() throws IOException {
 		if ((PropsValues.LUCENE_COMMIT_BATCH_SIZE == 0) ||
-			(PropsValues.LUCENE_COMMIT_BATCH_SIZE <= _batchCount)) {
+			(PropsValues.LUCENE_COMMIT_BATCH_SIZE <= _batchCount.get())) {
 
 			_doCommit();
 		}
@@ -263,7 +264,7 @@ public class IndexAccessorImpl implements IndexAccessor {
 			}
 		}
 
-		_batchCount = 0;
+		_batchCount.set(0);
 	}
 
 	private FSDirectory _getDirectory(String path) throws IOException {
@@ -329,7 +330,7 @@ public class IndexAccessorImpl implements IndexAccessor {
 
 			public void run() {
 				try {
-					if (_batchCount > 0) {
+					if (_batchCount.get() > 0) {
 						_doCommit();
 					}
 				}
@@ -379,7 +380,7 @@ public class IndexAccessorImpl implements IndexAccessor {
 				_optimizeCount = 0;
 			}
 
-			_batchCount++;
+			_batchCount.getAndIncrement();
 		}
 		finally {
 			_commit();
@@ -394,7 +395,7 @@ public class IndexAccessorImpl implements IndexAccessor {
 
 	private static Log _log = LogFactoryUtil.getLog(IndexAccessorImpl.class);
 
-	private volatile int _batchCount;
+	private AtomicInteger _batchCount;
 	private Lock _commitLock = new ReentrantLock();
 	private long _companyId;
 	private CountDownLatch _countDownLatch = new CountDownLatch(1);

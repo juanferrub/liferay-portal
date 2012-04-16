@@ -22,6 +22,7 @@ import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.AbstractQueuedSynchronizer;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -210,7 +211,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
 			long count = _completedTaskCount;
 
 			for (WorkerTask workerTask : _workerTasks) {
-				count += workerTask._localCompletedTaskCount;
+				count += workerTask._localCompletedTaskCount.get();
 			}
 
 			return count;
@@ -259,7 +260,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
 			long count = _completedTaskCount;
 
 			for (WorkerTask workerTask : _workerTasks) {
-				count += workerTask._localCompletedTaskCount;
+				count += workerTask._localCompletedTaskCount.get();
 
 				if (workerTask._isLocked()) {
 					count++;
@@ -495,7 +496,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
 						 (_poolSize > _corePoolSize))) {
 
 						_completedTaskCount +=
-							workerTask._localCompletedTaskCount;
+							workerTask._localCompletedTaskCount.get();
 
 						_workerTasks.remove(workerTask);
 
@@ -589,7 +590,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
 					_mainLock.lock();
 
 					try {
-						_completedTaskCount += _localCompletedTaskCount;
+						_completedTaskCount += _localCompletedTaskCount.get();
 
 						_workerTasks.remove(this);
 
@@ -668,7 +669,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
 				try {
 					task.run();
 
-					_localCompletedTaskCount++;
+					_localCompletedTaskCount.getAndIncrement();
 				}
 				catch (RuntimeException re) {
 					throwable = re;
@@ -696,7 +697,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
 			release(1);
 		}
 
-		private volatile long _localCompletedTaskCount;
+		private AtomicLong _localCompletedTaskCount;
 		private final Runnable _runnable;
 		private Thread _thread;
 
