@@ -131,7 +131,7 @@ public class LayoutLocalServiceVirtualLayoutsAdvice
 					group.isUser()) {
 
 					if (parentLayoutId ==
-						LayoutConstants.DEFAULT_PARENT_LAYOUT_ID) {
+							LayoutConstants.DEFAULT_PARENT_LAYOUT_ID) {
 
 						return addUserGroupLayouts(
 							group, layoutSet, (List<Layout>)returnValue,
