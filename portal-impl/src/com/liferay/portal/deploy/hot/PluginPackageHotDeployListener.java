@@ -93,16 +93,20 @@ public class PluginPackageHotDeployListener extends BaseHotDeployListener {
 			_log.debug("Invoking deploy for " + servletContextName);
 		}
 
-		if (servletContext.getResource(
-				"/WEB-INF/liferay-theme-loader.xml") != null) {
-
-			return;
-		}
-
 		PluginPackage pluginPackage =
 			PluginPackageUtil.readPluginPackageServletContext(servletContext);
 
 		if (pluginPackage == null) {
+			return;
+		}
+
+		if (servletContext.getResource(
+				"/WEB-INF/liferay-theme-loader.xml") != null) {
+
+			if (pluginPackage != null) {
+				PluginPackageUtil.registerInstalledPluginPackage(pluginPackage);
+			}
+
 			return;
 		}
 
