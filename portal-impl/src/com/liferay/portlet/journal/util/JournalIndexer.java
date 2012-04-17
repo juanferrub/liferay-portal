@@ -200,8 +200,10 @@ public class JournalIndexer extends BaseIndexer {
 			defaultLanguageId, article.getContent());
 
 		for (String languageId : languageIds) {
+
 			String content = extractContent(
-				article.getContentByLocale(languageId));
+				article.getContentByLocale(languageId),
+				Validator.isNotNull(article.getStructureId()));
 
 			if (languageId.equals(defaultLanguageId)) {
 				document.addText(Field.CONTENT, content);
@@ -327,7 +329,20 @@ public class JournalIndexer extends BaseIndexer {
 		return _FIELD_NAMESPACE.concat(StringPool.FORWARD_SLASH).concat(name);
 	}
 
-	protected String extractContent(String content) {
+	protected String extractContent(String content, boolean hasDynamicElement) {
+		if (hasDynamicElement) {
+			content = extractDynamicContent(content);
+		}
+		else {
+			content = extractStaticContent(content);
+		}
+
+		content = HtmlUtil.extractText(content);
+
+		return content;
+	}
+
+	protected String extractDynamicContent(String content) {
 		try {
 			com.liferay.portal.kernel.xml.Document contentDocument =
 				SAXReaderUtil.read(content);
@@ -353,7 +368,15 @@ public class JournalIndexer extends BaseIndexer {
 			_log.error(e);
 		}
 
-		content = HtmlUtil.extractText(content);
+		return content;
+	}
+
+	protected String extractStaticContent(String content) {
+		content = StringUtil.replace(content, "<![CDATA[", StringPool.BLANK);
+		content = StringUtil.replace(content, "]]>", StringPool.BLANK);
+		content = StringUtil.replace(content, "&amp;", "&");
+		content = StringUtil.replace(content, "&lt;", "<");
+		content = StringUtil.replace(content, "&gt;", ">");
 
 		return content;
 	}
