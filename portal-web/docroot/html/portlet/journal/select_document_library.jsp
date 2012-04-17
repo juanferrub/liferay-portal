@@ -23,13 +23,13 @@ long folderId = BeanParamUtil.getLong(folder, request, "folderId", DLFolderConst
 
 long searchFolderIds = ParamUtil.getLong(request, "searchFolderIds");
 
-long[] folderIdsArray = null;
-
 long groupId = ParamUtil.getLong(request, FileEntryDisplayTerms.SELECTED_GROUP_ID);
 
 if (groupId == 0) {
 	groupId = ParamUtil.getLong(request, "groupId");
 }
+
+long[] folderIdsArray = null;
 
 if (folderId > 0) {
 	folderIdsArray = new long[] {folderId};
@@ -64,13 +64,13 @@ portletURL.setParameter("folderId", String.valueOf(folderId));
 portletURL.setParameter("groupId", String.valueOf(groupId));
 
 PortletURL backURL = renderResponse.createRenderURL();
+
 backURL.setParameter("struts_action", "/journal/select_document_library");
 backURL.setParameter("groupId", String.valueOf(groupId));
 
 if (folder != null) {
 	DLUtil.addPortletBreadcrumbEntries(folder, request, renderResponse);
 }
-
 %>
 
 <aui:form method="post" name="fm">
@@ -95,7 +95,7 @@ if (folder != null) {
 		searchContainer="<%= fileEntrySearchContainer %>"
 	/>
 
-	<% if (!isSearch) { %>
+	<c:if test="<%= !isSearch %>">
 		<liferay-ui:header
 			title="folders"
 		/>
@@ -163,27 +163,24 @@ if (folder != null) {
 
 		<liferay-ui:search-iterator searchContainer="<%= searchContainer %>" />
 
-	<br />
-	<%
-	}
-	%>
+		<br />
+	</c:if>
 
-	<%if (!isSearch) { %>
-		<liferay-ui:header
-			title="documents"
-		/>
-	<%
-	}
-	else {
-	%>
-	<liferay-ui:header
-		backURL="<%= backURL.toString() %>"
-		title="documents"
-	/>
+	<c:choose>
+		<c:when test="<%= !isSearch %>">
+			<liferay-ui:header
+				title="documents"
+			/>
+		</c:when>
+		<c:otherwise>
+			<liferay-ui:header
+				backURL="<%= backURL.toString() %>"
+				title="documents"
+			/>
+		</c:otherwise>
+	</c:choose>
 
 	<%
-	}
-
 	headerNames.clear();
 
 	headerNames.add("document");
@@ -275,7 +272,9 @@ if (folder != null) {
 			resultRows.add(row);
 		}
 		%>
+
 		<liferay-ui:search-iterator searchContainer="<%= searchContainer %>" />
+
 		<%
 	}
 	else {
@@ -415,11 +414,15 @@ if (folder != null) {
 			_log.error(e, e);
 		}
 		%>
+
 		<liferay-ui:search-iterator searchContainer="<%= fileEntrySearchContainer %>" />
+
 		<%
 	}
 	%>
+
 </aui:form>
+
 <%!
 private static Log _log = LogFactoryUtil.getLog("portal-web.docroot.html.portlet.journal.select_document_library_jsp");
 %>
