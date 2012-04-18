@@ -199,11 +199,11 @@ public class JournalIndexer extends BaseIndexer {
 		String[] languageIds = getLanguageIds(
 			defaultLanguageId, article.getContent());
 
-		for (String languageId : languageIds) {
+		boolean dynamicContent = Validator.isNotNull(article.getStructureId());
 
+		for (String languageId : languageIds) {
 			String content = extractContent(
-				article.getContentByLocale(languageId),
-				Validator.isNotNull(article.getStructureId()));
+				article.getContentByLocale(languageId), dynamicContent);
 
 			if (languageId.equals(defaultLanguageId)) {
 				document.addText(Field.CONTENT, content);
@@ -329,8 +329,8 @@ public class JournalIndexer extends BaseIndexer {
 		return _FIELD_NAMESPACE.concat(StringPool.FORWARD_SLASH).concat(name);
 	}
 
-	protected String extractContent(String content, boolean hasDynamicElement) {
-		if (hasDynamicElement) {
+	protected String extractContent(String content, boolean dynamicContent) {
+		if (dynamicContent) {
 			content = extractDynamicContent(content);
 		}
 		else {
