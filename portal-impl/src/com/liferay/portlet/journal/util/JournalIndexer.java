@@ -35,10 +35,12 @@ import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
+import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.kernel.xml.DocumentException;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.kernel.xml.Node;
 import com.liferay.portal.kernel.xml.SAXReaderUtil;
@@ -197,9 +199,11 @@ public class JournalIndexer extends BaseIndexer {
 		String[] languageIds = getLanguageIds(
 			defaultLanguageId, article.getContent());
 
+		boolean dynamicContent = Validator.isNotNull(article.getStructureId());
+
 		for (String languageId : languageIds) {
 			String content = extractContent(
-				article.getContentByLocale(languageId));
+				article.getContentByLocale(languageId), dynamicContent);
 
 			if (languageId.equals(defaultLanguageId)) {
 				document.addText(Field.CONTENT, content);
@@ -325,14 +329,54 @@ public class JournalIndexer extends BaseIndexer {
 		return _FIELD_NAMESPACE.concat(StringPool.FORWARD_SLASH).concat(name);
 	}
 
-	protected String extractContent(String content) {
+	protected String extractContent(String content, boolean dynamicContent) {
+		if (dynamicContent) {
+			content = extractDynamicContent(content);
+		}
+		else {
+			content = extractStaticContent(content);
+		}
+
+		content = HtmlUtil.extractText(content);
+
+		return content;
+	}
+
+	protected String extractDynamicContent(String content) {
+		try {
+			com.liferay.portal.kernel.xml.Document contentDocument =
+				SAXReaderUtil.read(content);
+
+			String path = "//dynamic-element" +
+				"[@type='text' or @type='text_area' or @type='text_box']" +
+				"/dynamic-content";
+
+			List<Node> nodes = contentDocument.selectNodes(path);
+
+			if (!nodes.isEmpty()) {
+				StringBundler sb = new StringBundler();
+
+				for (Node node : nodes) {
+					sb.append(node.getText());
+					sb.append(StringPool.SPACE);
+				}
+
+				content = sb.toString();
+			}
+		}
+		catch (DocumentException e) {
+			_log.error(e);
+		}
+
+		return content;
+	}
+
+	protected String extractStaticContent(String content) {
 		content = StringUtil.replace(content, "<![CDATA[", StringPool.BLANK);
 		content = StringUtil.replace(content, "]]>", StringPool.BLANK);
 		content = StringUtil.replace(content, "&amp;", "&");
 		content = StringUtil.replace(content, "&lt;", "<");
 		content = StringUtil.replace(content, "&gt;", ">");
-
-		content = HtmlUtil.extractText(content);
 
 		return content;
 	}
