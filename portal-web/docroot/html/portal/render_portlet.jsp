@@ -857,7 +857,11 @@ if ((layout.isTypePanel() || layout.isTypeControlPanel()) && !portletDisplay.get
 			if (!access || portletException) {
 				PortletRequestProcessor portletReqProcessor = (PortletRequestProcessor)portletCtx.getAttribute(WebKeys.PORTLET_STRUTS_PROCESSOR);
 
-				ActionMapping actionMapping = portletReqProcessor.processMapping(request, response, (String)portlet.getInitParams().get("view-action"));
+				ActionMapping actionMapping = null;
+
+				if (portletReqProcessor != null){
+					actionMapping = portletReqProcessor.processMapping(request, response, (String)portlet.getInitParams().get("view-action"));
+				}
 
 				ComponentDefinition definition = null;
 
