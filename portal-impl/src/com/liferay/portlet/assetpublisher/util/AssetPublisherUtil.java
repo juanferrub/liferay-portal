@@ -523,7 +523,7 @@ public class AssetPublisherUtil {
 		ThemeDisplay themeDisplay = (ThemeDisplay)renderRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
-		DDMTemplate template = DDMTemplateLocalServiceUtil.getTemplate(
+		DDMTemplate ddmTemplate = DDMTemplateLocalServiceUtil.getTemplate(
 			templateId);
 
 		Map<String, Object> contextObjects = new HashMap<String, Object>();
@@ -548,8 +548,8 @@ public class AssetPublisherUtil {
 		contextObjects.put(AssetPublisherConstants.THEME_DISPLAY, themeDisplay);
 
 		return _transformer.transform(
-			themeDisplay, contextObjects, template.getScript(),
-			template.getLanguage());
+			themeDisplay, contextObjects, ddmTemplate.getScript(),
+			ddmTemplate.getLanguage());
 	}
 
 	private static String _getAssetEntryXml(

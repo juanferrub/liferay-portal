@@ -275,16 +275,9 @@
 						showToolbar: true,
 						struts_action: '/dynamic_data_mapping/view_template',
 						title: '<%= UnicodeLanguageUtil.get(pageContext, "display-styles") %>'
-					}
-				);
-
-				var intervalChecker = setInterval(function() {
-					var window = Liferay.Util.getWindow(windowId);
-
-					if (window) {
-						clearInterval(intervalChecker);
-
-						window.once(
+					},
+					function (ddmPortletWindow) {
+						ddmPortletWindow.once(
 							'visibleChange',
 							function(event) {
 								if (!event.newVal) {
@@ -293,7 +286,7 @@
 							}
 						);
 					}
-				}, 100);
+				);
 			}
 		);
 	}
