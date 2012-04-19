@@ -165,10 +165,10 @@ Element contentEl = (Element)request.getAttribute(WebKeys.JOURNAL_ARTICLE_CONTEN
 				<c:if test='<%= elType.equals("document_library") %>'>
 
 					<%
-					String dlInputName = "journalDocumentLibrary_" + elName;
+					String dlElName = "journalDocumentLibrary_" + count.getValue();
 					%>
 
-					<aui:input cssClass="lfr-input-text-container" inlineField="<%= true %>" label="" name="<%= dlInputName %>" size="55" type="text" value="<%= elContent %>" />
+					<aui:input cssClass="lfr-input-text-container" inlineField="<%= true %>" label="" name="<%= dlElName %>" size="55" type="text" value="<%= elContent %>" />
 
 					<%
 					long dlScopeGroupId = groupId;
