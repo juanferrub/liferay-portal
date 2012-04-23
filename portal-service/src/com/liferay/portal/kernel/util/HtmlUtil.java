@@ -22,6 +22,10 @@ package com.liferay.portal.kernel.util;
  */
 public class HtmlUtil {
 
+	public static boolean containsScriptTag(String text) {
+		return getHtml().containsScriptTag(text);
+	}
+
 	public static String escape(String html) {
 		return getHtml().escape(html);
 	}

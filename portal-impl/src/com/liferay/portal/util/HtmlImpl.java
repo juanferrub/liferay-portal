@@ -47,6 +47,22 @@ public class HtmlImpl implements Html {
 
 	public static final int ESCAPE_MODE_URL = 5;
 
+	public boolean containsScriptTag(String text) {
+		int x = 0;
+		int y = text.indexOf("<");
+
+		while (y != -1) {
+			if (isScriptTag(text, y + 1)) {
+				return true;
+			}
+
+			x = text.indexOf(">", y);
+			y = text.indexOf("<", x);
+		}
+
+		return false;
+	}
+
 	public String escape(String text) {
 		if (text == null) {
 			return null;
