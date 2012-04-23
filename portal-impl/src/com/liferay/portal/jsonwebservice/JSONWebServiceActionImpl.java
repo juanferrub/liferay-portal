@@ -217,6 +217,20 @@ public class JSONWebServiceActionImpl implements JSONWebServiceAction {
 							parameterTypeName);
 					}
 
+					// checks if passed type that is about to be created
+					// is of the same type as current method argument
+					// this prevents creation of types that are not used in the
+					// method and that can be dangerous for application
+
+					if (!ReflectUtil.isSubclass(
+						parameterType, methodParameters[i].getType())) {
+
+						throw new IllegalArgumentException(
+							"Unmatched argument type: " +
+							parameterType.getName() + " for method argument #"
+							+ i);
+					}
+
 					parameterValue = _createDefaultParameterValue(
 						parameterName, parameterType);
 				}
@@ -229,8 +243,14 @@ public class JSONWebServiceActionImpl implements JSONWebServiceAction {
 					parameterValue = calendar;
 				}
 				else if (parameterType.equals(List.class)) {
-					List<?> list = JSONFactoryUtil.looseDeserialize(
-						value.toString(), ArrayList.class);
+
+					String jsonString = value.toString();
+
+					// deserialize json string in list of strings,
+					// as the type conversion will happens in the
+					// next step (_generifyList)
+					List<?> list = JSONFactoryUtil.looseDeserializeSafe(
+						jsonString, ArrayList.class);
 
 					list = _generifyList(
 						list, methodParameters[i].getGenericTypes());
@@ -242,8 +262,14 @@ public class JSONWebServiceActionImpl implements JSONWebServiceAction {
 						value.toString());
 				}
 				else if (parameterType.equals(Map.class)) {
-					Map<?, ?> map = JSONFactoryUtil.looseDeserialize(
-						value.toString(), HashMap.class);
+
+					String jsonString = value.toString();
+
+					// deserialize json string in list of strings,
+					// as the type conversion will happens in the
+					// next step ( (_generifyMap)
+					Map<?, ?> map = JSONFactoryUtil.looseDeserializeSafe(
+						jsonString, HashMap.class);
 
 					map = _generifyMap(
 						map, methodParameters[i].getGenericTypes());
