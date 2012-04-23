@@ -1394,6 +1394,23 @@ public class LayoutImporter {
 				LayoutTypePortletConstants.LAYOUT_TEMPLATE_ID,
 				layoutTemplateId);
 
+			String nestedColumnIds = newTypeSettingsProperties.getProperty(
+				LayoutTypePortletConstants.NESTED_COLUMN_IDS, StringPool.BLANK);
+
+			if (!nestedColumnIds.equals(StringPool.BLANK)) {
+				previousTypeSettingsProperties.setProperty(
+					LayoutTypePortletConstants.NESTED_COLUMN_IDS,
+					nestedColumnIds);
+
+				for (String nestedColumnId :
+					StringUtil.split(nestedColumnIds)) {
+
+					previousTypeSettingsProperties.setProperty(
+						nestedColumnId,
+						newTypeSettingsProperties.getProperty(nestedColumnId));
+				}
+			}
+
 			LayoutTemplate newLayoutTemplate =
 				LayoutTemplateLocalServiceUtil.getLayoutTemplate(
 					layoutTemplateId, false, null);
