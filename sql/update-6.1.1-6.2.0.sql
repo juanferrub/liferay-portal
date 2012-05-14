@@ -234,6 +234,20 @@ drop table Groups_Permissions;
 
 alter table JournalArticle add folderId LONG;
 
+create table JournalFolder (
+	uuid_ VARCHAR(75) null,
+	folderId LONG not null primary key,
+	groupId LONG,
+	companyId LONG,
+	userId LONG,
+	userName VARCHAR(75) null,
+	createDate DATE null,
+	modifiedDate DATE null,
+	parentFolderId LONG,
+	name VARCHAR(100) null,
+	description STRING null
+);
+
 drop table OrgGroupPermission;
 
 drop table Permission_;
