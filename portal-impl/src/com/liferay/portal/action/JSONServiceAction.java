@@ -401,8 +401,10 @@ public class JSONServiceAction extends JSONAction {
 			JSONObject jsonObject = JSONFactoryUtil.createJSONObject(value);
 
 			return LocalizationUtil.deserialize(jsonObject);
-		}
-		else {
+		} else if (typeNameOrClassDescriptor.startsWith("java.util.Map")) {
+
+			return JSONFactoryUtil.looseDeserializeSafe(value);
+		} else {
 			_log.error(
 				"Unsupported parameter type for class " + clazz + ", method " +
 					methodName + ", parameter " + parameter + ", and type " +
