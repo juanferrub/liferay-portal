@@ -20,14 +20,17 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.struts.PortletAction;
 import com.liferay.portlet.RenderRequestImpl;
 
-import org.apache.struts.action.ActionForm;
-import org.apache.struts.action.ActionForward;
-import org.apache.struts.action.ActionMapping;
-
 import javax.portlet.PortletConfig;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.apache.struts.action.ActionForm;
+import org.apache.struts.action.ActionForward;
+import org.apache.struts.action.ActionMapping;
+
+/**
+ * @author Eduardo Garcia
+ */
 public class ViewAction extends PortletAction {
 
 	@Override
@@ -39,7 +42,7 @@ public class ViewAction extends PortletAction {
 		RenderRequestImpl renderRequestImpl = (RenderRequestImpl)renderRequest;
 
 		DynamicServletRequest dynamicRequest =
-				(DynamicServletRequest)renderRequestImpl.getHttpServletRequest();
+			(DynamicServletRequest)renderRequestImpl.getHttpServletRequest();
 
 		if (Validator.isNull(
 			ParamUtil.getString(renderRequest, "ddmResource"))) {

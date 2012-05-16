@@ -39,8 +39,6 @@ portletURL.setParameter("tabs1", tabs1);
 portletURL.setParameter("backURL", backURL);
 portletURL.setParameter("classNameId", String.valueOf(classNameId));
 portletURL.setParameter("classPK", String.valueOf(classPK));
-
-boolean showDeleteTemplatesButton = DDMPermission.contains(permissionChecker, scopeGroupId, ddmResource, ActionKeys.DELETE) ;
 %>
 
 <c:choose>
@@ -72,20 +70,14 @@ boolean showDeleteTemplatesButton = DDMPermission.contains(permissionChecker, sc
 	/>
 </aui:form>
 
-<div class="separator"></div>
-
-<c:if test="<%= showDeleteTemplatesButton %>">
-	<aui:button onClick='<%= renderResponse.getNamespace() + "deleteTemplates();" %>' value="delete" />
-</c:if>
-
 <aui:form action="<%= portletURL.toString() %>" method="get" name="fm1">
 	<aui:input name="<%= Constants.CMD %>" type="hidden" />
 	<aui:input name="redirect" type="hidden" value="<%= portletURL.toString() %>" />
-	<aui:input name="templateIds" type="hidden" />
+	<aui:input name="deleteTemplateIds" type="hidden" />
 
 	<liferay-ui:search-container
-		searchContainer="<%= new TemplateSearch(renderRequest, portletURL) %>"
 		rowChecker="<%= new RowChecker(renderResponse) %>"
+		searchContainer="<%= new TemplateSearch(renderRequest, portletURL) %>"
 	>
 		<liferay-ui:search-container-results>
 			<%@ include file="/html/portlet/dynamic_data_mapping/template_search_results.jspf" %>
@@ -179,24 +171,56 @@ boolean showDeleteTemplatesButton = DDMPermission.contains(permissionChecker, sc
 			/>
 		</liferay-ui:search-container-row>
 
+		<div class="separator article-separator"><!-- --></div>
+
+		<c:if test="<%= !results.isEmpty() %>">
+			<aui:button-row>
+				<aui:button cssClass="delete-templates-button" onClick='<%= renderResponse.getNamespace() + "deleteTemplates();" %>' value="delete" />
+			</aui:button-row>
+
+			<br /><br />
+		</c:if>
+
 		<liferay-ui:search-iterator />
 	</liferay-ui:search-container>
 </aui:form>
 
-<c:if test="<%= showDeleteTemplatesButton %>">
-	<aui:script>
-		Liferay.provide(
-			window,
-			'<portlet:namespace />deleteTemplates',
-			function() {
-				if (confirm('<%= UnicodeLanguageUtil.get(pageContext, "are-you-sure-you-want-to-delete-this") %>')) {
-					document.<portlet:namespace />fm1.method = "post";
-					document.<portlet:namespace />fm1.<portlet:namespace /><%= Constants.CMD %>.value = "<%= Constants.DELETE %>";
-					document.<portlet:namespace />fm1.<portlet:namespace />templateIds.value = Liferay.Util.listCheckedExcept(document.<portlet:namespace />fm1, "<portlet:namespace />allRowIds");
-					submitForm(document.<portlet:namespace />fm1, "<portlet:actionURL><portlet:param name="struts_action" value="/dynamic_data_mapping/edit_template" /></portlet:actionURL>");
-				}
-			},
-			['liferay-util-list-fields']
-		);
-	</aui:script>
-</c:if>
+<aui:script>
+	Liferay.provide(
+		window,
+		'<portlet:namespace />deleteTemplates',
+		function() {
+			if (confirm('<%= UnicodeLanguageUtil.get(pageContext, "are-you-sure-you-want-to-delete-this") %>')) {
+				document.<portlet:namespace />fm1.method = "post";
+				document.<portlet:namespace />fm1.<portlet:namespace /><%= Constants.CMD %>.value = "<%= Constants.DELETE %>";
+				document.<portlet:namespace />fm1.<portlet:namespace />deleteTemplateIds.value = Liferay.Util.listCheckedExcept(document.<portlet:namespace />fm1, "<portlet:namespace />allRowIds");
+				submitForm(document.<portlet:namespace />fm1, "<portlet:actionURL><portlet:param name="struts_action" value="/dynamic_data_mapping/edit_template" /></portlet:actionURL>");
+			}
+		},
+		['liferay-util-list-fields']
+	);
+</aui:script>
+
+<aui:script use="aui-base">
+	var buttons = A.all('.delete-templates-button');
+
+	if (buttons.size()) {
+		var toggleDisabled = A.bind(Liferay.Util.toggleDisabled, Liferay.Util, ':button');
+
+		var resultsGrid = A.one('.results-grid');
+
+		if (resultsGrid) {
+			resultsGrid.delegate(
+					'click',
+					function(event) {
+						var disabled = (resultsGrid.one(':checked') == null);
+
+						toggleDisabled(disabled);
+					},
+					':checkbox'
+			);
+		}
+
+		toggleDisabled(true);
+	}
+</aui:script>
