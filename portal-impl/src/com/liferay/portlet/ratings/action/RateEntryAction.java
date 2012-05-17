@@ -75,11 +75,9 @@ public class RateEntryAction extends JSONAction {
 	}
 
 	protected boolean isValidScore(double score) {
-		if (score < 0) {
-			return false;
-		}
+		if ((score < 0) ||
+			(score > PropsValues.RATINGS_DEFAULT_NUMBER_OF_STARS)) {
 
-		if (score > PropsValues.RATINGS_DEFAULT_NUMBER_OF_STARS) {
 			return false;
 		}
 
