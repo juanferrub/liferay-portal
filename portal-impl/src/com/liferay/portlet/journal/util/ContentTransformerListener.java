@@ -137,7 +137,12 @@ public class ContentTransformerListener extends BaseTransformerListener {
 			if (dynamicContent != null) {
 				String text = dynamicContent.getText();
 
-				text = HtmlUtil.escape(text);
+				String type = el.attributeValue("type", StringPool.BLANK);
+
+				if (!type.equals("text_area")) {
+					text = HtmlUtil.escape(text);
+				}
+
 				text = HtmlUtil.stripComments(text);
 				text = HtmlUtil.stripHtml(text);
 				text = text.trim();
