@@ -115,9 +115,11 @@ public abstract class BaseWorkflowHandler implements WorkflowHandler {
 		try {
 			AssetRenderer assetRenderer = getAssetRenderer(classPK);
 
+			assetRenderer.initForRender(
+				liferayPortletRequest, liferayPortletResponse);
+
 			if (assetRenderer != null) {
-				return assetRenderer.getURLEdit(
-					liferayPortletRequest, liferayPortletResponse);
+				return assetRenderer.getURLEdit();
 			}
 		}
 		catch (Exception e) {
@@ -137,10 +139,11 @@ public abstract class BaseWorkflowHandler implements WorkflowHandler {
 		try {
 			AssetRenderer assetRenderer = getAssetRenderer(classPK);
 
+			assetRenderer.initForRender(
+				liferayPortletRequest, liferayPortletResponse);
+
 			if (assetRenderer != null) {
-				return assetRenderer.getURLViewInContext(
-					liferayPortletRequest, liferayPortletResponse,
-					noSuchEntryRedirect);
+				return assetRenderer.getURLViewInContext(noSuchEntryRedirect);
 			}
 		}
 		catch (Exception e) {
@@ -179,9 +182,10 @@ public abstract class BaseWorkflowHandler implements WorkflowHandler {
 		try {
 			AssetRenderer assetRenderer = getAssetRenderer(classPK);
 
+			assetRenderer.initForRender(renderRequest, renderResponse);
+
 			if (assetRenderer != null) {
-				return assetRenderer.render(
-					renderRequest, renderResponse, template);
+				return assetRenderer.render(template);
 			}
 		}
 		catch (Exception e) {

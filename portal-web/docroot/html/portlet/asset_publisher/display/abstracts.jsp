@@ -32,7 +32,7 @@ request.setAttribute("view.jsp-showIconLabel", true);
 String title = (String)request.getAttribute("view.jsp-title");
 
 if (Validator.isNull(title)) {
-	title = assetRenderer.getTitle(locale);
+	title = assetRenderer.getTitle();
 }
 
 PortletURL viewFullContentURL = renderResponse.createRenderURL();
@@ -49,7 +49,7 @@ if (Validator.isNotNull(assetRenderer.getUrlTitle())) {
 	viewFullContentURL.setParameter("urlTitle", assetRenderer.getUrlTitle());
 }
 
-String summary = StringUtil.shorten(assetRenderer.getSummary(locale), abstractLength);
+String summary = StringUtil.shorten(assetRenderer.getSummary(), abstractLength);
 
 String viewURL = null;
 
@@ -58,7 +58,7 @@ if (viewInContext) {
 
 	viewFullContentURLString = HttpUtil.setParameter(viewFullContentURLString, "redirect", currentURL);
 
-	viewURL = assetRenderer.getURLViewInContext(liferayPortletRequest, liferayPortletResponse, viewFullContentURLString);
+	viewURL = assetRenderer.getURLViewInContext(viewFullContentURLString);
 
 	viewURL = HttpUtil.setParameter(viewURL, "redirect", currentURL);
 }
@@ -82,10 +82,10 @@ viewURL = _checkViewURL(viewURL, currentURL, themeDisplay);
 		<h3 class="asset-title">
 			<c:choose>
 				<c:when test="<%= Validator.isNotNull(viewURL) %>">
-					<a href="<%= viewURL %>"><img alt="" src="<%= assetRenderer.getIconPath(renderRequest) %>" /> <%= HtmlUtil.escape(title) %></a>
+					<a href="<%= viewURL %>"><img alt="" src="<%= assetRenderer.getIconPath() %>" /> <%= HtmlUtil.escape(title) %></a>
 				</c:when>
 				<c:otherwise>
-					<img alt="" src="<%= assetRenderer.getIconPath(renderRequest) %>" /> <%= HtmlUtil.escape(title) %>
+					<img alt="" src="<%= assetRenderer.getIconPath() %>" /> <%= HtmlUtil.escape(title) %>
 				</c:otherwise>
 			</c:choose>
 		</h3>
@@ -94,7 +94,7 @@ viewURL = _checkViewURL(viewURL, currentURL, themeDisplay);
 			<div class="asset-summary">
 
 				<%
-				String path = assetRenderer.render(renderRequest, renderResponse, AssetRenderer.TEMPLATE_ABSTRACT);
+				String path = assetRenderer.render(AssetRenderer.TEMPLATE_ABSTRACT);
 
 				request.setAttribute(WebKeys.ASSET_RENDERER, assetRenderer);
 				request.setAttribute(WebKeys.ASSET_PUBLISHER_ABSTRACT_LENGTH, abstractLength);
@@ -112,7 +112,7 @@ viewURL = _checkViewURL(viewURL, currentURL, themeDisplay);
 
 			<c:if test="<%= Validator.isNotNull(viewURL) %>">
 				<div class="asset-more">
-					<a href="<%= viewURL %>"><liferay-ui:message arguments='<%= new Object[] {"aui-helper-hidden-accessible", HtmlUtil.escape(assetRenderer.getTitle(locale))} %>' key="<%= viewURLMessage %>" /> &raquo; </a>
+					<a href="<%= viewURL %>"><liferay-ui:message arguments='<%= new Object[] {"aui-helper-hidden-accessible", HtmlUtil.escape(assetRenderer.getTitle())} %>' key="<%= viewURLMessage %>" /> &raquo; </a>
 				</div>
 			</c:if>
 		</div>

@@ -37,12 +37,14 @@ AssetEntry assetEntry = null;
 
 if (assetRenderer != null) {
 	assetEntry = assetRendererFactory.getAssetEntry(assetRendererFactory.getClassName(), assetRenderer.getClassPK());
+
+	assetRenderer.initForRender(renderRequest, renderResponse);
 }
 
 String headerTitle = LanguageUtil.get(pageContext, workflowInstance.getWorkflowDefinitionName());
 
 if (assetEntry != null) {
-	headerTitle = headerTitle.concat(StringPool.COLON + StringPool.SPACE + assetRenderer.getTitle(locale));
+	headerTitle = headerTitle.concat(StringPool.COLON + StringPool.SPACE + assetRenderer.getTitle());
 }
 
 PortletURL viewFullContentURL = renderResponse.createRenderURL();

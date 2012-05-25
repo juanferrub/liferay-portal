@@ -63,7 +63,7 @@ request.setAttribute("view.jsp-showIconLabel", true);
 				<%
 				String languageId = LanguageUtil.getLanguageId(request);
 
-				PortletURL exportAssetURL = assetRenderer.getURLExport(liferayPortletRequest, liferayPortletResponse);
+				PortletURL exportAssetURL = assetRenderer.getURLExport();
 				%>
 
 				<div class="export-actions">
@@ -138,7 +138,7 @@ request.setAttribute("view.jsp-showIconLabel", true);
 		</c:if>
 
 		<%
-		String path = assetRenderer.render(renderRequest, renderResponse, AssetRenderer.TEMPLATE_FULL_CONTENT);
+		String path = assetRenderer.render(AssetRenderer.TEMPLATE_FULL_CONTENT);
 
 		request.setAttribute(WebKeys.ASSET_RENDERER_FACTORY, assetRendererFactory);
 		request.setAttribute(WebKeys.ASSET_RENDERER, assetRenderer);
@@ -153,7 +153,7 @@ request.setAttribute("view.jsp-showIconLabel", true);
 				<liferay-ui:flags
 					className="<%= assetEntry.getClassName() %>"
 					classPK="<%= assetEntry.getClassPK() %>"
-					contentTitle="<%= assetRenderer.getTitle(locale) %>"
+					contentTitle="<%= assetRenderer.getTitle() %>"
 					reportedUserId="<%= assetRenderer.getUserId() %>"
 				/>
 			</div>
@@ -179,7 +179,7 @@ request.setAttribute("view.jsp-showIconLabel", true);
 
 		<c:if test="<%= showContextLink && !print && assetEntry.isVisible() %>">
 			<div class="asset-more">
-				<a href="<%= assetRenderer.getURLViewInContext(liferayPortletRequest, liferayPortletResponse, viewFullContentURLString) %>"><liferay-ui:message key="<%= assetRenderer.getViewInContextMessage() %>" /> &raquo;</a>
+				<a href="<%= assetRenderer.getURLViewInContext(viewFullContentURLString) %>"><liferay-ui:message key="<%= assetRenderer.getViewInContextMessage() %>" /> &raquo;</a>
 			</div>
 		</c:if>
 
@@ -205,7 +205,7 @@ request.setAttribute("view.jsp-showIconLabel", true);
 				formName='<%= "fm" + assetEntry.getClassPK() %>'
 				ratingsEnabled="<%= enableCommentRatings %>"
 				redirect="<%= currentURL %>"
-				subject="<%= assetRenderer.getTitle(locale) %>"
+				subject="<%= assetRenderer.getTitle() %>"
 				userId="<%= assetRenderer.getUserId() %>"
 			/>
 		</c:if>

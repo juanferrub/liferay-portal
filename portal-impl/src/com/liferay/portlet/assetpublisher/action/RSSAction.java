@@ -15,8 +15,6 @@
 package com.liferay.portlet.assetpublisher.action;
 
 import com.liferay.portal.kernel.language.LanguageUtil;
-import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
-import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HtmlUtil;
@@ -224,9 +222,9 @@ public class RSSAction extends PortletAction {
 		AssetRenderer assetRenderer = assetRendererFactory.getAssetRenderer(
 			assetEntry.getClassPK());
 
-		String viewInContextURL = assetRenderer.getURLViewInContext(
-			(LiferayPortletRequest)portletRequest,
-			(LiferayPortletResponse)portletResponse, null);
+		assetRenderer.initForRender(portletRequest, portletResponse);
+
+		String viewInContextURL = assetRenderer.getURLViewInContext(null);
 
 		if (!viewInContextURL.startsWith(Http.HTTP_WITH_SLASH) &&
 			!viewInContextURL.startsWith(Http.HTTPS_WITH_SLASH)) {

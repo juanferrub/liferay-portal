@@ -551,7 +551,9 @@ Group parentGroup = themeDisplay.getParentGroup();
 
 	AssetRenderer assetRenderer = assetRendererFactory.getAssetRenderer(article.getResourcePrimKey());
 
-	String urlViewInContext = assetRenderer.getURLViewInContext(liferayPortletRequest, liferayPortletResponse, currentURL);
+	assetRenderer.initForRender(renderRequest, renderResponse);
+
+	String urlViewInContext = assetRenderer.getURLViewInContext(currentURL);
 	%>
 
 	<c:if test="<%= Validator.isNotNull(urlViewInContext) %>">

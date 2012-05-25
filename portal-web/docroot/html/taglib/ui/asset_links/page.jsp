@@ -54,7 +54,9 @@ if (assetEntryId > 0) {
 				AssetRenderer assetRenderer = assetRendererFactory.getAssetRenderer(assetLinkEntry.getClassPK());
 
 				if (assetRenderer.hasViewPermission(permissionChecker)) {
-					String asseLinktEntryTitle = assetLinkEntry.getTitle(locale);
+					assetRenderer.initForRender(renderRequest, renderResponse);
+
+					String asseLinktEntryTitle = assetLinkEntry.getTitle();
 
 					LiferayPortletURL assetPublisherURL = new PortletURLImpl(request, PortletKeys.ASSET_PUBLISHER, plid, PortletRequest.RENDER_PHASE);
 
@@ -76,14 +78,14 @@ if (assetEntryId > 0) {
 
 					viewFullContentURLString = HttpUtil.setParameter(viewFullContentURLString, "redirect", currentURL);
 
-					String urlViewInContext = assetRenderer.getURLViewInContext((LiferayPortletRequest)portletRequest, (LiferayPortletResponse)portletResponse, viewFullContentURLString);
+					String urlViewInContext = assetRenderer.getURLViewInContext(viewFullContentURLString);
 			%>
 
 					<li class="asset-links-list-item">
 						<liferay-ui:icon
 							label="<%= true %>"
 							message="<%= asseLinktEntryTitle %>"
-							src="<%= assetRenderer.getIconPath(portletRequest) %>"
+							src="<%= assetRenderer.getIconPath() %>"
 							url="<%= urlViewInContext %>"
 						/>
 					</li>

@@ -28,7 +28,7 @@ AssetRenderer assetRenderer = (AssetRenderer)request.getAttribute("view.jsp-asse
 String title = (String)request.getAttribute("view.jsp-title");
 
 if (Validator.isNull(title)) {
-	title = assetRenderer.getTitle(locale);
+	title = assetRenderer.getTitle();
 }
 
 boolean show = ((Boolean)request.getAttribute("view.jsp-show")).booleanValue();
@@ -53,7 +53,7 @@ String viewFullContentURLString = viewFullContentURL.toString();
 
 viewFullContentURLString = HttpUtil.setParameter(viewFullContentURLString, "redirect", currentURL);
 
-String viewURL = viewInContext ? assetRenderer.getURLViewInContext(liferayPortletRequest, liferayPortletResponse, viewFullContentURLString) : viewFullContentURL.toString();
+String viewURL = viewInContext ? assetRenderer.getURLViewInContext(viewFullContentURLString) : viewFullContentURL.toString();
 
 viewURL = _checkViewURL(viewURL, currentURL, themeDisplay);
 %>
@@ -66,7 +66,7 @@ viewURL = _checkViewURL(viewURL, currentURL, themeDisplay);
 		<liferay-ui:icon
 			label="<%= true %>"
 			message="<%= HtmlUtil.escape(title) %>"
-			src="<%= assetRenderer.getIconPath(renderRequest) %>"
+			src="<%= assetRenderer.getIconPath() %>"
 			url="<%= viewURL %>"
 		/>
 

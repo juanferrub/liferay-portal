@@ -60,10 +60,11 @@ try {
 		else {
 			assetRenderer = assetRendererFactory.getAssetRenderer(classPK, AssetRendererFactory.TYPE_LATEST_APPROVED);
 		}
-
 	}
 
-	String title = assetRenderer.getTitle(locale);
+	assetRenderer.initForRender(renderRequest, renderResponse);
+
+	String title = assetRenderer.getTitle();
 	String summary = StringPool.BLANK;
 	String viewURL = StringPool.BLANK;
 	String viewURLMessage = StringPool.BLANK;

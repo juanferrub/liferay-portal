@@ -60,7 +60,7 @@ if (fileEntry.getVersion().equals(fileVersion.getVersion())) {
 					image='<%= "../file_system/small/" + fileVersion.getIcon() %>'
 					label="<%= true %>"
 					message="<%= HtmlUtil.escape(fileVersion.getTitle()) %>"
-					url="<%= assetRenderer.getURLDownload(themeDisplay) %>"
+					url="<%= assetRenderer.getURLDownload() %>"
 				/>
 			</c:otherwise>
 		</c:choose>

@@ -41,6 +41,8 @@ AssetEntry assetEntry = null;
 
 if (assetRenderer != null) {
 	assetEntry = assetRendererFactory.getAssetEntry(assetRendererFactory.getClassName(), assetRenderer.getClassPK());
+
+	assetRenderer.initForRender(renderRequest, renderResponse);
 }
 
 String headerTitle = LanguageUtil.get(pageContext, workflowTask.getName());
@@ -58,7 +60,7 @@ PortletURL editPortletURL = workflowHandler.getURLEdit(classPK, liferayPortletRe
 String viewFullContentURLString = null;
 
 if (assetRenderer.isPreviewInContext()) {
-	viewFullContentURLString = assetRenderer.getURLViewInContext((LiferayPortletRequest)renderRequest, (LiferayPortletResponse)renderResponse, null);
+	viewFullContentURLString = assetRenderer.getURLViewInContext(null);
 }
 else {
 	PortletURL viewFullContentURL = renderResponse.createRenderURL();
@@ -215,7 +217,7 @@ request.setAttribute(WebKeys.WORKFLOW_ASSET_PREVIEW, Boolean.TRUE);
 									<c:when test="<%= assetRenderer.hasEditPermission(permissionChecker) && showEditURL %>">
 
 										<%
-										String taglibEditURL = "javascript:Liferay.Util.openWindow({dialog: {width: 960}, id: '" + renderResponse.getNamespace() + "editAsset', title: '" + LanguageUtil.format(pageContext, "edit-x", HtmlUtil.escape(assetRenderer.getTitle(locale))) + "', uri:'" + HtmlUtil.escapeURL(editPortletURLString) + "'});";
+										String taglibEditURL = "javascript:Liferay.Util.openWindow({dialog: {width: 960}, id: '" + renderResponse.getNamespace() + "editAsset', title: '" + LanguageUtil.format(pageContext, "edit-x", HtmlUtil.escape(assetRenderer.getTitle())) + "', uri:'" + HtmlUtil.escapeURL(editPortletURLString) + "'});";
 										%>
 
 										<liferay-ui:icon image="edit" url="<%= taglibEditURL %>" />

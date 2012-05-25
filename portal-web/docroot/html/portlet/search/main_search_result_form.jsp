@@ -44,7 +44,9 @@ if (assetRendererFactory != null) {
 
 	AssetRenderer assetRenderer = assetRendererFactory.getAssetRenderer(classPK);
 
-	downloadURL = assetRenderer.getURLDownload(themeDisplay);
+	assetRenderer.initForRender(renderRequest, renderResponse);
+
+	downloadURL = assetRenderer.getURLDownload();
 
 	viewFullContentURL = _getViewFullContentURL(request, themeDisplay, PortletKeys.ASSET_PUBLISHER, document);
 
@@ -65,14 +67,14 @@ if (assetRendererFactory != null) {
 
 		viewFullContentURLString = HttpUtil.setParameter(viewFullContentURLString, "redirect", currentURL);
 
-		viewURL = assetRenderer.getURLViewInContext(liferayPortletRequest, liferayPortletResponse, viewFullContentURLString);
+		viewURL = assetRenderer.getURLViewInContext(viewFullContentURLString);
 	}
 	else {
 		viewURL = viewFullContentURL.toString();
 	}
 
-	entryTitle = assetRenderer.getTitle(locale);
-	entrySummary = assetRenderer.getSummary(locale);
+	entryTitle = assetRenderer.getTitle();
+	entrySummary = assetRenderer.getSummary();
 }
 else {
 	String portletId = document.get(Field.PORTLET_ID);

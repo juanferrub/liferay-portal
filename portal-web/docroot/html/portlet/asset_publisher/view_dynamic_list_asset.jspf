@@ -42,7 +42,9 @@ for (int assetEntryIndex = 0; assetEntryIndex < results.size(); assetEntryIndex+
 		continue;
 	}
 
-	String title = assetRenderer.getTitle(locale);
+	assetRenderer.initForRender(renderRequest, renderResponse);
+
+	String title = assetRenderer.getTitle();
 
 	boolean show = true;
 	boolean print = false;

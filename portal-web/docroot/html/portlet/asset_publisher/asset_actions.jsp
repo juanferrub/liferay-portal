@@ -23,7 +23,7 @@ AssetRenderer assetRenderer = (AssetRenderer)request.getAttribute("view.jsp-asse
 
 boolean showEditURL = ParamUtil.getBoolean(request, "showEditURL", true);
 
-PortletURL editPortletURL = assetRenderer.getURLEdit(liferayPortletRequest, liferayPortletResponse);
+PortletURL editPortletURL = assetRenderer.getURLEdit();
 
 String editPortletURLString = StringPool.BLANK;
 
@@ -64,13 +64,13 @@ if (themeDisplay.getScopeGroup().isLayout()) {
 	<div class="lfr-meta-actions asset-actions">
 
 		<%
-		String taglibEditURL = "javascript:Liferay.Util.openWindow({dialog: {width: 960}, id: '" + renderResponse.getNamespace() + "editAsset', title: '" + LanguageUtil.format(pageContext, "edit-x", HtmlUtil.escape(assetRenderer.getTitle(locale))) + "', uri:'" + HtmlUtil.escapeURL(editPortletURLString) + "'});";
+		String taglibEditURL = "javascript:Liferay.Util.openWindow({dialog: {width: 960}, id: '" + renderResponse.getNamespace() + "editAsset', title: '" + LanguageUtil.format(pageContext, "edit-x", HtmlUtil.escape(assetRenderer.getTitle())) + "', uri:'" + HtmlUtil.escapeURL(editPortletURLString) + "'});";
 		%>
 
 		<liferay-ui:icon
 			image="edit"
 			label="<%= showIconLabel %>"
-			message='<%= showIconLabel ? LanguageUtil.format(pageContext, "edit-x-x", new Object[] {"aui-helper-hidden-accessible", HtmlUtil.escape(assetRenderer.getTitle(locale))}) : LanguageUtil.format(pageContext, "edit-x", HtmlUtil.escape(assetRenderer.getTitle(locale))) %>'
+			message='<%= showIconLabel ? LanguageUtil.format(pageContext, "edit-x-x", new Object[] {"aui-helper-hidden-accessible", HtmlUtil.escape(assetRenderer.getTitle())}) : LanguageUtil.format(pageContext, "edit-x", HtmlUtil.escape(assetRenderer.getTitle())) %>'
 			url="<%= taglibEditURL %>"
 		/>
 	</div>
