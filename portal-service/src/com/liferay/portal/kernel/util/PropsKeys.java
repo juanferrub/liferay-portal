@@ -83,6 +83,8 @@ public interface PropsKeys {
 
 	public static final String ANNOUNCEMENTS_ENTRY_TYPES = "announcements.entry.types";
 
+	public static final String APPLICATION_DISPLAY_STYLE_CLASS_NAMES = "application.display.style.class.names";
+
 	public static final String APPLICATION_SHUTDOWN_EVENTS = "application.shutdown.events";
 
 	public static final String APPLICATION_STARTUP_EVENTS = "application.startup.events";
