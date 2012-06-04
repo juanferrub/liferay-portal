@@ -62,7 +62,7 @@ public class DDMTemplateFinderImpl
 		if (Validator.isNotNull(keywords)) {
 			names = CustomSQLUtil.keywords(keywords);
 			descriptions = CustomSQLUtil.keywords(keywords, false);
-			languages = CustomSQLUtil.keywords(keywords, false);
+			languages = CustomSQLUtil.keywords(languages, false);
 		}
 		else {
 			andOperator = true;
@@ -116,7 +116,7 @@ public class DDMTemplateFinderImpl
 		if (Validator.isNotNull(keywords)) {
 			names = CustomSQLUtil.keywords(keywords);
 			descriptions = CustomSQLUtil.keywords(keywords, false);
-			languages = CustomSQLUtil.keywords(keywords, false);
+			languages = CustomSQLUtil.keywords(languages, false);
 		}
 		else {
 			andOperator = true;
