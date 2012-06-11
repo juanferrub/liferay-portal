@@ -939,20 +939,6 @@ public class JournalArticleFinderImpl
 		}
 	}
 
-	protected boolean isArrayNull(Object[] array) {
-		if (Validator.isNull(array)) {
-			return true;
-		}
-
-		for (Object obj : array) {
-			if (Validator.isNotNull(obj)) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
 	protected String getFolderIds(List<Long> folderIds, String table) {
 		if (folderIds.isEmpty()) {
 			return StringPool.BLANK;
@@ -1036,6 +1022,20 @@ public class JournalArticleFinderImpl
 		return sb.toString();
 	}
 
+	protected boolean isArrayNull(Object[] array) {
+		if (Validator.isNull(array)) {
+			return true;
+		}
+
+		for (Object obj : array) {
+			if (Validator.isNotNull(obj)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	private static final String _AND_OR_CONNECTORS = "[$AND_OR_CONNECTOR$]";
 
 	private static final String _STRUCTUREID_SQL =
@@ -1044,7 +1044,6 @@ public class JournalArticleFinderImpl
 	private static final String _TEMPLATEID_SQL =
 		"(templateId LIKE ? [$AND_OR_NULL_CHECK$])";
 
-	private static final String _TYPE_SQL =
-		"(type_ = ? [$AND_OR_NULL_CHECK$])";
+	private static final String _TYPE_SQL = "(type_ = ? [$AND_OR_NULL_CHECK$])";
 
 }
