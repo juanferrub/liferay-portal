@@ -33,12 +33,13 @@ else if (displayStyle.equals("vertical")) {
 
 <div id="fb-root"></div>
 
-<fb:like
-	font=""
-	height="<%= (facebookDisplayStyle.equals("standard") || facebookDisplayStyle.equals("button_count")) ? 20 : StringPool.BLANK %>"
-	href="<%= url %>"
-	layout="<%= facebookDisplayStyle%>"
-	send="false"
-	show_faces="true"
+<div 
+	class="fb-like"
+	data-font=""
+	data-height="<%= (facebookDisplayStyle.equals("standard") || facebookDisplayStyle.equals("button_count")) ? 20 : StringPool.BLANK %>"
+	data-href="<%= url %>"
+	data-layout="<%= facebookDisplayStyle %>"
+	data-send="false"
+	data-show_faces="true"
 >
-</fb:like>
+</div>
