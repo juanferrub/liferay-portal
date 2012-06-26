@@ -349,7 +349,7 @@ public class LayoutExporter {
 		if (exportLogo) {
 			Image image = ImageLocalServiceUtil.getImage(layoutSet.getLogoId());
 
-			if (image != null) {
+			if ((image != null) && (image.getTextObj() != null)) {
 				String logoPath = getLayoutSetLogoPath(portletDataContext);
 
 				headerElement.addAttribute("logo-path", logoPath);

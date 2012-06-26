@@ -422,6 +422,14 @@
 		<priority value="ERROR" />
 	</category>
 
+	<category name="com.liferay.portal.security.auth.EmailAddressGeneratorFactory">
+		<priority value="ERROR" />
+	</category>
+
+	<category name="com.liferay.portal.security.auth.EmailAddressValidatorFactory">
+		<priority value="ERROR" />
+	</category>
+
 	<category name="com.liferay.portal.security.auth.CASAutoLogin">
 		<priority value="WARN" />
 	</category>
@@ -588,6 +596,10 @@
 
 	<category name="com.liferay.portal.service.impl.ReleaseLocalServiceImpl">
 		<priority value="INFO" />
+	</category>
+
+	<category name="com.liferay.portal.service.impl.RepositoryLocalServiceImpl">
+		<priority value="ERROR" />
 	</category>
 
 	<category name="com.liferay.portal.service.impl.ResourceLocalServiceImpl">
@@ -858,15 +870,7 @@
 		<priority value="ERROR" />
 	</category>
 
-	<category name="com.liferay.portal.velocity.ClassLoaderVelocityResourceListener">
-		<priority value="ERROR" />
-	</category>
-
 	<category name="com.liferay.portal.velocity.LiferayResourceLoader">
-		<priority value="ERROR" />
-	</category>
-
-	<category name="com.liferay.portal.velocity.ServletVelocityResourceListener">
 		<priority value="ERROR" />
 	</category>
 
