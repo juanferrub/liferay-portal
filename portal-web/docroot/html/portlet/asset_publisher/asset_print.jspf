@@ -38,7 +38,7 @@ if (Validator.isNotNull(assetRenderer.getUrlTitle())) {
 		<liferay-ui:icon
 			image="print"
 			label="<%= true %>"
-			message='<%= LanguageUtil.format(pageContext, "print-x-x", new Object[] {"aui-helper-hidden-accessible", assetRenderer.getTitle(locale)}) %>'
+			message='<%= LanguageUtil.format(pageContext, "print-x-x", new Object[] {"aui-helper-hidden-accessible", assetRenderer.getTitle()}) %>'
 			url="javascript:print();"
 		/>
 
@@ -50,7 +50,7 @@ if (Validator.isNotNull(assetRenderer.getUrlTitle())) {
 		<liferay-ui:icon
 			image="print"
 			label="<%= true %>"
-			message='<%= LanguageUtil.format(pageContext, "print-x-x", new Object[] {"aui-helper-hidden-accessible", assetRenderer.getTitle(locale)}) %>'
+			message='<%= LanguageUtil.format(pageContext, "print-x-x", new Object[] {"aui-helper-hidden-accessible", assetRenderer.getTitle()}) %>'
 			url='<%= "javascript:" + renderResponse.getNamespace() + "printPage_" + assetEntryIndex + "();" %>'
 		/>
 

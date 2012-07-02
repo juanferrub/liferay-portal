@@ -24,6 +24,7 @@ import com.liferay.portal.theme.ThemeDisplay;
 import java.util.Locale;
 
 import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -49,19 +50,43 @@ public interface AssetRenderer {
 
 	public long getGroupId();
 
+	public String getIconPath();
+
+	/**
+	 * @deprecated see {@link #getIconPath()}
+	 */
 	public String getIconPath(PortletRequest portletRequest);
+
+	public String getSummary();
 
 	public String getSummary(Locale locale);
 
+	public String getTitle();
+
 	public String getTitle(Locale locale);
 
+	public String getURLDownload();
+
+	/**
+	 * @deprecated see {@link #getURLDownload()}
+	 */
 	public String getURLDownload(ThemeDisplay themeDisplay);
 
+	public PortletURL getURLEdit() throws Exception;
+
+	/**
+	 * @deprecated see {@link #getURLEdit()}
+	 */
 	public PortletURL getURLEdit(
 			LiferayPortletRequest liferayPortletRequest,
 			LiferayPortletResponse liferayPortletResponse)
 		throws Exception;
 
+	public PortletURL getURLExport() throws Exception;
+
+	/**
+	 * @deprecated see {@link #getURLExport()}
+	 */
 	public PortletURL getURLExport(
 			LiferayPortletRequest liferayPortletRequest,
 			LiferayPortletResponse liferayPortletResponse)
@@ -69,11 +94,22 @@ public interface AssetRenderer {
 
 	public String getUrlTitle();
 
+	public PortletURL getURLView(WindowState windowState) throws Exception;
+
+	/**
+	 * @deprecated see {@link #getURLView()}
+	 */
 	public PortletURL getURLView(
 			LiferayPortletResponse liferayPortletResponse,
 			WindowState windowState)
 		throws Exception;
 
+	public String getURLViewInContext(String noSuchEntryRedirect)
+		throws Exception;
+
+	/**
+	 * @deprecated see {@link #getURLViewInContext(String)}
+	 */
 	public String getURLViewInContext(
 			LiferayPortletRequest liferayPortletRequest,
 			LiferayPortletResponse liferayPortletResponse,
@@ -94,6 +130,9 @@ public interface AssetRenderer {
 	public boolean hasViewPermission(PermissionChecker permissionChecker)
 		throws PortalException, SystemException;
 
+	public void initForRender(
+		PortletRequest portletRequest, PortletResponse portletResponse);
+
 	public boolean isConvertible();
 
 	public boolean isDisplayable();
@@ -104,6 +143,11 @@ public interface AssetRenderer {
 
 	public boolean isPrintable();
 
+	public String render(String template) throws Exception;
+
+	/**
+	 * @deprecated see {@link #render(String)}
+	 */
 	public String render(
 			RenderRequest renderRequest, RenderResponse renderResponse,
 			String template)

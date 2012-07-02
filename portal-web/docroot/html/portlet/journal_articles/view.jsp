@@ -127,11 +127,13 @@ double version = ParamUtil.getDouble(request, "version");
 
 					AssetRenderer assetRenderer = assetRendererFactory.getAssetRenderer(article.getId());
 
+					assetRenderer.initForRender(renderRequest, renderResponse);
+
 					String viewFullContentURLString = articleURL.toString();
 
 					viewFullContentURLString = HttpUtil.setParameter(viewFullContentURLString, "redirect", currentURL);
 
-					rowHREF = assetRenderer.getURLViewInContext(liferayPortletRequest, liferayPortletResponse, viewFullContentURLString);
+					rowHREF = assetRenderer.getURLViewInContext(viewFullContentURLString);
 
 					rowHREF = HttpUtil.setParameter(rowHREF, "redirect", currentURL);
 

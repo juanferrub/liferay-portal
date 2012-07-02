@@ -100,11 +100,13 @@ portletURL.setParameter("typeSelection", typeSelection);
 
 			AssetRenderer assetRenderer = assetRendererFactory.getAssetRenderer(entry.getClassPK());
 
-			row.addText(HtmlUtil.escape(assetRenderer.getTitle(locale)), rowHREF);
+			assetRenderer.initForRender(renderResponse, renderRequest);
+
+			row.addText(HtmlUtil.escape(assetRenderer.getTitle()), rowHREF);
 
 			// Description
 
-			row.addText(assetRenderer.getSummary(locale), rowHREF);
+			row.addText(assetRenderer.getSummary(), rowHREF);
 
 			// User name
 

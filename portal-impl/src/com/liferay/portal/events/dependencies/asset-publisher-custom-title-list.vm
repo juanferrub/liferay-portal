@@ -5,23 +5,24 @@
 <ul class="title-list">
 	#foreach ($assetEntry in $assetEntries)
 		#set ($assetRenderer = $assetEntry.getAssetRenderer())
+		#set ($void = $assetRenderer.initForRender($renderRequest, $renderResponse)))
 
 		#set ($viewURL = $assetPublisherHelper.getAssetViewURL($renderRequest, $renderResponse, $assetEntry))
 
 		#if ($assetLinkBehaviour != 'showFullContent')
-			#set ($viewURL = $assetRenderer.getURLViewInContext($renderRequest, $renderResponse, $viewURL))
+			#set ($viewURL = $assetRenderer.getURLViewInContext($viewURL))
 		#end
 
 		<li class="document title-list">
 			<a class="taglib-icon" href="$viewURL">
-				<img alt="$assetEntry.getTitle($locale)" class="icon" src="$assetRenderer.getIconPath($renderRequest)" />
+				<img alt="$assetRenderer.getTitle() #language("icon")" class="icon" src="$assetRenderer.getIconPath()" />
 
-				<span class="taglib-text">$assetEntry.getTitle($locale)</span>
+				<span class="taglib-text">$assetRenderer.getTitle()</span>
 			</a>
 
 			<div class="asset-actions lfr-meta-actions">
-				<a class="taglib-icon" href="$assetRenderer.getURLEdit($renderRequest, $renderResponse)">
-					<img alt="#language("edit") $assetEntry.getTitle($locale)" class="icon" src="$themeDisplay.getPathThemeImages()/common/edit.png" title="#language("edit") $assetEntry.getTitle($locale)" />
+				<a class="taglib-icon" href="$assetRenderer.getURLEdit()">
+					<img alt="#language("edit") $assetRenderer.getTitle()" class="icon" src="$themeDisplay.getPathThemeImages()/common/edit.png" title="#language("edit") $assetRenderer.getTitle()" />
 				</a>
 			</div>
 		</li>

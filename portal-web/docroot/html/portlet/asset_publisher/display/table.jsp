@@ -34,12 +34,12 @@ if (stageableGroup.isLayout()) {
 String title = (String)request.getAttribute("view.jsp-title");
 
 if (Validator.isNull(title)) {
-	title = assetRenderer.getTitle(locale);
+	title = assetRenderer.getTitle();
 }
 
 boolean show = ((Boolean)request.getAttribute("view.jsp-show")).booleanValue();
 
-PortletURL editPortletURL = assetRenderer.getURLEdit(liferayPortletRequest, liferayPortletResponse);
+PortletURL editPortletURL = assetRenderer.getURLEdit();
 
 PortletURL viewFullContentURL = renderResponse.createRenderURL();
 
@@ -59,7 +59,7 @@ String viewFullContentURLString = viewFullContentURL.toString();
 
 viewFullContentURLString = HttpUtil.setParameter(viewFullContentURLString, "redirect", currentURL);
 
-String viewURL = viewInContext ? assetRenderer.getURLViewInContext(liferayPortletRequest, liferayPortletResponse, viewFullContentURLString) : viewFullContentURL.toString();
+String viewURL = viewInContext ? assetRenderer.getURLViewInContext(viewFullContentURLString) : viewFullContentURL.toString();
 
 viewURL = _checkViewURL(viewURL, currentURL, themeDisplay);
 

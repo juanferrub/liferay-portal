@@ -27,14 +27,14 @@
 ##
 ##  #foreach($assetEntry in $assetEntries)
 ##    #set ($assetRenderer = $assetEntry.getAssetRenderer())
+##    #set ($void = $assetRenderer.initForRender($renderRequest, $renderResponse)))
 ##
-##    #set ($viewURL = $assetRenderer.getURLViewInContext($renderRequest,
-##                     $renderResponse, $viewNoContext))
+##    #set ($viewURL = $assetRenderer.getURLViewInContext($viewNoContext))
 ##
 ##    <div class="asset-actions lfr-meta-actions">
 ##      <a
 ##        class="taglib-icon"
-##        href="$assetRenderer.getURLEdit($renderRequest, $renderResponse)"
+##        href="$assetRenderer.getURLEdit()"
 ##      >
 ##        <img
 ##          alt="Edit"
@@ -46,12 +46,12 @@
 ##
 ##    <h3 class="asset-title">
 ##      <a href="$viewURL">
-##        <img alt="" src="$assetRenderer.getIconPath($renderRequest)" />
+##        <img alt="" src="$assetRenderer.getIconPath()" />
 ##
-##        $assetEntry.getTitle($locale)
+##        $assetRenderer.getTitle()
 ##      </a>
 ##    </h3>
 ##
-##    $assetRenderer.getSummary($locale)
+##    $assetRenderer.getSummary()
 ##  #end
 ##

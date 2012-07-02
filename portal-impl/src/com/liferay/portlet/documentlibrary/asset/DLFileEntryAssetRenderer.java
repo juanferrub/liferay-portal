@@ -14,12 +14,18 @@
 
 package com.liferay.portlet.documentlibrary.asset;
 
+import com.liferay.portal.kernel.dao.search.ResultRow;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.FileVersion;
+import com.liferay.portal.kernel.search.Document;
+import com.liferay.portal.kernel.search.Field;
+import com.liferay.portal.kernel.search.Indexer;
+import com.liferay.portal.kernel.search.IndexerRegistryUtil;
+import com.liferay.portal.kernel.search.Summary;
 import com.liferay.portal.kernel.trash.TrashRenderer;
 import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
@@ -33,16 +39,19 @@ import com.liferay.portal.util.PropsValues;
 import com.liferay.portal.util.WebKeys;
 import com.liferay.portlet.asset.model.AssetRendererFactory;
 import com.liferay.portlet.asset.model.BaseAssetRenderer;
+import com.liferay.portlet.documentlibrary.model.DLFileEntry;
 import com.liferay.portlet.documentlibrary.model.DLFileEntryConstants;
 import com.liferay.portlet.documentlibrary.service.permission.DLFileEntryPermission;
 import com.liferay.portlet.documentlibrary.util.DLUtil;
 
 import java.util.Locale;
 
+import javax.portlet.PortletMode;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.WindowState;
 
 /**
  * @author Julio Camarero
@@ -104,7 +113,50 @@ public class DLFileEntryAssetRenderer
 	}
 
 	public String getSummary(Locale locale) {
-		return HtmlUtil.stripHtml(_fileEntry.getDescription());
+		String summary = _fileEntry.getDescription();
+
+		if (Validator.isNull(summary) && (getPortletRequest() != null)) {
+			PortletRequest portletRequest = getPortletRequest();
+
+			try {
+				Indexer indexer = IndexerRegistryUtil.getIndexer(
+					DLFileEntry.class);
+
+				Document document = null;
+
+				ResultRow row = (ResultRow)portletRequest.getAttribute(
+					WebKeys.SEARCH_CONTAINER_RESULT_ROW);
+
+				if ((row != null) && (row.getObject() instanceof Document)) {
+					document = (Document)row.getObject();
+				}
+				else {
+					document = indexer.getDocument(_fileEntry);
+				}
+
+				String snippet = document.get(Field.SNIPPET);
+
+				RenderResponse renderResponse =
+					(RenderResponse)getPortletResponse();
+
+				WindowState windowState = portletRequest.getWindowState();
+				PortletMode portletMode = portletRequest.getPortletMode();
+
+				PortletURL portletURL = renderResponse.createRenderURL();
+
+				portletURL.setWindowState(windowState);
+				portletURL.setPortletMode(portletMode);
+
+				Summary summaryObj =  indexer.getSummary(
+					document, locale, snippet, portletURL);
+
+				summary = summaryObj.getContent();
+			}
+			catch (Exception e) {
+			}
+		}
+
+		return HtmlUtil.stripHtml(summary);
 	}
 
 	public String getTitle(Locale locale) {

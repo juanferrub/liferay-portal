@@ -28,10 +28,14 @@ import com.liferay.portal.security.permission.PermissionChecker;
 import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.service.LayoutLocalServiceUtil;
 import com.liferay.portal.theme.ThemeDisplay;
+import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.asset.AssetRendererFactoryRegistryUtil;
 
 import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
 import javax.portlet.PortletURL;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
 
 import javax.servlet.http.HttpServletRequest;
@@ -62,6 +66,10 @@ public abstract class BaseAssetRenderer implements AssetRenderer {
 		return null;
 	}
 
+	public String getIconPath() {
+		return getIconPath(_portletRequest);
+	}
+
 	public String getIconPath(PortletRequest portletRequest) {
 		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
@@ -69,8 +77,68 @@ public abstract class BaseAssetRenderer implements AssetRenderer {
 		return getIconPath(themeDisplay);
 	}
 
+	public PortletRequest getPortletRequest() {
+		return _portletRequest;
+	}
+
+	public PortletResponse getPortletResponse() {
+		return _portletResponse;
+	}
+
+	public String getSummary() {
+		ThemeDisplay themeDisplay = getThemeDisplay();
+
+		if (themeDisplay == null) {
+			return null;
+		}
+
+		return getSummary(themeDisplay.getLocale());
+	}
+
+	public ThemeDisplay getThemeDisplay() {
+		if ((_themeDisplay == null) && (_portletRequest != null)) {
+			_themeDisplay = (ThemeDisplay)_portletRequest.getAttribute(
+				WebKeys.THEME_DISPLAY);
+		}
+
+		return _themeDisplay;
+	}
+
+	public String getTitle() {
+		ThemeDisplay themeDisplay = getThemeDisplay();
+
+		if (themeDisplay == null) {
+			return null;
+		}
+
+		return getTitle(themeDisplay.getLocale());
+	}
+
+	public String getURLDownload() {
+		ThemeDisplay themeDisplay = getThemeDisplay();
+
+		if (themeDisplay == null) {
+			return null;
+		}
+
+		return getURLDownload(_themeDisplay);
+	}
+
 	public String getURLDownload(ThemeDisplay themeDisplay) {
 		return null;
+	}
+
+	public PortletURL getURLEdit() throws Exception {
+		if ((_portletRequest == null) || (_portletResponse == null)) {
+			return null;
+		}
+
+		LiferayPortletRequest liferayPortletRequest =
+			PortalUtil.getLiferayPortletRequest(_portletRequest);
+		LiferayPortletResponse liferayPortletResponse =
+			PortalUtil.getLiferayPortletResponse(_portletResponse);
+
+		return getURLEdit(liferayPortletRequest, liferayPortletResponse);
 	}
 
 	public PortletURL getURLEdit(
@@ -79,6 +147,19 @@ public abstract class BaseAssetRenderer implements AssetRenderer {
 		throws Exception {
 
 		return null;
+	}
+
+	public PortletURL getURLExport() throws Exception {
+		if ((_portletRequest == null) || (_portletResponse == null)) {
+			return null;
+		}
+
+		LiferayPortletRequest liferayPortletRequest =
+			PortalUtil.getLiferayPortletRequest(_portletRequest);
+		LiferayPortletResponse liferayPortletResponse =
+			PortalUtil.getLiferayPortletResponse(_portletResponse);
+
+		return getURLExport(liferayPortletRequest, liferayPortletResponse);
 	}
 
 	public PortletURL getURLExport(
@@ -93,12 +174,39 @@ public abstract class BaseAssetRenderer implements AssetRenderer {
 		return null;
 	}
 
+	public PortletURL getURLView(WindowState windowState) throws Exception {
+		if ((_portletRequest == null) || (_portletResponse == null)) {
+			return null;
+		}
+
+		LiferayPortletResponse liferayPortletResponse =
+			PortalUtil.getLiferayPortletResponse(_portletResponse);
+
+		return getURLView(liferayPortletResponse, windowState);
+	}
+
 	public PortletURL getURLView(
 			LiferayPortletResponse liferayPortletResponse,
 			WindowState windowState)
 		throws Exception {
 
 		return null;
+	}
+
+	public String getURLViewInContext(String noSuchEntryRedirect)
+		throws Exception {
+
+		if ((_portletRequest == null) || (_portletResponse == null)) {
+			return null;
+		}
+
+		LiferayPortletRequest liferayPortletRequest =
+			PortalUtil.getLiferayPortletRequest(_portletRequest);
+		LiferayPortletResponse liferayPortletResponse =
+			PortalUtil.getLiferayPortletResponse(_portletResponse);
+
+		return getURLViewInContext(
+			liferayPortletRequest, liferayPortletResponse, noSuchEntryRedirect);
 	}
 
 	public String getURLViewInContext(
@@ -128,6 +236,13 @@ public abstract class BaseAssetRenderer implements AssetRenderer {
 		return true;
 	}
 
+	public void initForRender(
+		PortletRequest portletRequest, PortletResponse portletResponse) {
+
+		_portletRequest = portletRequest;
+		_portletResponse = portletResponse;
+	}
+
 	public boolean isConvertible() {
 		return false;
 	}
@@ -146,6 +261,19 @@ public abstract class BaseAssetRenderer implements AssetRenderer {
 
 	public boolean isPrintable() {
 		return false;
+	}
+
+	public String render(String template) throws Exception {
+		if ((_portletRequest == null) || (_portletResponse == null) ||
+			(!(_portletRequest instanceof RenderRequest) &&
+			 !(_portletResponse instanceof RenderResponse))) {
+
+			return null;
+		}
+
+		return render(
+			(RenderRequest)_portletRequest, (RenderResponse)_portletResponse,
+			template);
 	}
 
 	protected long getControlPanelPlid(
@@ -208,5 +336,8 @@ public abstract class BaseAssetRenderer implements AssetRenderer {
 	private static final String[] _AVAILABLE_LOCALES = new String[0];
 
 	private AssetRendererFactory _assetRendererFactory;
+	private PortletRequest _portletRequest;
+	private PortletResponse _portletResponse;
+	private ThemeDisplay _themeDisplay;
 
 }
