@@ -40,7 +40,20 @@ else {
 %>
 
 <div class="journal-content-article">
-	<%= articleDisplay.getContent() %>
+
+	<%
+		RuntimeLogic portletLogic = new PortletLogic(request, response);
+		RuntimeLogic actionURLLogic = new ActionURLLogic(renderResponse);
+		RuntimeLogic renderURLLogic = new RenderURLLogic(renderResponse);
+
+		String content = articleDisplay.getContent();
+
+		content = RuntimePageUtil.processXML(request, content, portletLogic);
+		content = RuntimePageUtil.processXML(request, content, actionURLLogic);
+		content = RuntimePageUtil.processXML(request, content, renderURLLogic);
+	%>
+
+	<%= content %>
 </div>
 
 <c:if test="<%= articleDisplay.isPaginate() %>">
