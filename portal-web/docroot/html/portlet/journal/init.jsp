@@ -111,6 +111,11 @@ page import="com.liferay.portlet.journal.service.permission.JournalStructurePerm
 page import="com.liferay.portlet.journal.service.permission.JournalTemplatePermission" %><%@
 page import="com.liferay.portlet.journal.util.JournalUtil" %><%@
 page import="com.liferay.portlet.journalcontent.util.JournalContentUtil" %><%@
+page import="com.liferay.portlet.layoutconfiguration.util.RuntimePageUtil" %><%@
+page import="com.liferay.portlet.layoutconfiguration.util.xml.ActionURLLogic" %><%@
+page import="com.liferay.portlet.layoutconfiguration.util.xml.PortletLogic" %><%@
+page import="com.liferay.portlet.layoutconfiguration.util.xml.RenderURLLogic" %><%@
+page import="com.liferay.portlet.layoutconfiguration.util.xml.RuntimeLogic" %><%@
 page import="com.liferay.util.RSSUtil" %>
 
 <%@ page import="java.net.URLDecoder" %>
