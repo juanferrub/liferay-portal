@@ -51,9 +51,10 @@ else {
 		content = RuntimePageUtil.processXML(request, content, portletLogic);
 		content = RuntimePageUtil.processXML(request, content, actionURLLogic);
 		content = RuntimePageUtil.processXML(request, content, renderURLLogic);
+
+		out.print(content);
 	%>
 
-	<%= content %>
 </div>
 
 <c:if test="<%= articleDisplay.isPaginate() %>">
