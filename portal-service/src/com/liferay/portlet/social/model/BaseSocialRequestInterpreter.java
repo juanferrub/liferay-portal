@@ -67,6 +67,29 @@ public abstract class BaseSocialRequestInterpreter
 		}
 	}
 
+    public String getUserNameLink(long userId, ThemeDisplay themeDisplay) {
+		try {
+			if (userId <= 0) {
+				return StringPool.BLANK;
+			}
+
+			User user = UserLocalServiceUtil.getUserById(userId);
+
+			String userName = user.getFullName();
+
+			String userDisplayURL = user.getDisplayURL(themeDisplay);
+
+			userName =
+				"<a href=\"" + userDisplayURL + "\">" +
+				HtmlUtil.escape(userName) + "</a>";
+
+			return userName;
+		}
+		catch (Exception e) {
+			return StringPool.BLANK;
+		}
+	}
+
 	public SocialRequestFeedEntry interpret(
 		SocialRequest request, ThemeDisplay themeDisplay) {
 
