@@ -20,9 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class is used by SOAP remote services.
+ * This class is used by SOAP remote services, specifically {@link com.liferay.portlet.social.service.http.SocialRelationServiceSoap}.
  *
  * @author    Brian Wing Shun Chan
+ * @see       com.liferay.portlet.social.service.http.SocialRelationServiceSoap
  * @generated
  */
 public class SocialRelationSoap implements Serializable {
