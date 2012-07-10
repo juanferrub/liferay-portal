@@ -72,7 +72,8 @@ public class ExportRecordSetAction extends PortletAction {
 
 		DDLExportFormat exportFormat = DDLExportFormat.parse(fileExtension);
 
-		DDLExporter exporter = DDLExporterFactory.getDDLExporter(exportFormat);
+		DDLExporter exporter = DDLExporterFactory.getDDLExporter(
+			exportFormat, themeDisplay.getLocale());
 
 		byte[] bytes = exporter.export(
 			recordSetId, WorkflowConstants.STATUS_APPROVED);

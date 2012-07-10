@@ -18,14 +18,17 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.security.pacl.permission.PortalRuntimePermission;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
  * @author Marcellus Tavares
+ * @author Manuel de la Peña
  */
 public class DDLExporterFactory {
 
-	public static DDLExporter getDDLExporter(DDLExportFormat exportFormat)
+	public static DDLExporter getDDLExporter(
+			DDLExportFormat exportFormat, Locale locale)
 		throws PortalException {
 
 		DDLExporter exporter = _exporters.get(exportFormat);
@@ -33,6 +36,8 @@ public class DDLExporterFactory {
 		if (exporter == null) {
 			throw new PortalException("Invalid format type " + exportFormat);
 		}
+
+		exporter.setLocale(locale);
 
 		return exporter;
 	}
