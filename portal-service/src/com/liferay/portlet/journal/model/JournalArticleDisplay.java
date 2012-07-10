@@ -19,6 +19,7 @@ import java.io.Serializable;
 /**
  * @author Brian Wing Shun Chan
  * @author Raymond Augé
+ * @author Vilmos Papp
  */
 public interface JournalArticleDisplay extends Serializable {
 
