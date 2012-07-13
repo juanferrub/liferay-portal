@@ -310,6 +310,80 @@ public class SocialRelationUtil {
 	}
 
 	/**
+	* Returns all the social relations that the user has permission to view where uuid = &#63;.
+	*
+	* @param uuid the uuid
+	* @return the matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static java.util.List<com.liferay.portlet.social.model.SocialRelation> filterFindByUuid(
+		java.lang.String uuid)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().filterFindByUuid(uuid);
+	}
+
+	/**
+	* Returns a range of all the social relations that the user has permission to view where uuid = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* </p>
+	*
+	* @param uuid the uuid
+	* @param start the lower bound of the range of social relations
+	* @param end the upper bound of the range of social relations (not inclusive)
+	* @return the range of matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static java.util.List<com.liferay.portlet.social.model.SocialRelation> filterFindByUuid(
+		java.lang.String uuid, int start, int end)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().filterFindByUuid(uuid, start, end);
+	}
+
+	/**
+	* Returns an ordered range of all the social relations that the user has permissions to view where uuid = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* </p>
+	*
+	* @param uuid the uuid
+	* @param start the lower bound of the range of social relations
+	* @param end the upper bound of the range of social relations (not inclusive)
+	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	* @return the ordered range of matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static java.util.List<com.liferay.portlet.social.model.SocialRelation> filterFindByUuid(
+		java.lang.String uuid, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence()
+				   .filterFindByUuid(uuid, start, end, orderByComparator);
+	}
+
+	/**
+	* Returns the social relations before and after the current social relation in the ordered set of social relations that the user has permission to view where uuid = &#63;.
+	*
+	* @param relationId the primary key of the current social relation
+	* @param uuid the uuid
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the previous, current, and next social relation
+	* @throws com.liferay.portlet.social.NoSuchRelationException if a social relation with the primary key could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portlet.social.model.SocialRelation[] filterFindByUuid_PrevAndNext(
+		long relationId, java.lang.String uuid,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException,
+			com.liferay.portlet.social.NoSuchRelationException {
+		return getPersistence()
+				   .filterFindByUuid_PrevAndNext(relationId, uuid,
+			orderByComparator);
+	}
+
+	/**
 	* Returns all the social relations where uuid = &#63; and companyId = &#63;.
 	*
 	* @param uuid the uuid
@@ -438,6 +512,85 @@ public class SocialRelationUtil {
 	}
 
 	/**
+	* Returns all the social relations that the user has permission to view where uuid = &#63; and companyId = &#63;.
+	*
+	* @param uuid the uuid
+	* @param companyId the company ID
+	* @return the matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static java.util.List<com.liferay.portlet.social.model.SocialRelation> filterFindByUuid_C(
+		java.lang.String uuid, long companyId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().filterFindByUuid_C(uuid, companyId);
+	}
+
+	/**
+	* Returns a range of all the social relations that the user has permission to view where uuid = &#63; and companyId = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* </p>
+	*
+	* @param uuid the uuid
+	* @param companyId the company ID
+	* @param start the lower bound of the range of social relations
+	* @param end the upper bound of the range of social relations (not inclusive)
+	* @return the range of matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static java.util.List<com.liferay.portlet.social.model.SocialRelation> filterFindByUuid_C(
+		java.lang.String uuid, long companyId, int start, int end)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().filterFindByUuid_C(uuid, companyId, start, end);
+	}
+
+	/**
+	* Returns an ordered range of all the social relations that the user has permissions to view where uuid = &#63; and companyId = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* </p>
+	*
+	* @param uuid the uuid
+	* @param companyId the company ID
+	* @param start the lower bound of the range of social relations
+	* @param end the upper bound of the range of social relations (not inclusive)
+	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	* @return the ordered range of matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static java.util.List<com.liferay.portlet.social.model.SocialRelation> filterFindByUuid_C(
+		java.lang.String uuid, long companyId, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence()
+				   .filterFindByUuid_C(uuid, companyId, start, end,
+			orderByComparator);
+	}
+
+	/**
+	* Returns the social relations before and after the current social relation in the ordered set of social relations that the user has permission to view where uuid = &#63; and companyId = &#63;.
+	*
+	* @param relationId the primary key of the current social relation
+	* @param uuid the uuid
+	* @param companyId the company ID
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the previous, current, and next social relation
+	* @throws com.liferay.portlet.social.NoSuchRelationException if a social relation with the primary key could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portlet.social.model.SocialRelation[] filterFindByUuid_C_PrevAndNext(
+		long relationId, java.lang.String uuid, long companyId,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException,
+			com.liferay.portlet.social.NoSuchRelationException {
+		return getPersistence()
+				   .filterFindByUuid_C_PrevAndNext(relationId, uuid, companyId,
+			orderByComparator);
+	}
+
+	/**
 	* Returns all the social relations where companyId = &#63;.
 	*
 	* @param companyId the company ID
@@ -556,6 +709,81 @@ public class SocialRelationUtil {
 			com.liferay.portlet.social.NoSuchRelationException {
 		return getPersistence()
 				   .findByCompanyId_PrevAndNext(relationId, companyId,
+			orderByComparator);
+	}
+
+	/**
+	* Returns all the social relations that the user has permission to view where companyId = &#63;.
+	*
+	* @param companyId the company ID
+	* @return the matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static java.util.List<com.liferay.portlet.social.model.SocialRelation> filterFindByCompanyId(
+		long companyId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().filterFindByCompanyId(companyId);
+	}
+
+	/**
+	* Returns a range of all the social relations that the user has permission to view where companyId = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* </p>
+	*
+	* @param companyId the company ID
+	* @param start the lower bound of the range of social relations
+	* @param end the upper bound of the range of social relations (not inclusive)
+	* @return the range of matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static java.util.List<com.liferay.portlet.social.model.SocialRelation> filterFindByCompanyId(
+		long companyId, int start, int end)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().filterFindByCompanyId(companyId, start, end);
+	}
+
+	/**
+	* Returns an ordered range of all the social relations that the user has permissions to view where companyId = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* </p>
+	*
+	* @param companyId the company ID
+	* @param start the lower bound of the range of social relations
+	* @param end the upper bound of the range of social relations (not inclusive)
+	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	* @return the ordered range of matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static java.util.List<com.liferay.portlet.social.model.SocialRelation> filterFindByCompanyId(
+		long companyId, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence()
+				   .filterFindByCompanyId(companyId, start, end,
+			orderByComparator);
+	}
+
+	/**
+	* Returns the social relations before and after the current social relation in the ordered set of social relations that the user has permission to view where companyId = &#63;.
+	*
+	* @param relationId the primary key of the current social relation
+	* @param companyId the company ID
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the previous, current, and next social relation
+	* @throws com.liferay.portlet.social.NoSuchRelationException if a social relation with the primary key could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portlet.social.model.SocialRelation[] filterFindByCompanyId_PrevAndNext(
+		long relationId, long companyId,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException,
+			com.liferay.portlet.social.NoSuchRelationException {
+		return getPersistence()
+				   .filterFindByCompanyId_PrevAndNext(relationId, companyId,
 			orderByComparator);
 	}
 
@@ -680,6 +908,80 @@ public class SocialRelationUtil {
 	}
 
 	/**
+	* Returns all the social relations that the user has permission to view where userId1 = &#63;.
+	*
+	* @param userId1 the user id1
+	* @return the matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static java.util.List<com.liferay.portlet.social.model.SocialRelation> filterFindByUserId1(
+		long userId1)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().filterFindByUserId1(userId1);
+	}
+
+	/**
+	* Returns a range of all the social relations that the user has permission to view where userId1 = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* </p>
+	*
+	* @param userId1 the user id1
+	* @param start the lower bound of the range of social relations
+	* @param end the upper bound of the range of social relations (not inclusive)
+	* @return the range of matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static java.util.List<com.liferay.portlet.social.model.SocialRelation> filterFindByUserId1(
+		long userId1, int start, int end)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().filterFindByUserId1(userId1, start, end);
+	}
+
+	/**
+	* Returns an ordered range of all the social relations that the user has permissions to view where userId1 = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* </p>
+	*
+	* @param userId1 the user id1
+	* @param start the lower bound of the range of social relations
+	* @param end the upper bound of the range of social relations (not inclusive)
+	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	* @return the ordered range of matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static java.util.List<com.liferay.portlet.social.model.SocialRelation> filterFindByUserId1(
+		long userId1, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence()
+				   .filterFindByUserId1(userId1, start, end, orderByComparator);
+	}
+
+	/**
+	* Returns the social relations before and after the current social relation in the ordered set of social relations that the user has permission to view where userId1 = &#63;.
+	*
+	* @param relationId the primary key of the current social relation
+	* @param userId1 the user id1
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the previous, current, and next social relation
+	* @throws com.liferay.portlet.social.NoSuchRelationException if a social relation with the primary key could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portlet.social.model.SocialRelation[] filterFindByUserId1_PrevAndNext(
+		long relationId, long userId1,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException,
+			com.liferay.portlet.social.NoSuchRelationException {
+		return getPersistence()
+				   .filterFindByUserId1_PrevAndNext(relationId, userId1,
+			orderByComparator);
+	}
+
+	/**
 	* Returns all the social relations where userId2 = &#63;.
 	*
 	* @param userId2 the user id2
@@ -800,6 +1102,80 @@ public class SocialRelationUtil {
 	}
 
 	/**
+	* Returns all the social relations that the user has permission to view where userId2 = &#63;.
+	*
+	* @param userId2 the user id2
+	* @return the matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static java.util.List<com.liferay.portlet.social.model.SocialRelation> filterFindByUserId2(
+		long userId2)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().filterFindByUserId2(userId2);
+	}
+
+	/**
+	* Returns a range of all the social relations that the user has permission to view where userId2 = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* </p>
+	*
+	* @param userId2 the user id2
+	* @param start the lower bound of the range of social relations
+	* @param end the upper bound of the range of social relations (not inclusive)
+	* @return the range of matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static java.util.List<com.liferay.portlet.social.model.SocialRelation> filterFindByUserId2(
+		long userId2, int start, int end)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().filterFindByUserId2(userId2, start, end);
+	}
+
+	/**
+	* Returns an ordered range of all the social relations that the user has permissions to view where userId2 = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* </p>
+	*
+	* @param userId2 the user id2
+	* @param start the lower bound of the range of social relations
+	* @param end the upper bound of the range of social relations (not inclusive)
+	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	* @return the ordered range of matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static java.util.List<com.liferay.portlet.social.model.SocialRelation> filterFindByUserId2(
+		long userId2, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence()
+				   .filterFindByUserId2(userId2, start, end, orderByComparator);
+	}
+
+	/**
+	* Returns the social relations before and after the current social relation in the ordered set of social relations that the user has permission to view where userId2 = &#63;.
+	*
+	* @param relationId the primary key of the current social relation
+	* @param userId2 the user id2
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the previous, current, and next social relation
+	* @throws com.liferay.portlet.social.NoSuchRelationException if a social relation with the primary key could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portlet.social.model.SocialRelation[] filterFindByUserId2_PrevAndNext(
+		long relationId, long userId2,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException,
+			com.liferay.portlet.social.NoSuchRelationException {
+		return getPersistence()
+				   .filterFindByUserId2_PrevAndNext(relationId, userId2,
+			orderByComparator);
+	}
+
+	/**
 	* Returns all the social relations where type = &#63;.
 	*
 	* @param type the type
@@ -914,6 +1290,79 @@ public class SocialRelationUtil {
 			com.liferay.portlet.social.NoSuchRelationException {
 		return getPersistence()
 				   .findByType_PrevAndNext(relationId, type, orderByComparator);
+	}
+
+	/**
+	* Returns all the social relations that the user has permission to view where type = &#63;.
+	*
+	* @param type the type
+	* @return the matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static java.util.List<com.liferay.portlet.social.model.SocialRelation> filterFindByType(
+		int type) throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().filterFindByType(type);
+	}
+
+	/**
+	* Returns a range of all the social relations that the user has permission to view where type = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* </p>
+	*
+	* @param type the type
+	* @param start the lower bound of the range of social relations
+	* @param end the upper bound of the range of social relations (not inclusive)
+	* @return the range of matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static java.util.List<com.liferay.portlet.social.model.SocialRelation> filterFindByType(
+		int type, int start, int end)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().filterFindByType(type, start, end);
+	}
+
+	/**
+	* Returns an ordered range of all the social relations that the user has permissions to view where type = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* </p>
+	*
+	* @param type the type
+	* @param start the lower bound of the range of social relations
+	* @param end the upper bound of the range of social relations (not inclusive)
+	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	* @return the ordered range of matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static java.util.List<com.liferay.portlet.social.model.SocialRelation> filterFindByType(
+		int type, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence()
+				   .filterFindByType(type, start, end, orderByComparator);
+	}
+
+	/**
+	* Returns the social relations before and after the current social relation in the ordered set of social relations that the user has permission to view where type = &#63;.
+	*
+	* @param relationId the primary key of the current social relation
+	* @param type the type
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the previous, current, and next social relation
+	* @throws com.liferay.portlet.social.NoSuchRelationException if a social relation with the primary key could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portlet.social.model.SocialRelation[] filterFindByType_PrevAndNext(
+		long relationId, int type,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException,
+			com.liferay.portlet.social.NoSuchRelationException {
+		return getPersistence()
+				   .filterFindByType_PrevAndNext(relationId, type,
+			orderByComparator);
 	}
 
 	/**
@@ -1041,6 +1490,85 @@ public class SocialRelationUtil {
 			com.liferay.portlet.social.NoSuchRelationException {
 		return getPersistence()
 				   .findByC_T_PrevAndNext(relationId, companyId, type,
+			orderByComparator);
+	}
+
+	/**
+	* Returns all the social relations that the user has permission to view where companyId = &#63; and type = &#63;.
+	*
+	* @param companyId the company ID
+	* @param type the type
+	* @return the matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static java.util.List<com.liferay.portlet.social.model.SocialRelation> filterFindByC_T(
+		long companyId, int type)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().filterFindByC_T(companyId, type);
+	}
+
+	/**
+	* Returns a range of all the social relations that the user has permission to view where companyId = &#63; and type = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* </p>
+	*
+	* @param companyId the company ID
+	* @param type the type
+	* @param start the lower bound of the range of social relations
+	* @param end the upper bound of the range of social relations (not inclusive)
+	* @return the range of matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static java.util.List<com.liferay.portlet.social.model.SocialRelation> filterFindByC_T(
+		long companyId, int type, int start, int end)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().filterFindByC_T(companyId, type, start, end);
+	}
+
+	/**
+	* Returns an ordered range of all the social relations that the user has permissions to view where companyId = &#63; and type = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* </p>
+	*
+	* @param companyId the company ID
+	* @param type the type
+	* @param start the lower bound of the range of social relations
+	* @param end the upper bound of the range of social relations (not inclusive)
+	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	* @return the ordered range of matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static java.util.List<com.liferay.portlet.social.model.SocialRelation> filterFindByC_T(
+		long companyId, int type, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence()
+				   .filterFindByC_T(companyId, type, start, end,
+			orderByComparator);
+	}
+
+	/**
+	* Returns the social relations before and after the current social relation in the ordered set of social relations that the user has permission to view where companyId = &#63; and type = &#63;.
+	*
+	* @param relationId the primary key of the current social relation
+	* @param companyId the company ID
+	* @param type the type
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the previous, current, and next social relation
+	* @throws com.liferay.portlet.social.NoSuchRelationException if a social relation with the primary key could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portlet.social.model.SocialRelation[] filterFindByC_T_PrevAndNext(
+		long relationId, long companyId, int type,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException,
+			com.liferay.portlet.social.NoSuchRelationException {
+		return getPersistence()
+				   .filterFindByC_T_PrevAndNext(relationId, companyId, type,
 			orderByComparator);
 	}
 
@@ -1173,6 +1701,85 @@ public class SocialRelationUtil {
 	}
 
 	/**
+	* Returns all the social relations that the user has permission to view where userId1 = &#63; and userId2 = &#63;.
+	*
+	* @param userId1 the user id1
+	* @param userId2 the user id2
+	* @return the matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static java.util.List<com.liferay.portlet.social.model.SocialRelation> filterFindByU1_U2(
+		long userId1, long userId2)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().filterFindByU1_U2(userId1, userId2);
+	}
+
+	/**
+	* Returns a range of all the social relations that the user has permission to view where userId1 = &#63; and userId2 = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* </p>
+	*
+	* @param userId1 the user id1
+	* @param userId2 the user id2
+	* @param start the lower bound of the range of social relations
+	* @param end the upper bound of the range of social relations (not inclusive)
+	* @return the range of matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static java.util.List<com.liferay.portlet.social.model.SocialRelation> filterFindByU1_U2(
+		long userId1, long userId2, int start, int end)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().filterFindByU1_U2(userId1, userId2, start, end);
+	}
+
+	/**
+	* Returns an ordered range of all the social relations that the user has permissions to view where userId1 = &#63; and userId2 = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* </p>
+	*
+	* @param userId1 the user id1
+	* @param userId2 the user id2
+	* @param start the lower bound of the range of social relations
+	* @param end the upper bound of the range of social relations (not inclusive)
+	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	* @return the ordered range of matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static java.util.List<com.liferay.portlet.social.model.SocialRelation> filterFindByU1_U2(
+		long userId1, long userId2, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence()
+				   .filterFindByU1_U2(userId1, userId2, start, end,
+			orderByComparator);
+	}
+
+	/**
+	* Returns the social relations before and after the current social relation in the ordered set of social relations that the user has permission to view where userId1 = &#63; and userId2 = &#63;.
+	*
+	* @param relationId the primary key of the current social relation
+	* @param userId1 the user id1
+	* @param userId2 the user id2
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the previous, current, and next social relation
+	* @throws com.liferay.portlet.social.NoSuchRelationException if a social relation with the primary key could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portlet.social.model.SocialRelation[] filterFindByU1_U2_PrevAndNext(
+		long relationId, long userId1, long userId2,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException,
+			com.liferay.portlet.social.NoSuchRelationException {
+		return getPersistence()
+				   .filterFindByU1_U2_PrevAndNext(relationId, userId1, userId2,
+			orderByComparator);
+	}
+
+	/**
 	* Returns all the social relations where userId1 = &#63; and type = &#63;.
 	*
 	* @param userId1 the user id1
@@ -1300,6 +1907,85 @@ public class SocialRelationUtil {
 	}
 
 	/**
+	* Returns all the social relations that the user has permission to view where userId1 = &#63; and type = &#63;.
+	*
+	* @param userId1 the user id1
+	* @param type the type
+	* @return the matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static java.util.List<com.liferay.portlet.social.model.SocialRelation> filterFindByU1_T(
+		long userId1, int type)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().filterFindByU1_T(userId1, type);
+	}
+
+	/**
+	* Returns a range of all the social relations that the user has permission to view where userId1 = &#63; and type = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* </p>
+	*
+	* @param userId1 the user id1
+	* @param type the type
+	* @param start the lower bound of the range of social relations
+	* @param end the upper bound of the range of social relations (not inclusive)
+	* @return the range of matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static java.util.List<com.liferay.portlet.social.model.SocialRelation> filterFindByU1_T(
+		long userId1, int type, int start, int end)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().filterFindByU1_T(userId1, type, start, end);
+	}
+
+	/**
+	* Returns an ordered range of all the social relations that the user has permissions to view where userId1 = &#63; and type = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* </p>
+	*
+	* @param userId1 the user id1
+	* @param type the type
+	* @param start the lower bound of the range of social relations
+	* @param end the upper bound of the range of social relations (not inclusive)
+	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	* @return the ordered range of matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static java.util.List<com.liferay.portlet.social.model.SocialRelation> filterFindByU1_T(
+		long userId1, int type, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence()
+				   .filterFindByU1_T(userId1, type, start, end,
+			orderByComparator);
+	}
+
+	/**
+	* Returns the social relations before and after the current social relation in the ordered set of social relations that the user has permission to view where userId1 = &#63; and type = &#63;.
+	*
+	* @param relationId the primary key of the current social relation
+	* @param userId1 the user id1
+	* @param type the type
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the previous, current, and next social relation
+	* @throws com.liferay.portlet.social.NoSuchRelationException if a social relation with the primary key could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portlet.social.model.SocialRelation[] filterFindByU1_T_PrevAndNext(
+		long relationId, long userId1, int type,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException,
+			com.liferay.portlet.social.NoSuchRelationException {
+		return getPersistence()
+				   .filterFindByU1_T_PrevAndNext(relationId, userId1, type,
+			orderByComparator);
+	}
+
+	/**
 	* Returns all the social relations where userId2 = &#63; and type = &#63;.
 	*
 	* @param userId2 the user id2
@@ -1423,6 +2109,85 @@ public class SocialRelationUtil {
 			com.liferay.portlet.social.NoSuchRelationException {
 		return getPersistence()
 				   .findByU2_T_PrevAndNext(relationId, userId2, type,
+			orderByComparator);
+	}
+
+	/**
+	* Returns all the social relations that the user has permission to view where userId2 = &#63; and type = &#63;.
+	*
+	* @param userId2 the user id2
+	* @param type the type
+	* @return the matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static java.util.List<com.liferay.portlet.social.model.SocialRelation> filterFindByU2_T(
+		long userId2, int type)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().filterFindByU2_T(userId2, type);
+	}
+
+	/**
+	* Returns a range of all the social relations that the user has permission to view where userId2 = &#63; and type = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* </p>
+	*
+	* @param userId2 the user id2
+	* @param type the type
+	* @param start the lower bound of the range of social relations
+	* @param end the upper bound of the range of social relations (not inclusive)
+	* @return the range of matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static java.util.List<com.liferay.portlet.social.model.SocialRelation> filterFindByU2_T(
+		long userId2, int type, int start, int end)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().filterFindByU2_T(userId2, type, start, end);
+	}
+
+	/**
+	* Returns an ordered range of all the social relations that the user has permissions to view where userId2 = &#63; and type = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* </p>
+	*
+	* @param userId2 the user id2
+	* @param type the type
+	* @param start the lower bound of the range of social relations
+	* @param end the upper bound of the range of social relations (not inclusive)
+	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	* @return the ordered range of matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static java.util.List<com.liferay.portlet.social.model.SocialRelation> filterFindByU2_T(
+		long userId2, int type, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence()
+				   .filterFindByU2_T(userId2, type, start, end,
+			orderByComparator);
+	}
+
+	/**
+	* Returns the social relations before and after the current social relation in the ordered set of social relations that the user has permission to view where userId2 = &#63; and type = &#63;.
+	*
+	* @param relationId the primary key of the current social relation
+	* @param userId2 the user id2
+	* @param type the type
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the previous, current, and next social relation
+	* @throws com.liferay.portlet.social.NoSuchRelationException if a social relation with the primary key could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portlet.social.model.SocialRelation[] filterFindByU2_T_PrevAndNext(
+		long relationId, long userId2, int type,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException,
+			com.liferay.portlet.social.NoSuchRelationException {
+		return getPersistence()
+				   .filterFindByU2_T_PrevAndNext(relationId, userId2, type,
 			orderByComparator);
 	}
 
@@ -1678,6 +2443,18 @@ public class SocialRelationUtil {
 	}
 
 	/**
+	* Returns the number of social relations that the user has permission to view where uuid = &#63;.
+	*
+	* @param uuid the uuid
+	* @return the number of matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static int filterCountByUuid(java.lang.String uuid)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().filterCountByUuid(uuid);
+	}
+
+	/**
 	* Returns the number of social relations where uuid = &#63; and companyId = &#63;.
 	*
 	* @param uuid the uuid
@@ -1688,6 +2465,19 @@ public class SocialRelationUtil {
 	public static int countByUuid_C(java.lang.String uuid, long companyId)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		return getPersistence().countByUuid_C(uuid, companyId);
+	}
+
+	/**
+	* Returns the number of social relations that the user has permission to view where uuid = &#63; and companyId = &#63;.
+	*
+	* @param uuid the uuid
+	* @param companyId the company ID
+	* @return the number of matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static int filterCountByUuid_C(java.lang.String uuid, long companyId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().filterCountByUuid_C(uuid, companyId);
 	}
 
 	/**
@@ -1703,6 +2493,18 @@ public class SocialRelationUtil {
 	}
 
 	/**
+	* Returns the number of social relations that the user has permission to view where companyId = &#63;.
+	*
+	* @param companyId the company ID
+	* @return the number of matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static int filterCountByCompanyId(long companyId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().filterCountByCompanyId(companyId);
+	}
+
+	/**
 	* Returns the number of social relations where userId1 = &#63;.
 	*
 	* @param userId1 the user id1
@@ -1712,6 +2514,18 @@ public class SocialRelationUtil {
 	public static int countByUserId1(long userId1)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		return getPersistence().countByUserId1(userId1);
+	}
+
+	/**
+	* Returns the number of social relations that the user has permission to view where userId1 = &#63;.
+	*
+	* @param userId1 the user id1
+	* @return the number of matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static int filterCountByUserId1(long userId1)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().filterCountByUserId1(userId1);
 	}
 
 	/**
@@ -1727,6 +2541,18 @@ public class SocialRelationUtil {
 	}
 
 	/**
+	* Returns the number of social relations that the user has permission to view where userId2 = &#63;.
+	*
+	* @param userId2 the user id2
+	* @return the number of matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static int filterCountByUserId2(long userId2)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().filterCountByUserId2(userId2);
+	}
+
+	/**
 	* Returns the number of social relations where type = &#63;.
 	*
 	* @param type the type
@@ -1736,6 +2562,18 @@ public class SocialRelationUtil {
 	public static int countByType(int type)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		return getPersistence().countByType(type);
+	}
+
+	/**
+	* Returns the number of social relations that the user has permission to view where type = &#63;.
+	*
+	* @param type the type
+	* @return the number of matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static int filterCountByType(int type)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().filterCountByType(type);
 	}
 
 	/**
@@ -1752,6 +2590,19 @@ public class SocialRelationUtil {
 	}
 
 	/**
+	* Returns the number of social relations that the user has permission to view where companyId = &#63; and type = &#63;.
+	*
+	* @param companyId the company ID
+	* @param type the type
+	* @return the number of matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static int filterCountByC_T(long companyId, int type)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().filterCountByC_T(companyId, type);
+	}
+
+	/**
 	* Returns the number of social relations where userId1 = &#63; and userId2 = &#63;.
 	*
 	* @param userId1 the user id1
@@ -1762,6 +2613,19 @@ public class SocialRelationUtil {
 	public static int countByU1_U2(long userId1, long userId2)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		return getPersistence().countByU1_U2(userId1, userId2);
+	}
+
+	/**
+	* Returns the number of social relations that the user has permission to view where userId1 = &#63; and userId2 = &#63;.
+	*
+	* @param userId1 the user id1
+	* @param userId2 the user id2
+	* @return the number of matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static int filterCountByU1_U2(long userId1, long userId2)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().filterCountByU1_U2(userId1, userId2);
 	}
 
 	/**
@@ -1778,6 +2642,19 @@ public class SocialRelationUtil {
 	}
 
 	/**
+	* Returns the number of social relations that the user has permission to view where userId1 = &#63; and type = &#63;.
+	*
+	* @param userId1 the user id1
+	* @param type the type
+	* @return the number of matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static int filterCountByU1_T(long userId1, int type)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().filterCountByU1_T(userId1, type);
+	}
+
+	/**
 	* Returns the number of social relations where userId2 = &#63; and type = &#63;.
 	*
 	* @param userId2 the user id2
@@ -1788,6 +2665,19 @@ public class SocialRelationUtil {
 	public static int countByU2_T(long userId2, int type)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		return getPersistence().countByU2_T(userId2, type);
+	}
+
+	/**
+	* Returns the number of social relations that the user has permission to view where userId2 = &#63; and type = &#63;.
+	*
+	* @param userId2 the user id2
+	* @param type the type
+	* @return the number of matching social relations that the user has permission to view
+	* @throws SystemException if a system exception occurred
+	*/
+	public static int filterCountByU2_T(long userId2, int type)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().filterCountByU2_T(userId2, type);
 	}
 
 	/**

@@ -15,6 +15,7 @@
 package com.liferay.portlet.social.model.impl;
 
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
+import com.liferay.portal.kernel.json.JSON;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
@@ -27,12 +28,15 @@ import com.liferay.portlet.expando.model.ExpandoBridge;
 import com.liferay.portlet.expando.util.ExpandoBridgeFactoryUtil;
 import com.liferay.portlet.social.model.SocialRelation;
 import com.liferay.portlet.social.model.SocialRelationModel;
+import com.liferay.portlet.social.model.SocialRelationSoap;
 
 import java.io.Serializable;
 
 import java.sql.Types;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -48,6 +52,7 @@ import java.util.Map;
  * @see com.liferay.portlet.social.model.SocialRelationModel
  * @generated
  */
+@JSON(strict = true)
 public class SocialRelationModelImpl extends BaseModelImpl<SocialRelation>
 	implements SocialRelationModel {
 	/*
@@ -84,6 +89,51 @@ public class SocialRelationModelImpl extends BaseModelImpl<SocialRelation>
 	public static long USERID1_COLUMN_BITMASK = 4L;
 	public static long USERID2_COLUMN_BITMASK = 8L;
 	public static long UUID_COLUMN_BITMASK = 16L;
+
+	/**
+	 * Converts the soap model instance into a normal model instance.
+	 *
+	 * @param soapModel the soap model instance to convert
+	 * @return the normal model instance
+	 */
+	public static SocialRelation toModel(SocialRelationSoap soapModel) {
+		if (soapModel == null) {
+			return null;
+		}
+
+		SocialRelation model = new SocialRelationImpl();
+
+		model.setUuid(soapModel.getUuid());
+		model.setRelationId(soapModel.getRelationId());
+		model.setCompanyId(soapModel.getCompanyId());
+		model.setCreateDate(soapModel.getCreateDate());
+		model.setUserId1(soapModel.getUserId1());
+		model.setUserId2(soapModel.getUserId2());
+		model.setType(soapModel.getType());
+
+		return model;
+	}
+
+	/**
+	 * Converts the soap model instances into normal model instances.
+	 *
+	 * @param soapModels the soap model instances to convert
+	 * @return the normal model instances
+	 */
+	public static List<SocialRelation> toModels(SocialRelationSoap[] soapModels) {
+		if (soapModels == null) {
+			return null;
+		}
+
+		List<SocialRelation> models = new ArrayList<SocialRelation>(soapModels.length);
+
+		for (SocialRelationSoap soapModel : soapModels) {
+			models.add(toModel(soapModel));
+		}
+
+		return models;
+	}
+
 	public static final long LOCK_EXPIRATION_TIME = GetterUtil.getLong(com.liferay.portal.util.PropsUtil.get(
 				"lock.expiration.time.com.liferay.portlet.social.model.SocialRelation"));
 
@@ -174,6 +224,7 @@ public class SocialRelationModelImpl extends BaseModelImpl<SocialRelation>
 		}
 	}
 
+	@JSON
 	public String getUuid() {
 		if (_uuid == null) {
 			return StringPool.BLANK;
@@ -195,6 +246,7 @@ public class SocialRelationModelImpl extends BaseModelImpl<SocialRelation>
 		return GetterUtil.getString(_originalUuid);
 	}
 
+	@JSON
 	public long getRelationId() {
 		return _relationId;
 	}
@@ -203,6 +255,7 @@ public class SocialRelationModelImpl extends BaseModelImpl<SocialRelation>
 		_relationId = relationId;
 	}
 
+	@JSON
 	public long getCompanyId() {
 		return _companyId;
 	}
@@ -223,6 +276,7 @@ public class SocialRelationModelImpl extends BaseModelImpl<SocialRelation>
 		return _originalCompanyId;
 	}
 
+	@JSON
 	public long getCreateDate() {
 		return _createDate;
 	}
@@ -231,6 +285,7 @@ public class SocialRelationModelImpl extends BaseModelImpl<SocialRelation>
 		_createDate = createDate;
 	}
 
+	@JSON
 	public long getUserId1() {
 		return _userId1;
 	}
@@ -251,6 +306,7 @@ public class SocialRelationModelImpl extends BaseModelImpl<SocialRelation>
 		return _originalUserId1;
 	}
 
+	@JSON
 	public long getUserId2() {
 		return _userId2;
 	}
@@ -271,6 +327,7 @@ public class SocialRelationModelImpl extends BaseModelImpl<SocialRelation>
 		return _originalUserId2;
 	}
 
+	@JSON
 	public int getType() {
 		return _type;
 	}

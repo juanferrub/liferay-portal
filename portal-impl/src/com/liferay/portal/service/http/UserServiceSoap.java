@@ -1175,6 +1175,21 @@ public class UserServiceSoap {
 		}
 	}
 
+	public static void updateAsset(long userId,
+		com.liferay.portal.model.UserSoap user, long[] assetCategoryIds,
+		java.lang.String[] assetTagNames) throws RemoteException {
+		try {
+			UserServiceUtil.updateAsset(userId,
+				com.liferay.portal.model.impl.UserModelImpl.toModel(user),
+				assetCategoryIds, assetTagNames);
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
 	/**
 	* Updates the user's email address.
 	*

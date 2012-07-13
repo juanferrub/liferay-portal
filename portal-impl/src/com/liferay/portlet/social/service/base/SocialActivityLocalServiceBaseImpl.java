@@ -57,8 +57,10 @@ import com.liferay.portlet.social.service.SocialActivityLocalService;
 import com.liferay.portlet.social.service.SocialActivitySettingLocalService;
 import com.liferay.portlet.social.service.SocialActivitySettingService;
 import com.liferay.portlet.social.service.SocialRelationLocalService;
+import com.liferay.portlet.social.service.SocialRelationService;
 import com.liferay.portlet.social.service.SocialRequestInterpreterLocalService;
 import com.liferay.portlet.social.service.SocialRequestLocalService;
+import com.liferay.portlet.social.service.SocialRequestService;
 import com.liferay.portlet.social.service.persistence.SocialActivityAchievementPersistence;
 import com.liferay.portlet.social.service.persistence.SocialActivityCounterFinder;
 import com.liferay.portlet.social.service.persistence.SocialActivityCounterPersistence;
@@ -586,6 +588,25 @@ public abstract class SocialActivityLocalServiceBaseImpl
 	}
 
 	/**
+	 * Returns the social relation remote service.
+	 *
+	 * @return the social relation remote service
+	 */
+	public SocialRelationService getSocialRelationService() {
+		return socialRelationService;
+	}
+
+	/**
+	 * Sets the social relation remote service.
+	 *
+	 * @param socialRelationService the social relation remote service
+	 */
+	public void setSocialRelationService(
+		SocialRelationService socialRelationService) {
+		this.socialRelationService = socialRelationService;
+	}
+
+	/**
 	 * Returns the social relation persistence.
 	 *
 	 * @return the social relation persistence
@@ -621,6 +642,25 @@ public abstract class SocialActivityLocalServiceBaseImpl
 	public void setSocialRequestLocalService(
 		SocialRequestLocalService socialRequestLocalService) {
 		this.socialRequestLocalService = socialRequestLocalService;
+	}
+
+	/**
+	 * Returns the social request remote service.
+	 *
+	 * @return the social request remote service
+	 */
+	public SocialRequestService getSocialRequestService() {
+		return socialRequestService;
+	}
+
+	/**
+	 * Sets the social request remote service.
+	 *
+	 * @param socialRequestService the social request remote service
+	 */
+	public void setSocialRequestService(
+		SocialRequestService socialRequestService) {
+		this.socialRequestService = socialRequestService;
 	}
 
 	/**
@@ -1073,10 +1113,14 @@ public abstract class SocialActivityLocalServiceBaseImpl
 	protected SocialActivitySettingPersistence socialActivitySettingPersistence;
 	@BeanReference(type = SocialRelationLocalService.class)
 	protected SocialRelationLocalService socialRelationLocalService;
+	@BeanReference(type = SocialRelationService.class)
+	protected SocialRelationService socialRelationService;
 	@BeanReference(type = SocialRelationPersistence.class)
 	protected SocialRelationPersistence socialRelationPersistence;
 	@BeanReference(type = SocialRequestLocalService.class)
 	protected SocialRequestLocalService socialRequestLocalService;
+	@BeanReference(type = SocialRequestService.class)
+	protected SocialRequestService socialRequestService;
 	@BeanReference(type = SocialRequestPersistence.class)
 	protected SocialRequestPersistence socialRequestPersistence;
 	@BeanReference(type = SocialRequestInterpreterLocalService.class)

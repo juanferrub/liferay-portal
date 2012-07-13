@@ -23,6 +23,7 @@ import com.liferay.portal.kernel.dao.orm.FinderPath;
 import com.liferay.portal.kernel.dao.orm.Query;
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
+import com.liferay.portal.kernel.dao.orm.SQLQuery;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
@@ -37,6 +38,7 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
 import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.model.ModelListener;
+import com.liferay.portal.security.permission.InlineSQLHelperUtil;
 import com.liferay.portal.service.persistence.BatchSessionUtil;
 import com.liferay.portal.service.persistence.UserPersistence;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
@@ -1281,6 +1283,323 @@ public class SocialRelationPersistenceImpl extends BasePersistenceImpl<SocialRel
 	}
 
 	/**
+	 * Returns all the social relations that the user has permission to view where uuid = &#63;.
+	 *
+	 * @param uuid the uuid
+	 * @return the matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public List<SocialRelation> filterFindByUuid(String uuid)
+		throws SystemException {
+		return filterFindByUuid(uuid, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
+	}
+
+	/**
+	 * Returns a range of all the social relations that the user has permission to view where uuid = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * </p>
+	 *
+	 * @param uuid the uuid
+	 * @param start the lower bound of the range of social relations
+	 * @param end the upper bound of the range of social relations (not inclusive)
+	 * @return the range of matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public List<SocialRelation> filterFindByUuid(String uuid, int start, int end)
+		throws SystemException {
+		return filterFindByUuid(uuid, start, end, null);
+	}
+
+	/**
+	 * Returns an ordered range of all the social relations that the user has permissions to view where uuid = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * </p>
+	 *
+	 * @param uuid the uuid
+	 * @param start the lower bound of the range of social relations
+	 * @param end the upper bound of the range of social relations (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public List<SocialRelation> filterFindByUuid(String uuid, int start,
+		int end, OrderByComparator orderByComparator) throws SystemException {
+		if (!InlineSQLHelperUtil.isEnabled()) {
+			return findByUuid(uuid, start, end, orderByComparator);
+		}
+
+		StringBundler query = null;
+
+		if (orderByComparator != null) {
+			query = new StringBundler(3 +
+					(orderByComparator.getOrderByFields().length * 3));
+		}
+		else {
+			query = new StringBundler(2);
+		}
+
+		if (getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_WHERE);
+		}
+		else {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_1);
+		}
+
+		if (uuid == null) {
+			query.append(_FINDER_COLUMN_UUID_UUID_1);
+		}
+		else {
+			if (uuid.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_UUID_UUID_3);
+			}
+			else {
+				query.append(_FINDER_COLUMN_UUID_UUID_2);
+			}
+		}
+
+		if (!getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_2);
+		}
+
+		if (orderByComparator != null) {
+			if (getDB().isSupportsInlineDistinct()) {
+				appendOrderByComparator(query, _ORDER_BY_ENTITY_ALIAS,
+					orderByComparator);
+			}
+			else {
+				appendOrderByComparator(query, _ORDER_BY_ENTITY_TABLE,
+					orderByComparator);
+			}
+		}
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(query.toString(),
+				SocialRelation.class.getName(),
+				_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SQLQuery q = session.createSQLQuery(sql);
+
+			if (getDB().isSupportsInlineDistinct()) {
+				q.addEntity(_FILTER_ENTITY_ALIAS, SocialRelationImpl.class);
+			}
+			else {
+				q.addEntity(_FILTER_ENTITY_TABLE, SocialRelationImpl.class);
+			}
+
+			QueryPos qPos = QueryPos.getInstance(q);
+
+			if (uuid != null) {
+				qPos.add(uuid);
+			}
+
+			return (List<SocialRelation>)QueryUtil.list(q, getDialect(), start,
+				end);
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	/**
+	 * Returns the social relations before and after the current social relation in the ordered set of social relations that the user has permission to view where uuid = &#63;.
+	 *
+	 * @param relationId the primary key of the current social relation
+	 * @param uuid the uuid
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next social relation
+	 * @throws com.liferay.portlet.social.NoSuchRelationException if a social relation with the primary key could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public SocialRelation[] filterFindByUuid_PrevAndNext(long relationId,
+		String uuid, OrderByComparator orderByComparator)
+		throws NoSuchRelationException, SystemException {
+		if (!InlineSQLHelperUtil.isEnabled()) {
+			return findByUuid_PrevAndNext(relationId, uuid, orderByComparator);
+		}
+
+		SocialRelation socialRelation = findByPrimaryKey(relationId);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SocialRelation[] array = new SocialRelationImpl[3];
+
+			array[0] = filterGetByUuid_PrevAndNext(session, socialRelation,
+					uuid, orderByComparator, true);
+
+			array[1] = socialRelation;
+
+			array[2] = filterGetByUuid_PrevAndNext(session, socialRelation,
+					uuid, orderByComparator, false);
+
+			return array;
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	protected SocialRelation filterGetByUuid_PrevAndNext(Session session,
+		SocialRelation socialRelation, String uuid,
+		OrderByComparator orderByComparator, boolean previous) {
+		StringBundler query = null;
+
+		if (orderByComparator != null) {
+			query = new StringBundler(6 +
+					(orderByComparator.getOrderByFields().length * 6));
+		}
+		else {
+			query = new StringBundler(3);
+		}
+
+		if (getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_WHERE);
+		}
+		else {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_1);
+		}
+
+		if (uuid == null) {
+			query.append(_FINDER_COLUMN_UUID_UUID_1);
+		}
+		else {
+			if (uuid.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_UUID_UUID_3);
+			}
+			else {
+				query.append(_FINDER_COLUMN_UUID_UUID_2);
+			}
+		}
+
+		if (!getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_2);
+		}
+
+		if (orderByComparator != null) {
+			String[] orderByConditionFields = orderByComparator.getOrderByConditionFields();
+
+			if (orderByConditionFields.length > 0) {
+				query.append(WHERE_AND);
+			}
+
+			for (int i = 0; i < orderByConditionFields.length; i++) {
+				if (getDB().isSupportsInlineDistinct()) {
+					query.append(_ORDER_BY_ENTITY_ALIAS);
+				}
+				else {
+					query.append(_ORDER_BY_ENTITY_TABLE);
+				}
+
+				query.append(orderByConditionFields[i]);
+
+				if ((i + 1) < orderByConditionFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN);
+					}
+				}
+			}
+
+			query.append(ORDER_BY_CLAUSE);
+
+			String[] orderByFields = orderByComparator.getOrderByFields();
+
+			for (int i = 0; i < orderByFields.length; i++) {
+				if (getDB().isSupportsInlineDistinct()) {
+					query.append(_ORDER_BY_ENTITY_ALIAS);
+				}
+				else {
+					query.append(_ORDER_BY_ENTITY_TABLE);
+				}
+
+				query.append(orderByFields[i]);
+
+				if ((i + 1) < orderByFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC_HAS_NEXT);
+					}
+					else {
+						query.append(ORDER_BY_DESC_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC);
+					}
+					else {
+						query.append(ORDER_BY_DESC);
+					}
+				}
+			}
+		}
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(query.toString(),
+				SocialRelation.class.getName(),
+				_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		SQLQuery q = session.createSQLQuery(sql);
+
+		q.setFirstResult(0);
+		q.setMaxResults(2);
+
+		if (getDB().isSupportsInlineDistinct()) {
+			q.addEntity(_FILTER_ENTITY_ALIAS, SocialRelationImpl.class);
+		}
+		else {
+			q.addEntity(_FILTER_ENTITY_TABLE, SocialRelationImpl.class);
+		}
+
+		QueryPos qPos = QueryPos.getInstance(q);
+
+		if (uuid != null) {
+			qPos.add(uuid);
+		}
+
+		if (orderByComparator != null) {
+			Object[] values = orderByComparator.getOrderByConditionValues(socialRelation);
+
+			for (Object value : values) {
+				qPos.add(value);
+			}
+		}
+
+		List<SocialRelation> list = q.list();
+
+		if (list.size() == 2) {
+			return list.get(1);
+		}
+		else {
+			return null;
+		}
+	}
+
+	/**
 	 * Returns all the social relations where uuid = &#63; and companyId = &#63;.
 	 *
 	 * @param uuid the uuid
@@ -1680,6 +1999,338 @@ public class SocialRelationPersistenceImpl extends BasePersistenceImpl<SocialRel
 	}
 
 	/**
+	 * Returns all the social relations that the user has permission to view where uuid = &#63; and companyId = &#63;.
+	 *
+	 * @param uuid the uuid
+	 * @param companyId the company ID
+	 * @return the matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public List<SocialRelation> filterFindByUuid_C(String uuid, long companyId)
+		throws SystemException {
+		return filterFindByUuid_C(uuid, companyId, QueryUtil.ALL_POS,
+			QueryUtil.ALL_POS, null);
+	}
+
+	/**
+	 * Returns a range of all the social relations that the user has permission to view where uuid = &#63; and companyId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * </p>
+	 *
+	 * @param uuid the uuid
+	 * @param companyId the company ID
+	 * @param start the lower bound of the range of social relations
+	 * @param end the upper bound of the range of social relations (not inclusive)
+	 * @return the range of matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public List<SocialRelation> filterFindByUuid_C(String uuid, long companyId,
+		int start, int end) throws SystemException {
+		return filterFindByUuid_C(uuid, companyId, start, end, null);
+	}
+
+	/**
+	 * Returns an ordered range of all the social relations that the user has permissions to view where uuid = &#63; and companyId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * </p>
+	 *
+	 * @param uuid the uuid
+	 * @param companyId the company ID
+	 * @param start the lower bound of the range of social relations
+	 * @param end the upper bound of the range of social relations (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public List<SocialRelation> filterFindByUuid_C(String uuid, long companyId,
+		int start, int end, OrderByComparator orderByComparator)
+		throws SystemException {
+		if (!InlineSQLHelperUtil.isEnabled()) {
+			return findByUuid_C(uuid, companyId, start, end, orderByComparator);
+		}
+
+		StringBundler query = null;
+
+		if (orderByComparator != null) {
+			query = new StringBundler(4 +
+					(orderByComparator.getOrderByFields().length * 3));
+		}
+		else {
+			query = new StringBundler(3);
+		}
+
+		if (getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_WHERE);
+		}
+		else {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_1);
+		}
+
+		if (uuid == null) {
+			query.append(_FINDER_COLUMN_UUID_C_UUID_1);
+		}
+		else {
+			if (uuid.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
+			}
+			else {
+				query.append(_FINDER_COLUMN_UUID_C_UUID_2);
+			}
+		}
+
+		query.append(_FINDER_COLUMN_UUID_C_COMPANYID_2);
+
+		if (!getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_2);
+		}
+
+		if (orderByComparator != null) {
+			if (getDB().isSupportsInlineDistinct()) {
+				appendOrderByComparator(query, _ORDER_BY_ENTITY_ALIAS,
+					orderByComparator);
+			}
+			else {
+				appendOrderByComparator(query, _ORDER_BY_ENTITY_TABLE,
+					orderByComparator);
+			}
+		}
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(query.toString(),
+				SocialRelation.class.getName(),
+				_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SQLQuery q = session.createSQLQuery(sql);
+
+			if (getDB().isSupportsInlineDistinct()) {
+				q.addEntity(_FILTER_ENTITY_ALIAS, SocialRelationImpl.class);
+			}
+			else {
+				q.addEntity(_FILTER_ENTITY_TABLE, SocialRelationImpl.class);
+			}
+
+			QueryPos qPos = QueryPos.getInstance(q);
+
+			if (uuid != null) {
+				qPos.add(uuid);
+			}
+
+			qPos.add(companyId);
+
+			return (List<SocialRelation>)QueryUtil.list(q, getDialect(), start,
+				end);
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	/**
+	 * Returns the social relations before and after the current social relation in the ordered set of social relations that the user has permission to view where uuid = &#63; and companyId = &#63;.
+	 *
+	 * @param relationId the primary key of the current social relation
+	 * @param uuid the uuid
+	 * @param companyId the company ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next social relation
+	 * @throws com.liferay.portlet.social.NoSuchRelationException if a social relation with the primary key could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public SocialRelation[] filterFindByUuid_C_PrevAndNext(long relationId,
+		String uuid, long companyId, OrderByComparator orderByComparator)
+		throws NoSuchRelationException, SystemException {
+		if (!InlineSQLHelperUtil.isEnabled()) {
+			return findByUuid_C_PrevAndNext(relationId, uuid, companyId,
+				orderByComparator);
+		}
+
+		SocialRelation socialRelation = findByPrimaryKey(relationId);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SocialRelation[] array = new SocialRelationImpl[3];
+
+			array[0] = filterGetByUuid_C_PrevAndNext(session, socialRelation,
+					uuid, companyId, orderByComparator, true);
+
+			array[1] = socialRelation;
+
+			array[2] = filterGetByUuid_C_PrevAndNext(session, socialRelation,
+					uuid, companyId, orderByComparator, false);
+
+			return array;
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	protected SocialRelation filterGetByUuid_C_PrevAndNext(Session session,
+		SocialRelation socialRelation, String uuid, long companyId,
+		OrderByComparator orderByComparator, boolean previous) {
+		StringBundler query = null;
+
+		if (orderByComparator != null) {
+			query = new StringBundler(6 +
+					(orderByComparator.getOrderByFields().length * 6));
+		}
+		else {
+			query = new StringBundler(3);
+		}
+
+		if (getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_WHERE);
+		}
+		else {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_1);
+		}
+
+		if (uuid == null) {
+			query.append(_FINDER_COLUMN_UUID_C_UUID_1);
+		}
+		else {
+			if (uuid.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
+			}
+			else {
+				query.append(_FINDER_COLUMN_UUID_C_UUID_2);
+			}
+		}
+
+		query.append(_FINDER_COLUMN_UUID_C_COMPANYID_2);
+
+		if (!getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_2);
+		}
+
+		if (orderByComparator != null) {
+			String[] orderByConditionFields = orderByComparator.getOrderByConditionFields();
+
+			if (orderByConditionFields.length > 0) {
+				query.append(WHERE_AND);
+			}
+
+			for (int i = 0; i < orderByConditionFields.length; i++) {
+				if (getDB().isSupportsInlineDistinct()) {
+					query.append(_ORDER_BY_ENTITY_ALIAS);
+				}
+				else {
+					query.append(_ORDER_BY_ENTITY_TABLE);
+				}
+
+				query.append(orderByConditionFields[i]);
+
+				if ((i + 1) < orderByConditionFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN);
+					}
+				}
+			}
+
+			query.append(ORDER_BY_CLAUSE);
+
+			String[] orderByFields = orderByComparator.getOrderByFields();
+
+			for (int i = 0; i < orderByFields.length; i++) {
+				if (getDB().isSupportsInlineDistinct()) {
+					query.append(_ORDER_BY_ENTITY_ALIAS);
+				}
+				else {
+					query.append(_ORDER_BY_ENTITY_TABLE);
+				}
+
+				query.append(orderByFields[i]);
+
+				if ((i + 1) < orderByFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC_HAS_NEXT);
+					}
+					else {
+						query.append(ORDER_BY_DESC_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC);
+					}
+					else {
+						query.append(ORDER_BY_DESC);
+					}
+				}
+			}
+		}
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(query.toString(),
+				SocialRelation.class.getName(),
+				_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		SQLQuery q = session.createSQLQuery(sql);
+
+		q.setFirstResult(0);
+		q.setMaxResults(2);
+
+		if (getDB().isSupportsInlineDistinct()) {
+			q.addEntity(_FILTER_ENTITY_ALIAS, SocialRelationImpl.class);
+		}
+		else {
+			q.addEntity(_FILTER_ENTITY_TABLE, SocialRelationImpl.class);
+		}
+
+		QueryPos qPos = QueryPos.getInstance(q);
+
+		if (uuid != null) {
+			qPos.add(uuid);
+		}
+
+		qPos.add(companyId);
+
+		if (orderByComparator != null) {
+			Object[] values = orderByComparator.getOrderByConditionValues(socialRelation);
+
+			for (Object value : values) {
+				qPos.add(value);
+			}
+		}
+
+		List<SocialRelation> list = q.list();
+
+		if (list.size() == 2) {
+			return list.get(1);
+		}
+		else {
+			return null;
+		}
+	}
+
+	/**
 	 * Returns all the social relations where companyId = &#63;.
 	 *
 	 * @param companyId the company ID
@@ -2005,6 +2656,302 @@ public class SocialRelationPersistenceImpl extends BasePersistenceImpl<SocialRel
 
 		q.setFirstResult(0);
 		q.setMaxResults(2);
+
+		QueryPos qPos = QueryPos.getInstance(q);
+
+		qPos.add(companyId);
+
+		if (orderByComparator != null) {
+			Object[] values = orderByComparator.getOrderByConditionValues(socialRelation);
+
+			for (Object value : values) {
+				qPos.add(value);
+			}
+		}
+
+		List<SocialRelation> list = q.list();
+
+		if (list.size() == 2) {
+			return list.get(1);
+		}
+		else {
+			return null;
+		}
+	}
+
+	/**
+	 * Returns all the social relations that the user has permission to view where companyId = &#63;.
+	 *
+	 * @param companyId the company ID
+	 * @return the matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public List<SocialRelation> filterFindByCompanyId(long companyId)
+		throws SystemException {
+		return filterFindByCompanyId(companyId, QueryUtil.ALL_POS,
+			QueryUtil.ALL_POS, null);
+	}
+
+	/**
+	 * Returns a range of all the social relations that the user has permission to view where companyId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * </p>
+	 *
+	 * @param companyId the company ID
+	 * @param start the lower bound of the range of social relations
+	 * @param end the upper bound of the range of social relations (not inclusive)
+	 * @return the range of matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public List<SocialRelation> filterFindByCompanyId(long companyId,
+		int start, int end) throws SystemException {
+		return filterFindByCompanyId(companyId, start, end, null);
+	}
+
+	/**
+	 * Returns an ordered range of all the social relations that the user has permissions to view where companyId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * </p>
+	 *
+	 * @param companyId the company ID
+	 * @param start the lower bound of the range of social relations
+	 * @param end the upper bound of the range of social relations (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public List<SocialRelation> filterFindByCompanyId(long companyId,
+		int start, int end, OrderByComparator orderByComparator)
+		throws SystemException {
+		if (!InlineSQLHelperUtil.isEnabled()) {
+			return findByCompanyId(companyId, start, end, orderByComparator);
+		}
+
+		StringBundler query = null;
+
+		if (orderByComparator != null) {
+			query = new StringBundler(3 +
+					(orderByComparator.getOrderByFields().length * 3));
+		}
+		else {
+			query = new StringBundler(2);
+		}
+
+		if (getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_WHERE);
+		}
+		else {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_1);
+		}
+
+		query.append(_FINDER_COLUMN_COMPANYID_COMPANYID_2);
+
+		if (!getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_2);
+		}
+
+		if (orderByComparator != null) {
+			if (getDB().isSupportsInlineDistinct()) {
+				appendOrderByComparator(query, _ORDER_BY_ENTITY_ALIAS,
+					orderByComparator);
+			}
+			else {
+				appendOrderByComparator(query, _ORDER_BY_ENTITY_TABLE,
+					orderByComparator);
+			}
+		}
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(query.toString(),
+				SocialRelation.class.getName(),
+				_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SQLQuery q = session.createSQLQuery(sql);
+
+			if (getDB().isSupportsInlineDistinct()) {
+				q.addEntity(_FILTER_ENTITY_ALIAS, SocialRelationImpl.class);
+			}
+			else {
+				q.addEntity(_FILTER_ENTITY_TABLE, SocialRelationImpl.class);
+			}
+
+			QueryPos qPos = QueryPos.getInstance(q);
+
+			qPos.add(companyId);
+
+			return (List<SocialRelation>)QueryUtil.list(q, getDialect(), start,
+				end);
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	/**
+	 * Returns the social relations before and after the current social relation in the ordered set of social relations that the user has permission to view where companyId = &#63;.
+	 *
+	 * @param relationId the primary key of the current social relation
+	 * @param companyId the company ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next social relation
+	 * @throws com.liferay.portlet.social.NoSuchRelationException if a social relation with the primary key could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public SocialRelation[] filterFindByCompanyId_PrevAndNext(long relationId,
+		long companyId, OrderByComparator orderByComparator)
+		throws NoSuchRelationException, SystemException {
+		if (!InlineSQLHelperUtil.isEnabled()) {
+			return findByCompanyId_PrevAndNext(relationId, companyId,
+				orderByComparator);
+		}
+
+		SocialRelation socialRelation = findByPrimaryKey(relationId);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SocialRelation[] array = new SocialRelationImpl[3];
+
+			array[0] = filterGetByCompanyId_PrevAndNext(session,
+					socialRelation, companyId, orderByComparator, true);
+
+			array[1] = socialRelation;
+
+			array[2] = filterGetByCompanyId_PrevAndNext(session,
+					socialRelation, companyId, orderByComparator, false);
+
+			return array;
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	protected SocialRelation filterGetByCompanyId_PrevAndNext(Session session,
+		SocialRelation socialRelation, long companyId,
+		OrderByComparator orderByComparator, boolean previous) {
+		StringBundler query = null;
+
+		if (orderByComparator != null) {
+			query = new StringBundler(6 +
+					(orderByComparator.getOrderByFields().length * 6));
+		}
+		else {
+			query = new StringBundler(3);
+		}
+
+		if (getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_WHERE);
+		}
+		else {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_1);
+		}
+
+		query.append(_FINDER_COLUMN_COMPANYID_COMPANYID_2);
+
+		if (!getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_2);
+		}
+
+		if (orderByComparator != null) {
+			String[] orderByConditionFields = orderByComparator.getOrderByConditionFields();
+
+			if (orderByConditionFields.length > 0) {
+				query.append(WHERE_AND);
+			}
+
+			for (int i = 0; i < orderByConditionFields.length; i++) {
+				if (getDB().isSupportsInlineDistinct()) {
+					query.append(_ORDER_BY_ENTITY_ALIAS);
+				}
+				else {
+					query.append(_ORDER_BY_ENTITY_TABLE);
+				}
+
+				query.append(orderByConditionFields[i]);
+
+				if ((i + 1) < orderByConditionFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN);
+					}
+				}
+			}
+
+			query.append(ORDER_BY_CLAUSE);
+
+			String[] orderByFields = orderByComparator.getOrderByFields();
+
+			for (int i = 0; i < orderByFields.length; i++) {
+				if (getDB().isSupportsInlineDistinct()) {
+					query.append(_ORDER_BY_ENTITY_ALIAS);
+				}
+				else {
+					query.append(_ORDER_BY_ENTITY_TABLE);
+				}
+
+				query.append(orderByFields[i]);
+
+				if ((i + 1) < orderByFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC_HAS_NEXT);
+					}
+					else {
+						query.append(ORDER_BY_DESC_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC);
+					}
+					else {
+						query.append(ORDER_BY_DESC);
+					}
+				}
+			}
+		}
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(query.toString(),
+				SocialRelation.class.getName(),
+				_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		SQLQuery q = session.createSQLQuery(sql);
+
+		q.setFirstResult(0);
+		q.setMaxResults(2);
+
+		if (getDB().isSupportsInlineDistinct()) {
+			q.addEntity(_FILTER_ENTITY_ALIAS, SocialRelationImpl.class);
+		}
+		else {
+			q.addEntity(_FILTER_ENTITY_TABLE, SocialRelationImpl.class);
+		}
 
 		QueryPos qPos = QueryPos.getInstance(q);
 
@@ -2377,6 +3324,301 @@ public class SocialRelationPersistenceImpl extends BasePersistenceImpl<SocialRel
 	}
 
 	/**
+	 * Returns all the social relations that the user has permission to view where userId1 = &#63;.
+	 *
+	 * @param userId1 the user id1
+	 * @return the matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public List<SocialRelation> filterFindByUserId1(long userId1)
+		throws SystemException {
+		return filterFindByUserId1(userId1, QueryUtil.ALL_POS,
+			QueryUtil.ALL_POS, null);
+	}
+
+	/**
+	 * Returns a range of all the social relations that the user has permission to view where userId1 = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * </p>
+	 *
+	 * @param userId1 the user id1
+	 * @param start the lower bound of the range of social relations
+	 * @param end the upper bound of the range of social relations (not inclusive)
+	 * @return the range of matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public List<SocialRelation> filterFindByUserId1(long userId1, int start,
+		int end) throws SystemException {
+		return filterFindByUserId1(userId1, start, end, null);
+	}
+
+	/**
+	 * Returns an ordered range of all the social relations that the user has permissions to view where userId1 = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * </p>
+	 *
+	 * @param userId1 the user id1
+	 * @param start the lower bound of the range of social relations
+	 * @param end the upper bound of the range of social relations (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public List<SocialRelation> filterFindByUserId1(long userId1, int start,
+		int end, OrderByComparator orderByComparator) throws SystemException {
+		if (!InlineSQLHelperUtil.isEnabled()) {
+			return findByUserId1(userId1, start, end, orderByComparator);
+		}
+
+		StringBundler query = null;
+
+		if (orderByComparator != null) {
+			query = new StringBundler(3 +
+					(orderByComparator.getOrderByFields().length * 3));
+		}
+		else {
+			query = new StringBundler(2);
+		}
+
+		if (getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_WHERE);
+		}
+		else {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_1);
+		}
+
+		query.append(_FINDER_COLUMN_USERID1_USERID1_2);
+
+		if (!getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_2);
+		}
+
+		if (orderByComparator != null) {
+			if (getDB().isSupportsInlineDistinct()) {
+				appendOrderByComparator(query, _ORDER_BY_ENTITY_ALIAS,
+					orderByComparator);
+			}
+			else {
+				appendOrderByComparator(query, _ORDER_BY_ENTITY_TABLE,
+					orderByComparator);
+			}
+		}
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(query.toString(),
+				SocialRelation.class.getName(),
+				_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SQLQuery q = session.createSQLQuery(sql);
+
+			if (getDB().isSupportsInlineDistinct()) {
+				q.addEntity(_FILTER_ENTITY_ALIAS, SocialRelationImpl.class);
+			}
+			else {
+				q.addEntity(_FILTER_ENTITY_TABLE, SocialRelationImpl.class);
+			}
+
+			QueryPos qPos = QueryPos.getInstance(q);
+
+			qPos.add(userId1);
+
+			return (List<SocialRelation>)QueryUtil.list(q, getDialect(), start,
+				end);
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	/**
+	 * Returns the social relations before and after the current social relation in the ordered set of social relations that the user has permission to view where userId1 = &#63;.
+	 *
+	 * @param relationId the primary key of the current social relation
+	 * @param userId1 the user id1
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next social relation
+	 * @throws com.liferay.portlet.social.NoSuchRelationException if a social relation with the primary key could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public SocialRelation[] filterFindByUserId1_PrevAndNext(long relationId,
+		long userId1, OrderByComparator orderByComparator)
+		throws NoSuchRelationException, SystemException {
+		if (!InlineSQLHelperUtil.isEnabled()) {
+			return findByUserId1_PrevAndNext(relationId, userId1,
+				orderByComparator);
+		}
+
+		SocialRelation socialRelation = findByPrimaryKey(relationId);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SocialRelation[] array = new SocialRelationImpl[3];
+
+			array[0] = filterGetByUserId1_PrevAndNext(session, socialRelation,
+					userId1, orderByComparator, true);
+
+			array[1] = socialRelation;
+
+			array[2] = filterGetByUserId1_PrevAndNext(session, socialRelation,
+					userId1, orderByComparator, false);
+
+			return array;
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	protected SocialRelation filterGetByUserId1_PrevAndNext(Session session,
+		SocialRelation socialRelation, long userId1,
+		OrderByComparator orderByComparator, boolean previous) {
+		StringBundler query = null;
+
+		if (orderByComparator != null) {
+			query = new StringBundler(6 +
+					(orderByComparator.getOrderByFields().length * 6));
+		}
+		else {
+			query = new StringBundler(3);
+		}
+
+		if (getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_WHERE);
+		}
+		else {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_1);
+		}
+
+		query.append(_FINDER_COLUMN_USERID1_USERID1_2);
+
+		if (!getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_2);
+		}
+
+		if (orderByComparator != null) {
+			String[] orderByConditionFields = orderByComparator.getOrderByConditionFields();
+
+			if (orderByConditionFields.length > 0) {
+				query.append(WHERE_AND);
+			}
+
+			for (int i = 0; i < orderByConditionFields.length; i++) {
+				if (getDB().isSupportsInlineDistinct()) {
+					query.append(_ORDER_BY_ENTITY_ALIAS);
+				}
+				else {
+					query.append(_ORDER_BY_ENTITY_TABLE);
+				}
+
+				query.append(orderByConditionFields[i]);
+
+				if ((i + 1) < orderByConditionFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN);
+					}
+				}
+			}
+
+			query.append(ORDER_BY_CLAUSE);
+
+			String[] orderByFields = orderByComparator.getOrderByFields();
+
+			for (int i = 0; i < orderByFields.length; i++) {
+				if (getDB().isSupportsInlineDistinct()) {
+					query.append(_ORDER_BY_ENTITY_ALIAS);
+				}
+				else {
+					query.append(_ORDER_BY_ENTITY_TABLE);
+				}
+
+				query.append(orderByFields[i]);
+
+				if ((i + 1) < orderByFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC_HAS_NEXT);
+					}
+					else {
+						query.append(ORDER_BY_DESC_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC);
+					}
+					else {
+						query.append(ORDER_BY_DESC);
+					}
+				}
+			}
+		}
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(query.toString(),
+				SocialRelation.class.getName(),
+				_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		SQLQuery q = session.createSQLQuery(sql);
+
+		q.setFirstResult(0);
+		q.setMaxResults(2);
+
+		if (getDB().isSupportsInlineDistinct()) {
+			q.addEntity(_FILTER_ENTITY_ALIAS, SocialRelationImpl.class);
+		}
+		else {
+			q.addEntity(_FILTER_ENTITY_TABLE, SocialRelationImpl.class);
+		}
+
+		QueryPos qPos = QueryPos.getInstance(q);
+
+		qPos.add(userId1);
+
+		if (orderByComparator != null) {
+			Object[] values = orderByComparator.getOrderByConditionValues(socialRelation);
+
+			for (Object value : values) {
+				qPos.add(value);
+			}
+		}
+
+		List<SocialRelation> list = q.list();
+
+		if (list.size() == 2) {
+			return list.get(1);
+		}
+		else {
+			return null;
+		}
+	}
+
+	/**
 	 * Returns all the social relations where userId2 = &#63;.
 	 *
 	 * @param userId2 the user id2
@@ -2725,6 +3967,301 @@ public class SocialRelationPersistenceImpl extends BasePersistenceImpl<SocialRel
 	}
 
 	/**
+	 * Returns all the social relations that the user has permission to view where userId2 = &#63;.
+	 *
+	 * @param userId2 the user id2
+	 * @return the matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public List<SocialRelation> filterFindByUserId2(long userId2)
+		throws SystemException {
+		return filterFindByUserId2(userId2, QueryUtil.ALL_POS,
+			QueryUtil.ALL_POS, null);
+	}
+
+	/**
+	 * Returns a range of all the social relations that the user has permission to view where userId2 = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * </p>
+	 *
+	 * @param userId2 the user id2
+	 * @param start the lower bound of the range of social relations
+	 * @param end the upper bound of the range of social relations (not inclusive)
+	 * @return the range of matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public List<SocialRelation> filterFindByUserId2(long userId2, int start,
+		int end) throws SystemException {
+		return filterFindByUserId2(userId2, start, end, null);
+	}
+
+	/**
+	 * Returns an ordered range of all the social relations that the user has permissions to view where userId2 = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * </p>
+	 *
+	 * @param userId2 the user id2
+	 * @param start the lower bound of the range of social relations
+	 * @param end the upper bound of the range of social relations (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public List<SocialRelation> filterFindByUserId2(long userId2, int start,
+		int end, OrderByComparator orderByComparator) throws SystemException {
+		if (!InlineSQLHelperUtil.isEnabled()) {
+			return findByUserId2(userId2, start, end, orderByComparator);
+		}
+
+		StringBundler query = null;
+
+		if (orderByComparator != null) {
+			query = new StringBundler(3 +
+					(orderByComparator.getOrderByFields().length * 3));
+		}
+		else {
+			query = new StringBundler(2);
+		}
+
+		if (getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_WHERE);
+		}
+		else {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_1);
+		}
+
+		query.append(_FINDER_COLUMN_USERID2_USERID2_2);
+
+		if (!getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_2);
+		}
+
+		if (orderByComparator != null) {
+			if (getDB().isSupportsInlineDistinct()) {
+				appendOrderByComparator(query, _ORDER_BY_ENTITY_ALIAS,
+					orderByComparator);
+			}
+			else {
+				appendOrderByComparator(query, _ORDER_BY_ENTITY_TABLE,
+					orderByComparator);
+			}
+		}
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(query.toString(),
+				SocialRelation.class.getName(),
+				_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SQLQuery q = session.createSQLQuery(sql);
+
+			if (getDB().isSupportsInlineDistinct()) {
+				q.addEntity(_FILTER_ENTITY_ALIAS, SocialRelationImpl.class);
+			}
+			else {
+				q.addEntity(_FILTER_ENTITY_TABLE, SocialRelationImpl.class);
+			}
+
+			QueryPos qPos = QueryPos.getInstance(q);
+
+			qPos.add(userId2);
+
+			return (List<SocialRelation>)QueryUtil.list(q, getDialect(), start,
+				end);
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	/**
+	 * Returns the social relations before and after the current social relation in the ordered set of social relations that the user has permission to view where userId2 = &#63;.
+	 *
+	 * @param relationId the primary key of the current social relation
+	 * @param userId2 the user id2
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next social relation
+	 * @throws com.liferay.portlet.social.NoSuchRelationException if a social relation with the primary key could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public SocialRelation[] filterFindByUserId2_PrevAndNext(long relationId,
+		long userId2, OrderByComparator orderByComparator)
+		throws NoSuchRelationException, SystemException {
+		if (!InlineSQLHelperUtil.isEnabled()) {
+			return findByUserId2_PrevAndNext(relationId, userId2,
+				orderByComparator);
+		}
+
+		SocialRelation socialRelation = findByPrimaryKey(relationId);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SocialRelation[] array = new SocialRelationImpl[3];
+
+			array[0] = filterGetByUserId2_PrevAndNext(session, socialRelation,
+					userId2, orderByComparator, true);
+
+			array[1] = socialRelation;
+
+			array[2] = filterGetByUserId2_PrevAndNext(session, socialRelation,
+					userId2, orderByComparator, false);
+
+			return array;
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	protected SocialRelation filterGetByUserId2_PrevAndNext(Session session,
+		SocialRelation socialRelation, long userId2,
+		OrderByComparator orderByComparator, boolean previous) {
+		StringBundler query = null;
+
+		if (orderByComparator != null) {
+			query = new StringBundler(6 +
+					(orderByComparator.getOrderByFields().length * 6));
+		}
+		else {
+			query = new StringBundler(3);
+		}
+
+		if (getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_WHERE);
+		}
+		else {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_1);
+		}
+
+		query.append(_FINDER_COLUMN_USERID2_USERID2_2);
+
+		if (!getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_2);
+		}
+
+		if (orderByComparator != null) {
+			String[] orderByConditionFields = orderByComparator.getOrderByConditionFields();
+
+			if (orderByConditionFields.length > 0) {
+				query.append(WHERE_AND);
+			}
+
+			for (int i = 0; i < orderByConditionFields.length; i++) {
+				if (getDB().isSupportsInlineDistinct()) {
+					query.append(_ORDER_BY_ENTITY_ALIAS);
+				}
+				else {
+					query.append(_ORDER_BY_ENTITY_TABLE);
+				}
+
+				query.append(orderByConditionFields[i]);
+
+				if ((i + 1) < orderByConditionFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN);
+					}
+				}
+			}
+
+			query.append(ORDER_BY_CLAUSE);
+
+			String[] orderByFields = orderByComparator.getOrderByFields();
+
+			for (int i = 0; i < orderByFields.length; i++) {
+				if (getDB().isSupportsInlineDistinct()) {
+					query.append(_ORDER_BY_ENTITY_ALIAS);
+				}
+				else {
+					query.append(_ORDER_BY_ENTITY_TABLE);
+				}
+
+				query.append(orderByFields[i]);
+
+				if ((i + 1) < orderByFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC_HAS_NEXT);
+					}
+					else {
+						query.append(ORDER_BY_DESC_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC);
+					}
+					else {
+						query.append(ORDER_BY_DESC);
+					}
+				}
+			}
+		}
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(query.toString(),
+				SocialRelation.class.getName(),
+				_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		SQLQuery q = session.createSQLQuery(sql);
+
+		q.setFirstResult(0);
+		q.setMaxResults(2);
+
+		if (getDB().isSupportsInlineDistinct()) {
+			q.addEntity(_FILTER_ENTITY_ALIAS, SocialRelationImpl.class);
+		}
+		else {
+			q.addEntity(_FILTER_ENTITY_TABLE, SocialRelationImpl.class);
+		}
+
+		QueryPos qPos = QueryPos.getInstance(q);
+
+		qPos.add(userId2);
+
+		if (orderByComparator != null) {
+			Object[] values = orderByComparator.getOrderByConditionValues(socialRelation);
+
+			for (Object value : values) {
+				qPos.add(value);
+			}
+		}
+
+		List<SocialRelation> list = q.list();
+
+		if (list.size() == 2) {
+			return list.get(1);
+		}
+		else {
+			return null;
+		}
+	}
+
+	/**
 	 * Returns all the social relations where type = &#63;.
 	 *
 	 * @param type the type
@@ -3047,6 +4584,299 @@ public class SocialRelationPersistenceImpl extends BasePersistenceImpl<SocialRel
 
 		q.setFirstResult(0);
 		q.setMaxResults(2);
+
+		QueryPos qPos = QueryPos.getInstance(q);
+
+		qPos.add(type);
+
+		if (orderByComparator != null) {
+			Object[] values = orderByComparator.getOrderByConditionValues(socialRelation);
+
+			for (Object value : values) {
+				qPos.add(value);
+			}
+		}
+
+		List<SocialRelation> list = q.list();
+
+		if (list.size() == 2) {
+			return list.get(1);
+		}
+		else {
+			return null;
+		}
+	}
+
+	/**
+	 * Returns all the social relations that the user has permission to view where type = &#63;.
+	 *
+	 * @param type the type
+	 * @return the matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public List<SocialRelation> filterFindByType(int type)
+		throws SystemException {
+		return filterFindByType(type, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
+	}
+
+	/**
+	 * Returns a range of all the social relations that the user has permission to view where type = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * </p>
+	 *
+	 * @param type the type
+	 * @param start the lower bound of the range of social relations
+	 * @param end the upper bound of the range of social relations (not inclusive)
+	 * @return the range of matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public List<SocialRelation> filterFindByType(int type, int start, int end)
+		throws SystemException {
+		return filterFindByType(type, start, end, null);
+	}
+
+	/**
+	 * Returns an ordered range of all the social relations that the user has permissions to view where type = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * </p>
+	 *
+	 * @param type the type
+	 * @param start the lower bound of the range of social relations
+	 * @param end the upper bound of the range of social relations (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public List<SocialRelation> filterFindByType(int type, int start, int end,
+		OrderByComparator orderByComparator) throws SystemException {
+		if (!InlineSQLHelperUtil.isEnabled()) {
+			return findByType(type, start, end, orderByComparator);
+		}
+
+		StringBundler query = null;
+
+		if (orderByComparator != null) {
+			query = new StringBundler(3 +
+					(orderByComparator.getOrderByFields().length * 3));
+		}
+		else {
+			query = new StringBundler(2);
+		}
+
+		if (getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_WHERE);
+		}
+		else {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_1);
+		}
+
+		query.append(_FINDER_COLUMN_TYPE_TYPE_2);
+
+		if (!getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_2);
+		}
+
+		if (orderByComparator != null) {
+			if (getDB().isSupportsInlineDistinct()) {
+				appendOrderByComparator(query, _ORDER_BY_ENTITY_ALIAS,
+					orderByComparator);
+			}
+			else {
+				appendOrderByComparator(query, _ORDER_BY_ENTITY_TABLE,
+					orderByComparator);
+			}
+		}
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(query.toString(),
+				SocialRelation.class.getName(),
+				_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SQLQuery q = session.createSQLQuery(sql);
+
+			if (getDB().isSupportsInlineDistinct()) {
+				q.addEntity(_FILTER_ENTITY_ALIAS, SocialRelationImpl.class);
+			}
+			else {
+				q.addEntity(_FILTER_ENTITY_TABLE, SocialRelationImpl.class);
+			}
+
+			QueryPos qPos = QueryPos.getInstance(q);
+
+			qPos.add(type);
+
+			return (List<SocialRelation>)QueryUtil.list(q, getDialect(), start,
+				end);
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	/**
+	 * Returns the social relations before and after the current social relation in the ordered set of social relations that the user has permission to view where type = &#63;.
+	 *
+	 * @param relationId the primary key of the current social relation
+	 * @param type the type
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next social relation
+	 * @throws com.liferay.portlet.social.NoSuchRelationException if a social relation with the primary key could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public SocialRelation[] filterFindByType_PrevAndNext(long relationId,
+		int type, OrderByComparator orderByComparator)
+		throws NoSuchRelationException, SystemException {
+		if (!InlineSQLHelperUtil.isEnabled()) {
+			return findByType_PrevAndNext(relationId, type, orderByComparator);
+		}
+
+		SocialRelation socialRelation = findByPrimaryKey(relationId);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SocialRelation[] array = new SocialRelationImpl[3];
+
+			array[0] = filterGetByType_PrevAndNext(session, socialRelation,
+					type, orderByComparator, true);
+
+			array[1] = socialRelation;
+
+			array[2] = filterGetByType_PrevAndNext(session, socialRelation,
+					type, orderByComparator, false);
+
+			return array;
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	protected SocialRelation filterGetByType_PrevAndNext(Session session,
+		SocialRelation socialRelation, int type,
+		OrderByComparator orderByComparator, boolean previous) {
+		StringBundler query = null;
+
+		if (orderByComparator != null) {
+			query = new StringBundler(6 +
+					(orderByComparator.getOrderByFields().length * 6));
+		}
+		else {
+			query = new StringBundler(3);
+		}
+
+		if (getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_WHERE);
+		}
+		else {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_1);
+		}
+
+		query.append(_FINDER_COLUMN_TYPE_TYPE_2);
+
+		if (!getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_2);
+		}
+
+		if (orderByComparator != null) {
+			String[] orderByConditionFields = orderByComparator.getOrderByConditionFields();
+
+			if (orderByConditionFields.length > 0) {
+				query.append(WHERE_AND);
+			}
+
+			for (int i = 0; i < orderByConditionFields.length; i++) {
+				if (getDB().isSupportsInlineDistinct()) {
+					query.append(_ORDER_BY_ENTITY_ALIAS);
+				}
+				else {
+					query.append(_ORDER_BY_ENTITY_TABLE);
+				}
+
+				query.append(orderByConditionFields[i]);
+
+				if ((i + 1) < orderByConditionFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN);
+					}
+				}
+			}
+
+			query.append(ORDER_BY_CLAUSE);
+
+			String[] orderByFields = orderByComparator.getOrderByFields();
+
+			for (int i = 0; i < orderByFields.length; i++) {
+				if (getDB().isSupportsInlineDistinct()) {
+					query.append(_ORDER_BY_ENTITY_ALIAS);
+				}
+				else {
+					query.append(_ORDER_BY_ENTITY_TABLE);
+				}
+
+				query.append(orderByFields[i]);
+
+				if ((i + 1) < orderByFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC_HAS_NEXT);
+					}
+					else {
+						query.append(ORDER_BY_DESC_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC);
+					}
+					else {
+						query.append(ORDER_BY_DESC);
+					}
+				}
+			}
+		}
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(query.toString(),
+				SocialRelation.class.getName(),
+				_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		SQLQuery q = session.createSQLQuery(sql);
+
+		q.setFirstResult(0);
+		q.setMaxResults(2);
+
+		if (getDB().isSupportsInlineDistinct()) {
+			q.addEntity(_FILTER_ENTITY_ALIAS, SocialRelationImpl.class);
+		}
+		else {
+			q.addEntity(_FILTER_ENTITY_TABLE, SocialRelationImpl.class);
+		}
 
 		QueryPos qPos = QueryPos.getInstance(q);
 
@@ -3419,6 +5249,314 @@ public class SocialRelationPersistenceImpl extends BasePersistenceImpl<SocialRel
 
 		q.setFirstResult(0);
 		q.setMaxResults(2);
+
+		QueryPos qPos = QueryPos.getInstance(q);
+
+		qPos.add(companyId);
+
+		qPos.add(type);
+
+		if (orderByComparator != null) {
+			Object[] values = orderByComparator.getOrderByConditionValues(socialRelation);
+
+			for (Object value : values) {
+				qPos.add(value);
+			}
+		}
+
+		List<SocialRelation> list = q.list();
+
+		if (list.size() == 2) {
+			return list.get(1);
+		}
+		else {
+			return null;
+		}
+	}
+
+	/**
+	 * Returns all the social relations that the user has permission to view where companyId = &#63; and type = &#63;.
+	 *
+	 * @param companyId the company ID
+	 * @param type the type
+	 * @return the matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public List<SocialRelation> filterFindByC_T(long companyId, int type)
+		throws SystemException {
+		return filterFindByC_T(companyId, type, QueryUtil.ALL_POS,
+			QueryUtil.ALL_POS, null);
+	}
+
+	/**
+	 * Returns a range of all the social relations that the user has permission to view where companyId = &#63; and type = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * </p>
+	 *
+	 * @param companyId the company ID
+	 * @param type the type
+	 * @param start the lower bound of the range of social relations
+	 * @param end the upper bound of the range of social relations (not inclusive)
+	 * @return the range of matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public List<SocialRelation> filterFindByC_T(long companyId, int type,
+		int start, int end) throws SystemException {
+		return filterFindByC_T(companyId, type, start, end, null);
+	}
+
+	/**
+	 * Returns an ordered range of all the social relations that the user has permissions to view where companyId = &#63; and type = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * </p>
+	 *
+	 * @param companyId the company ID
+	 * @param type the type
+	 * @param start the lower bound of the range of social relations
+	 * @param end the upper bound of the range of social relations (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public List<SocialRelation> filterFindByC_T(long companyId, int type,
+		int start, int end, OrderByComparator orderByComparator)
+		throws SystemException {
+		if (!InlineSQLHelperUtil.isEnabled()) {
+			return findByC_T(companyId, type, start, end, orderByComparator);
+		}
+
+		StringBundler query = null;
+
+		if (orderByComparator != null) {
+			query = new StringBundler(4 +
+					(orderByComparator.getOrderByFields().length * 3));
+		}
+		else {
+			query = new StringBundler(3);
+		}
+
+		if (getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_WHERE);
+		}
+		else {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_1);
+		}
+
+		query.append(_FINDER_COLUMN_C_T_COMPANYID_2);
+
+		query.append(_FINDER_COLUMN_C_T_TYPE_2);
+
+		if (!getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_2);
+		}
+
+		if (orderByComparator != null) {
+			if (getDB().isSupportsInlineDistinct()) {
+				appendOrderByComparator(query, _ORDER_BY_ENTITY_ALIAS,
+					orderByComparator);
+			}
+			else {
+				appendOrderByComparator(query, _ORDER_BY_ENTITY_TABLE,
+					orderByComparator);
+			}
+		}
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(query.toString(),
+				SocialRelation.class.getName(),
+				_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SQLQuery q = session.createSQLQuery(sql);
+
+			if (getDB().isSupportsInlineDistinct()) {
+				q.addEntity(_FILTER_ENTITY_ALIAS, SocialRelationImpl.class);
+			}
+			else {
+				q.addEntity(_FILTER_ENTITY_TABLE, SocialRelationImpl.class);
+			}
+
+			QueryPos qPos = QueryPos.getInstance(q);
+
+			qPos.add(companyId);
+
+			qPos.add(type);
+
+			return (List<SocialRelation>)QueryUtil.list(q, getDialect(), start,
+				end);
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	/**
+	 * Returns the social relations before and after the current social relation in the ordered set of social relations that the user has permission to view where companyId = &#63; and type = &#63;.
+	 *
+	 * @param relationId the primary key of the current social relation
+	 * @param companyId the company ID
+	 * @param type the type
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next social relation
+	 * @throws com.liferay.portlet.social.NoSuchRelationException if a social relation with the primary key could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public SocialRelation[] filterFindByC_T_PrevAndNext(long relationId,
+		long companyId, int type, OrderByComparator orderByComparator)
+		throws NoSuchRelationException, SystemException {
+		if (!InlineSQLHelperUtil.isEnabled()) {
+			return findByC_T_PrevAndNext(relationId, companyId, type,
+				orderByComparator);
+		}
+
+		SocialRelation socialRelation = findByPrimaryKey(relationId);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SocialRelation[] array = new SocialRelationImpl[3];
+
+			array[0] = filterGetByC_T_PrevAndNext(session, socialRelation,
+					companyId, type, orderByComparator, true);
+
+			array[1] = socialRelation;
+
+			array[2] = filterGetByC_T_PrevAndNext(session, socialRelation,
+					companyId, type, orderByComparator, false);
+
+			return array;
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	protected SocialRelation filterGetByC_T_PrevAndNext(Session session,
+		SocialRelation socialRelation, long companyId, int type,
+		OrderByComparator orderByComparator, boolean previous) {
+		StringBundler query = null;
+
+		if (orderByComparator != null) {
+			query = new StringBundler(6 +
+					(orderByComparator.getOrderByFields().length * 6));
+		}
+		else {
+			query = new StringBundler(3);
+		}
+
+		if (getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_WHERE);
+		}
+		else {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_1);
+		}
+
+		query.append(_FINDER_COLUMN_C_T_COMPANYID_2);
+
+		query.append(_FINDER_COLUMN_C_T_TYPE_2);
+
+		if (!getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_2);
+		}
+
+		if (orderByComparator != null) {
+			String[] orderByConditionFields = orderByComparator.getOrderByConditionFields();
+
+			if (orderByConditionFields.length > 0) {
+				query.append(WHERE_AND);
+			}
+
+			for (int i = 0; i < orderByConditionFields.length; i++) {
+				if (getDB().isSupportsInlineDistinct()) {
+					query.append(_ORDER_BY_ENTITY_ALIAS);
+				}
+				else {
+					query.append(_ORDER_BY_ENTITY_TABLE);
+				}
+
+				query.append(orderByConditionFields[i]);
+
+				if ((i + 1) < orderByConditionFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN);
+					}
+				}
+			}
+
+			query.append(ORDER_BY_CLAUSE);
+
+			String[] orderByFields = orderByComparator.getOrderByFields();
+
+			for (int i = 0; i < orderByFields.length; i++) {
+				if (getDB().isSupportsInlineDistinct()) {
+					query.append(_ORDER_BY_ENTITY_ALIAS);
+				}
+				else {
+					query.append(_ORDER_BY_ENTITY_TABLE);
+				}
+
+				query.append(orderByFields[i]);
+
+				if ((i + 1) < orderByFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC_HAS_NEXT);
+					}
+					else {
+						query.append(ORDER_BY_DESC_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC);
+					}
+					else {
+						query.append(ORDER_BY_DESC);
+					}
+				}
+			}
+		}
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(query.toString(),
+				SocialRelation.class.getName(),
+				_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		SQLQuery q = session.createSQLQuery(sql);
+
+		q.setFirstResult(0);
+		q.setMaxResults(2);
+
+		if (getDB().isSupportsInlineDistinct()) {
+			q.addEntity(_FILTER_ENTITY_ALIAS, SocialRelationImpl.class);
+		}
+		else {
+			q.addEntity(_FILTER_ENTITY_TABLE, SocialRelationImpl.class);
+		}
 
 		QueryPos qPos = QueryPos.getInstance(q);
 
@@ -3820,6 +5958,314 @@ public class SocialRelationPersistenceImpl extends BasePersistenceImpl<SocialRel
 	}
 
 	/**
+	 * Returns all the social relations that the user has permission to view where userId1 = &#63; and userId2 = &#63;.
+	 *
+	 * @param userId1 the user id1
+	 * @param userId2 the user id2
+	 * @return the matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public List<SocialRelation> filterFindByU1_U2(long userId1, long userId2)
+		throws SystemException {
+		return filterFindByU1_U2(userId1, userId2, QueryUtil.ALL_POS,
+			QueryUtil.ALL_POS, null);
+	}
+
+	/**
+	 * Returns a range of all the social relations that the user has permission to view where userId1 = &#63; and userId2 = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * </p>
+	 *
+	 * @param userId1 the user id1
+	 * @param userId2 the user id2
+	 * @param start the lower bound of the range of social relations
+	 * @param end the upper bound of the range of social relations (not inclusive)
+	 * @return the range of matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public List<SocialRelation> filterFindByU1_U2(long userId1, long userId2,
+		int start, int end) throws SystemException {
+		return filterFindByU1_U2(userId1, userId2, start, end, null);
+	}
+
+	/**
+	 * Returns an ordered range of all the social relations that the user has permissions to view where userId1 = &#63; and userId2 = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * </p>
+	 *
+	 * @param userId1 the user id1
+	 * @param userId2 the user id2
+	 * @param start the lower bound of the range of social relations
+	 * @param end the upper bound of the range of social relations (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public List<SocialRelation> filterFindByU1_U2(long userId1, long userId2,
+		int start, int end, OrderByComparator orderByComparator)
+		throws SystemException {
+		if (!InlineSQLHelperUtil.isEnabled()) {
+			return findByU1_U2(userId1, userId2, start, end, orderByComparator);
+		}
+
+		StringBundler query = null;
+
+		if (orderByComparator != null) {
+			query = new StringBundler(4 +
+					(orderByComparator.getOrderByFields().length * 3));
+		}
+		else {
+			query = new StringBundler(3);
+		}
+
+		if (getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_WHERE);
+		}
+		else {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_1);
+		}
+
+		query.append(_FINDER_COLUMN_U1_U2_USERID1_2);
+
+		query.append(_FINDER_COLUMN_U1_U2_USERID2_2);
+
+		if (!getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_2);
+		}
+
+		if (orderByComparator != null) {
+			if (getDB().isSupportsInlineDistinct()) {
+				appendOrderByComparator(query, _ORDER_BY_ENTITY_ALIAS,
+					orderByComparator);
+			}
+			else {
+				appendOrderByComparator(query, _ORDER_BY_ENTITY_TABLE,
+					orderByComparator);
+			}
+		}
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(query.toString(),
+				SocialRelation.class.getName(),
+				_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SQLQuery q = session.createSQLQuery(sql);
+
+			if (getDB().isSupportsInlineDistinct()) {
+				q.addEntity(_FILTER_ENTITY_ALIAS, SocialRelationImpl.class);
+			}
+			else {
+				q.addEntity(_FILTER_ENTITY_TABLE, SocialRelationImpl.class);
+			}
+
+			QueryPos qPos = QueryPos.getInstance(q);
+
+			qPos.add(userId1);
+
+			qPos.add(userId2);
+
+			return (List<SocialRelation>)QueryUtil.list(q, getDialect(), start,
+				end);
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	/**
+	 * Returns the social relations before and after the current social relation in the ordered set of social relations that the user has permission to view where userId1 = &#63; and userId2 = &#63;.
+	 *
+	 * @param relationId the primary key of the current social relation
+	 * @param userId1 the user id1
+	 * @param userId2 the user id2
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next social relation
+	 * @throws com.liferay.portlet.social.NoSuchRelationException if a social relation with the primary key could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public SocialRelation[] filterFindByU1_U2_PrevAndNext(long relationId,
+		long userId1, long userId2, OrderByComparator orderByComparator)
+		throws NoSuchRelationException, SystemException {
+		if (!InlineSQLHelperUtil.isEnabled()) {
+			return findByU1_U2_PrevAndNext(relationId, userId1, userId2,
+				orderByComparator);
+		}
+
+		SocialRelation socialRelation = findByPrimaryKey(relationId);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SocialRelation[] array = new SocialRelationImpl[3];
+
+			array[0] = filterGetByU1_U2_PrevAndNext(session, socialRelation,
+					userId1, userId2, orderByComparator, true);
+
+			array[1] = socialRelation;
+
+			array[2] = filterGetByU1_U2_PrevAndNext(session, socialRelation,
+					userId1, userId2, orderByComparator, false);
+
+			return array;
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	protected SocialRelation filterGetByU1_U2_PrevAndNext(Session session,
+		SocialRelation socialRelation, long userId1, long userId2,
+		OrderByComparator orderByComparator, boolean previous) {
+		StringBundler query = null;
+
+		if (orderByComparator != null) {
+			query = new StringBundler(6 +
+					(orderByComparator.getOrderByFields().length * 6));
+		}
+		else {
+			query = new StringBundler(3);
+		}
+
+		if (getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_WHERE);
+		}
+		else {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_1);
+		}
+
+		query.append(_FINDER_COLUMN_U1_U2_USERID1_2);
+
+		query.append(_FINDER_COLUMN_U1_U2_USERID2_2);
+
+		if (!getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_2);
+		}
+
+		if (orderByComparator != null) {
+			String[] orderByConditionFields = orderByComparator.getOrderByConditionFields();
+
+			if (orderByConditionFields.length > 0) {
+				query.append(WHERE_AND);
+			}
+
+			for (int i = 0; i < orderByConditionFields.length; i++) {
+				if (getDB().isSupportsInlineDistinct()) {
+					query.append(_ORDER_BY_ENTITY_ALIAS);
+				}
+				else {
+					query.append(_ORDER_BY_ENTITY_TABLE);
+				}
+
+				query.append(orderByConditionFields[i]);
+
+				if ((i + 1) < orderByConditionFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN);
+					}
+				}
+			}
+
+			query.append(ORDER_BY_CLAUSE);
+
+			String[] orderByFields = orderByComparator.getOrderByFields();
+
+			for (int i = 0; i < orderByFields.length; i++) {
+				if (getDB().isSupportsInlineDistinct()) {
+					query.append(_ORDER_BY_ENTITY_ALIAS);
+				}
+				else {
+					query.append(_ORDER_BY_ENTITY_TABLE);
+				}
+
+				query.append(orderByFields[i]);
+
+				if ((i + 1) < orderByFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC_HAS_NEXT);
+					}
+					else {
+						query.append(ORDER_BY_DESC_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC);
+					}
+					else {
+						query.append(ORDER_BY_DESC);
+					}
+				}
+			}
+		}
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(query.toString(),
+				SocialRelation.class.getName(),
+				_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		SQLQuery q = session.createSQLQuery(sql);
+
+		q.setFirstResult(0);
+		q.setMaxResults(2);
+
+		if (getDB().isSupportsInlineDistinct()) {
+			q.addEntity(_FILTER_ENTITY_ALIAS, SocialRelationImpl.class);
+		}
+		else {
+			q.addEntity(_FILTER_ENTITY_TABLE, SocialRelationImpl.class);
+		}
+
+		QueryPos qPos = QueryPos.getInstance(q);
+
+		qPos.add(userId1);
+
+		qPos.add(userId2);
+
+		if (orderByComparator != null) {
+			Object[] values = orderByComparator.getOrderByConditionValues(socialRelation);
+
+			for (Object value : values) {
+				qPos.add(value);
+			}
+		}
+
+		List<SocialRelation> list = q.list();
+
+		if (list.size() == 2) {
+			return list.get(1);
+		}
+		else {
+			return null;
+		}
+	}
+
+	/**
 	 * Returns all the social relations where userId1 = &#63; and type = &#63;.
 	 *
 	 * @param userId1 the user id1
@@ -4194,6 +6640,314 @@ public class SocialRelationPersistenceImpl extends BasePersistenceImpl<SocialRel
 	}
 
 	/**
+	 * Returns all the social relations that the user has permission to view where userId1 = &#63; and type = &#63;.
+	 *
+	 * @param userId1 the user id1
+	 * @param type the type
+	 * @return the matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public List<SocialRelation> filterFindByU1_T(long userId1, int type)
+		throws SystemException {
+		return filterFindByU1_T(userId1, type, QueryUtil.ALL_POS,
+			QueryUtil.ALL_POS, null);
+	}
+
+	/**
+	 * Returns a range of all the social relations that the user has permission to view where userId1 = &#63; and type = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * </p>
+	 *
+	 * @param userId1 the user id1
+	 * @param type the type
+	 * @param start the lower bound of the range of social relations
+	 * @param end the upper bound of the range of social relations (not inclusive)
+	 * @return the range of matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public List<SocialRelation> filterFindByU1_T(long userId1, int type,
+		int start, int end) throws SystemException {
+		return filterFindByU1_T(userId1, type, start, end, null);
+	}
+
+	/**
+	 * Returns an ordered range of all the social relations that the user has permissions to view where userId1 = &#63; and type = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * </p>
+	 *
+	 * @param userId1 the user id1
+	 * @param type the type
+	 * @param start the lower bound of the range of social relations
+	 * @param end the upper bound of the range of social relations (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public List<SocialRelation> filterFindByU1_T(long userId1, int type,
+		int start, int end, OrderByComparator orderByComparator)
+		throws SystemException {
+		if (!InlineSQLHelperUtil.isEnabled()) {
+			return findByU1_T(userId1, type, start, end, orderByComparator);
+		}
+
+		StringBundler query = null;
+
+		if (orderByComparator != null) {
+			query = new StringBundler(4 +
+					(orderByComparator.getOrderByFields().length * 3));
+		}
+		else {
+			query = new StringBundler(3);
+		}
+
+		if (getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_WHERE);
+		}
+		else {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_1);
+		}
+
+		query.append(_FINDER_COLUMN_U1_T_USERID1_2);
+
+		query.append(_FINDER_COLUMN_U1_T_TYPE_2);
+
+		if (!getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_2);
+		}
+
+		if (orderByComparator != null) {
+			if (getDB().isSupportsInlineDistinct()) {
+				appendOrderByComparator(query, _ORDER_BY_ENTITY_ALIAS,
+					orderByComparator);
+			}
+			else {
+				appendOrderByComparator(query, _ORDER_BY_ENTITY_TABLE,
+					orderByComparator);
+			}
+		}
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(query.toString(),
+				SocialRelation.class.getName(),
+				_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SQLQuery q = session.createSQLQuery(sql);
+
+			if (getDB().isSupportsInlineDistinct()) {
+				q.addEntity(_FILTER_ENTITY_ALIAS, SocialRelationImpl.class);
+			}
+			else {
+				q.addEntity(_FILTER_ENTITY_TABLE, SocialRelationImpl.class);
+			}
+
+			QueryPos qPos = QueryPos.getInstance(q);
+
+			qPos.add(userId1);
+
+			qPos.add(type);
+
+			return (List<SocialRelation>)QueryUtil.list(q, getDialect(), start,
+				end);
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	/**
+	 * Returns the social relations before and after the current social relation in the ordered set of social relations that the user has permission to view where userId1 = &#63; and type = &#63;.
+	 *
+	 * @param relationId the primary key of the current social relation
+	 * @param userId1 the user id1
+	 * @param type the type
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next social relation
+	 * @throws com.liferay.portlet.social.NoSuchRelationException if a social relation with the primary key could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public SocialRelation[] filterFindByU1_T_PrevAndNext(long relationId,
+		long userId1, int type, OrderByComparator orderByComparator)
+		throws NoSuchRelationException, SystemException {
+		if (!InlineSQLHelperUtil.isEnabled()) {
+			return findByU1_T_PrevAndNext(relationId, userId1, type,
+				orderByComparator);
+		}
+
+		SocialRelation socialRelation = findByPrimaryKey(relationId);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SocialRelation[] array = new SocialRelationImpl[3];
+
+			array[0] = filterGetByU1_T_PrevAndNext(session, socialRelation,
+					userId1, type, orderByComparator, true);
+
+			array[1] = socialRelation;
+
+			array[2] = filterGetByU1_T_PrevAndNext(session, socialRelation,
+					userId1, type, orderByComparator, false);
+
+			return array;
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	protected SocialRelation filterGetByU1_T_PrevAndNext(Session session,
+		SocialRelation socialRelation, long userId1, int type,
+		OrderByComparator orderByComparator, boolean previous) {
+		StringBundler query = null;
+
+		if (orderByComparator != null) {
+			query = new StringBundler(6 +
+					(orderByComparator.getOrderByFields().length * 6));
+		}
+		else {
+			query = new StringBundler(3);
+		}
+
+		if (getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_WHERE);
+		}
+		else {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_1);
+		}
+
+		query.append(_FINDER_COLUMN_U1_T_USERID1_2);
+
+		query.append(_FINDER_COLUMN_U1_T_TYPE_2);
+
+		if (!getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_2);
+		}
+
+		if (orderByComparator != null) {
+			String[] orderByConditionFields = orderByComparator.getOrderByConditionFields();
+
+			if (orderByConditionFields.length > 0) {
+				query.append(WHERE_AND);
+			}
+
+			for (int i = 0; i < orderByConditionFields.length; i++) {
+				if (getDB().isSupportsInlineDistinct()) {
+					query.append(_ORDER_BY_ENTITY_ALIAS);
+				}
+				else {
+					query.append(_ORDER_BY_ENTITY_TABLE);
+				}
+
+				query.append(orderByConditionFields[i]);
+
+				if ((i + 1) < orderByConditionFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN);
+					}
+				}
+			}
+
+			query.append(ORDER_BY_CLAUSE);
+
+			String[] orderByFields = orderByComparator.getOrderByFields();
+
+			for (int i = 0; i < orderByFields.length; i++) {
+				if (getDB().isSupportsInlineDistinct()) {
+					query.append(_ORDER_BY_ENTITY_ALIAS);
+				}
+				else {
+					query.append(_ORDER_BY_ENTITY_TABLE);
+				}
+
+				query.append(orderByFields[i]);
+
+				if ((i + 1) < orderByFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC_HAS_NEXT);
+					}
+					else {
+						query.append(ORDER_BY_DESC_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC);
+					}
+					else {
+						query.append(ORDER_BY_DESC);
+					}
+				}
+			}
+		}
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(query.toString(),
+				SocialRelation.class.getName(),
+				_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		SQLQuery q = session.createSQLQuery(sql);
+
+		q.setFirstResult(0);
+		q.setMaxResults(2);
+
+		if (getDB().isSupportsInlineDistinct()) {
+			q.addEntity(_FILTER_ENTITY_ALIAS, SocialRelationImpl.class);
+		}
+		else {
+			q.addEntity(_FILTER_ENTITY_TABLE, SocialRelationImpl.class);
+		}
+
+		QueryPos qPos = QueryPos.getInstance(q);
+
+		qPos.add(userId1);
+
+		qPos.add(type);
+
+		if (orderByComparator != null) {
+			Object[] values = orderByComparator.getOrderByConditionValues(socialRelation);
+
+			for (Object value : values) {
+				qPos.add(value);
+			}
+		}
+
+		List<SocialRelation> list = q.list();
+
+		if (list.size() == 2) {
+			return list.get(1);
+		}
+		else {
+			return null;
+		}
+	}
+
+	/**
 	 * Returns all the social relations where userId2 = &#63; and type = &#63;.
 	 *
 	 * @param userId2 the user id2
@@ -4542,6 +7296,314 @@ public class SocialRelationPersistenceImpl extends BasePersistenceImpl<SocialRel
 
 		q.setFirstResult(0);
 		q.setMaxResults(2);
+
+		QueryPos qPos = QueryPos.getInstance(q);
+
+		qPos.add(userId2);
+
+		qPos.add(type);
+
+		if (orderByComparator != null) {
+			Object[] values = orderByComparator.getOrderByConditionValues(socialRelation);
+
+			for (Object value : values) {
+				qPos.add(value);
+			}
+		}
+
+		List<SocialRelation> list = q.list();
+
+		if (list.size() == 2) {
+			return list.get(1);
+		}
+		else {
+			return null;
+		}
+	}
+
+	/**
+	 * Returns all the social relations that the user has permission to view where userId2 = &#63; and type = &#63;.
+	 *
+	 * @param userId2 the user id2
+	 * @param type the type
+	 * @return the matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public List<SocialRelation> filterFindByU2_T(long userId2, int type)
+		throws SystemException {
+		return filterFindByU2_T(userId2, type, QueryUtil.ALL_POS,
+			QueryUtil.ALL_POS, null);
+	}
+
+	/**
+	 * Returns a range of all the social relations that the user has permission to view where userId2 = &#63; and type = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * </p>
+	 *
+	 * @param userId2 the user id2
+	 * @param type the type
+	 * @param start the lower bound of the range of social relations
+	 * @param end the upper bound of the range of social relations (not inclusive)
+	 * @return the range of matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public List<SocialRelation> filterFindByU2_T(long userId2, int type,
+		int start, int end) throws SystemException {
+		return filterFindByU2_T(userId2, type, start, end, null);
+	}
+
+	/**
+	 * Returns an ordered range of all the social relations that the user has permissions to view where userId2 = &#63; and type = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * </p>
+	 *
+	 * @param userId2 the user id2
+	 * @param type the type
+	 * @param start the lower bound of the range of social relations
+	 * @param end the upper bound of the range of social relations (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public List<SocialRelation> filterFindByU2_T(long userId2, int type,
+		int start, int end, OrderByComparator orderByComparator)
+		throws SystemException {
+		if (!InlineSQLHelperUtil.isEnabled()) {
+			return findByU2_T(userId2, type, start, end, orderByComparator);
+		}
+
+		StringBundler query = null;
+
+		if (orderByComparator != null) {
+			query = new StringBundler(4 +
+					(orderByComparator.getOrderByFields().length * 3));
+		}
+		else {
+			query = new StringBundler(3);
+		}
+
+		if (getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_WHERE);
+		}
+		else {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_1);
+		}
+
+		query.append(_FINDER_COLUMN_U2_T_USERID2_2);
+
+		query.append(_FINDER_COLUMN_U2_T_TYPE_2);
+
+		if (!getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_2);
+		}
+
+		if (orderByComparator != null) {
+			if (getDB().isSupportsInlineDistinct()) {
+				appendOrderByComparator(query, _ORDER_BY_ENTITY_ALIAS,
+					orderByComparator);
+			}
+			else {
+				appendOrderByComparator(query, _ORDER_BY_ENTITY_TABLE,
+					orderByComparator);
+			}
+		}
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(query.toString(),
+				SocialRelation.class.getName(),
+				_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SQLQuery q = session.createSQLQuery(sql);
+
+			if (getDB().isSupportsInlineDistinct()) {
+				q.addEntity(_FILTER_ENTITY_ALIAS, SocialRelationImpl.class);
+			}
+			else {
+				q.addEntity(_FILTER_ENTITY_TABLE, SocialRelationImpl.class);
+			}
+
+			QueryPos qPos = QueryPos.getInstance(q);
+
+			qPos.add(userId2);
+
+			qPos.add(type);
+
+			return (List<SocialRelation>)QueryUtil.list(q, getDialect(), start,
+				end);
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	/**
+	 * Returns the social relations before and after the current social relation in the ordered set of social relations that the user has permission to view where userId2 = &#63; and type = &#63;.
+	 *
+	 * @param relationId the primary key of the current social relation
+	 * @param userId2 the user id2
+	 * @param type the type
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next social relation
+	 * @throws com.liferay.portlet.social.NoSuchRelationException if a social relation with the primary key could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public SocialRelation[] filterFindByU2_T_PrevAndNext(long relationId,
+		long userId2, int type, OrderByComparator orderByComparator)
+		throws NoSuchRelationException, SystemException {
+		if (!InlineSQLHelperUtil.isEnabled()) {
+			return findByU2_T_PrevAndNext(relationId, userId2, type,
+				orderByComparator);
+		}
+
+		SocialRelation socialRelation = findByPrimaryKey(relationId);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SocialRelation[] array = new SocialRelationImpl[3];
+
+			array[0] = filterGetByU2_T_PrevAndNext(session, socialRelation,
+					userId2, type, orderByComparator, true);
+
+			array[1] = socialRelation;
+
+			array[2] = filterGetByU2_T_PrevAndNext(session, socialRelation,
+					userId2, type, orderByComparator, false);
+
+			return array;
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	protected SocialRelation filterGetByU2_T_PrevAndNext(Session session,
+		SocialRelation socialRelation, long userId2, int type,
+		OrderByComparator orderByComparator, boolean previous) {
+		StringBundler query = null;
+
+		if (orderByComparator != null) {
+			query = new StringBundler(6 +
+					(orderByComparator.getOrderByFields().length * 6));
+		}
+		else {
+			query = new StringBundler(3);
+		}
+
+		if (getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_WHERE);
+		}
+		else {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_1);
+		}
+
+		query.append(_FINDER_COLUMN_U2_T_USERID2_2);
+
+		query.append(_FINDER_COLUMN_U2_T_TYPE_2);
+
+		if (!getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_2);
+		}
+
+		if (orderByComparator != null) {
+			String[] orderByConditionFields = orderByComparator.getOrderByConditionFields();
+
+			if (orderByConditionFields.length > 0) {
+				query.append(WHERE_AND);
+			}
+
+			for (int i = 0; i < orderByConditionFields.length; i++) {
+				if (getDB().isSupportsInlineDistinct()) {
+					query.append(_ORDER_BY_ENTITY_ALIAS);
+				}
+				else {
+					query.append(_ORDER_BY_ENTITY_TABLE);
+				}
+
+				query.append(orderByConditionFields[i]);
+
+				if ((i + 1) < orderByConditionFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN);
+					}
+				}
+			}
+
+			query.append(ORDER_BY_CLAUSE);
+
+			String[] orderByFields = orderByComparator.getOrderByFields();
+
+			for (int i = 0; i < orderByFields.length; i++) {
+				if (getDB().isSupportsInlineDistinct()) {
+					query.append(_ORDER_BY_ENTITY_ALIAS);
+				}
+				else {
+					query.append(_ORDER_BY_ENTITY_TABLE);
+				}
+
+				query.append(orderByFields[i]);
+
+				if ((i + 1) < orderByFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC_HAS_NEXT);
+					}
+					else {
+						query.append(ORDER_BY_DESC_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC);
+					}
+					else {
+						query.append(ORDER_BY_DESC);
+					}
+				}
+			}
+		}
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(query.toString(),
+				SocialRelation.class.getName(),
+				_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		SQLQuery q = session.createSQLQuery(sql);
+
+		q.setFirstResult(0);
+		q.setMaxResults(2);
+
+		if (getDB().isSupportsInlineDistinct()) {
+			q.addEntity(_FILTER_ENTITY_ALIAS, SocialRelationImpl.class);
+		}
+		else {
+			q.addEntity(_FILTER_ENTITY_TABLE, SocialRelationImpl.class);
+		}
 
 		QueryPos qPos = QueryPos.getInstance(q);
 
@@ -5062,6 +8124,66 @@ public class SocialRelationPersistenceImpl extends BasePersistenceImpl<SocialRel
 	}
 
 	/**
+	 * Returns the number of social relations that the user has permission to view where uuid = &#63;.
+	 *
+	 * @param uuid the uuid
+	 * @return the number of matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public int filterCountByUuid(String uuid) throws SystemException {
+		if (!InlineSQLHelperUtil.isEnabled()) {
+			return countByUuid(uuid);
+		}
+
+		StringBundler query = new StringBundler(2);
+
+		query.append(_FILTER_SQL_COUNT_SOCIALRELATION_WHERE);
+
+		if (uuid == null) {
+			query.append(_FINDER_COLUMN_UUID_UUID_1);
+		}
+		else {
+			if (uuid.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_UUID_UUID_3);
+			}
+			else {
+				query.append(_FINDER_COLUMN_UUID_UUID_2);
+			}
+		}
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(query.toString(),
+				SocialRelation.class.getName(),
+				_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SQLQuery q = session.createSQLQuery(sql);
+
+			q.addScalar(COUNT_COLUMN_NAME,
+				com.liferay.portal.kernel.dao.orm.Type.LONG);
+
+			QueryPos qPos = QueryPos.getInstance(q);
+
+			if (uuid != null) {
+				qPos.add(uuid);
+			}
+
+			Long count = (Long)q.uniqueResult();
+
+			return count.intValue();
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	/**
 	 * Returns the number of social relations where uuid = &#63; and companyId = &#63;.
 	 *
 	 * @param uuid the uuid
@@ -5133,6 +8255,72 @@ public class SocialRelationPersistenceImpl extends BasePersistenceImpl<SocialRel
 	}
 
 	/**
+	 * Returns the number of social relations that the user has permission to view where uuid = &#63; and companyId = &#63;.
+	 *
+	 * @param uuid the uuid
+	 * @param companyId the company ID
+	 * @return the number of matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public int filterCountByUuid_C(String uuid, long companyId)
+		throws SystemException {
+		if (!InlineSQLHelperUtil.isEnabled()) {
+			return countByUuid_C(uuid, companyId);
+		}
+
+		StringBundler query = new StringBundler(3);
+
+		query.append(_FILTER_SQL_COUNT_SOCIALRELATION_WHERE);
+
+		if (uuid == null) {
+			query.append(_FINDER_COLUMN_UUID_C_UUID_1);
+		}
+		else {
+			if (uuid.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
+			}
+			else {
+				query.append(_FINDER_COLUMN_UUID_C_UUID_2);
+			}
+		}
+
+		query.append(_FINDER_COLUMN_UUID_C_COMPANYID_2);
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(query.toString(),
+				SocialRelation.class.getName(),
+				_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SQLQuery q = session.createSQLQuery(sql);
+
+			q.addScalar(COUNT_COLUMN_NAME,
+				com.liferay.portal.kernel.dao.orm.Type.LONG);
+
+			QueryPos qPos = QueryPos.getInstance(q);
+
+			if (uuid != null) {
+				qPos.add(uuid);
+			}
+
+			qPos.add(companyId);
+
+			Long count = (Long)q.uniqueResult();
+
+			return count.intValue();
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	/**
 	 * Returns the number of social relations where companyId = &#63;.
 	 *
 	 * @param companyId the company ID
@@ -5183,6 +8371,54 @@ public class SocialRelationPersistenceImpl extends BasePersistenceImpl<SocialRel
 		}
 
 		return count.intValue();
+	}
+
+	/**
+	 * Returns the number of social relations that the user has permission to view where companyId = &#63;.
+	 *
+	 * @param companyId the company ID
+	 * @return the number of matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public int filterCountByCompanyId(long companyId) throws SystemException {
+		if (!InlineSQLHelperUtil.isEnabled()) {
+			return countByCompanyId(companyId);
+		}
+
+		StringBundler query = new StringBundler(2);
+
+		query.append(_FILTER_SQL_COUNT_SOCIALRELATION_WHERE);
+
+		query.append(_FINDER_COLUMN_COMPANYID_COMPANYID_2);
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(query.toString(),
+				SocialRelation.class.getName(),
+				_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SQLQuery q = session.createSQLQuery(sql);
+
+			q.addScalar(COUNT_COLUMN_NAME,
+				com.liferay.portal.kernel.dao.orm.Type.LONG);
+
+			QueryPos qPos = QueryPos.getInstance(q);
+
+			qPos.add(companyId);
+
+			Long count = (Long)q.uniqueResult();
+
+			return count.intValue();
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
 	}
 
 	/**
@@ -5239,6 +8475,54 @@ public class SocialRelationPersistenceImpl extends BasePersistenceImpl<SocialRel
 	}
 
 	/**
+	 * Returns the number of social relations that the user has permission to view where userId1 = &#63;.
+	 *
+	 * @param userId1 the user id1
+	 * @return the number of matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public int filterCountByUserId1(long userId1) throws SystemException {
+		if (!InlineSQLHelperUtil.isEnabled()) {
+			return countByUserId1(userId1);
+		}
+
+		StringBundler query = new StringBundler(2);
+
+		query.append(_FILTER_SQL_COUNT_SOCIALRELATION_WHERE);
+
+		query.append(_FINDER_COLUMN_USERID1_USERID1_2);
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(query.toString(),
+				SocialRelation.class.getName(),
+				_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SQLQuery q = session.createSQLQuery(sql);
+
+			q.addScalar(COUNT_COLUMN_NAME,
+				com.liferay.portal.kernel.dao.orm.Type.LONG);
+
+			QueryPos qPos = QueryPos.getInstance(q);
+
+			qPos.add(userId1);
+
+			Long count = (Long)q.uniqueResult();
+
+			return count.intValue();
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	/**
 	 * Returns the number of social relations where userId2 = &#63;.
 	 *
 	 * @param userId2 the user id2
@@ -5292,6 +8576,54 @@ public class SocialRelationPersistenceImpl extends BasePersistenceImpl<SocialRel
 	}
 
 	/**
+	 * Returns the number of social relations that the user has permission to view where userId2 = &#63;.
+	 *
+	 * @param userId2 the user id2
+	 * @return the number of matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public int filterCountByUserId2(long userId2) throws SystemException {
+		if (!InlineSQLHelperUtil.isEnabled()) {
+			return countByUserId2(userId2);
+		}
+
+		StringBundler query = new StringBundler(2);
+
+		query.append(_FILTER_SQL_COUNT_SOCIALRELATION_WHERE);
+
+		query.append(_FINDER_COLUMN_USERID2_USERID2_2);
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(query.toString(),
+				SocialRelation.class.getName(),
+				_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SQLQuery q = session.createSQLQuery(sql);
+
+			q.addScalar(COUNT_COLUMN_NAME,
+				com.liferay.portal.kernel.dao.orm.Type.LONG);
+
+			QueryPos qPos = QueryPos.getInstance(q);
+
+			qPos.add(userId2);
+
+			Long count = (Long)q.uniqueResult();
+
+			return count.intValue();
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	/**
 	 * Returns the number of social relations where type = &#63;.
 	 *
 	 * @param type the type
@@ -5342,6 +8674,54 @@ public class SocialRelationPersistenceImpl extends BasePersistenceImpl<SocialRel
 		}
 
 		return count.intValue();
+	}
+
+	/**
+	 * Returns the number of social relations that the user has permission to view where type = &#63;.
+	 *
+	 * @param type the type
+	 * @return the number of matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public int filterCountByType(int type) throws SystemException {
+		if (!InlineSQLHelperUtil.isEnabled()) {
+			return countByType(type);
+		}
+
+		StringBundler query = new StringBundler(2);
+
+		query.append(_FILTER_SQL_COUNT_SOCIALRELATION_WHERE);
+
+		query.append(_FINDER_COLUMN_TYPE_TYPE_2);
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(query.toString(),
+				SocialRelation.class.getName(),
+				_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SQLQuery q = session.createSQLQuery(sql);
+
+			q.addScalar(COUNT_COLUMN_NAME,
+				com.liferay.portal.kernel.dao.orm.Type.LONG);
+
+			QueryPos qPos = QueryPos.getInstance(q);
+
+			qPos.add(type);
+
+			Long count = (Long)q.uniqueResult();
+
+			return count.intValue();
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
 	}
 
 	/**
@@ -5400,6 +8780,60 @@ public class SocialRelationPersistenceImpl extends BasePersistenceImpl<SocialRel
 		}
 
 		return count.intValue();
+	}
+
+	/**
+	 * Returns the number of social relations that the user has permission to view where companyId = &#63; and type = &#63;.
+	 *
+	 * @param companyId the company ID
+	 * @param type the type
+	 * @return the number of matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public int filterCountByC_T(long companyId, int type)
+		throws SystemException {
+		if (!InlineSQLHelperUtil.isEnabled()) {
+			return countByC_T(companyId, type);
+		}
+
+		StringBundler query = new StringBundler(3);
+
+		query.append(_FILTER_SQL_COUNT_SOCIALRELATION_WHERE);
+
+		query.append(_FINDER_COLUMN_C_T_COMPANYID_2);
+
+		query.append(_FINDER_COLUMN_C_T_TYPE_2);
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(query.toString(),
+				SocialRelation.class.getName(),
+				_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SQLQuery q = session.createSQLQuery(sql);
+
+			q.addScalar(COUNT_COLUMN_NAME,
+				com.liferay.portal.kernel.dao.orm.Type.LONG);
+
+			QueryPos qPos = QueryPos.getInstance(q);
+
+			qPos.add(companyId);
+
+			qPos.add(type);
+
+			Long count = (Long)q.uniqueResult();
+
+			return count.intValue();
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
 	}
 
 	/**
@@ -5462,6 +8896,60 @@ public class SocialRelationPersistenceImpl extends BasePersistenceImpl<SocialRel
 	}
 
 	/**
+	 * Returns the number of social relations that the user has permission to view where userId1 = &#63; and userId2 = &#63;.
+	 *
+	 * @param userId1 the user id1
+	 * @param userId2 the user id2
+	 * @return the number of matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public int filterCountByU1_U2(long userId1, long userId2)
+		throws SystemException {
+		if (!InlineSQLHelperUtil.isEnabled()) {
+			return countByU1_U2(userId1, userId2);
+		}
+
+		StringBundler query = new StringBundler(3);
+
+		query.append(_FILTER_SQL_COUNT_SOCIALRELATION_WHERE);
+
+		query.append(_FINDER_COLUMN_U1_U2_USERID1_2);
+
+		query.append(_FINDER_COLUMN_U1_U2_USERID2_2);
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(query.toString(),
+				SocialRelation.class.getName(),
+				_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SQLQuery q = session.createSQLQuery(sql);
+
+			q.addScalar(COUNT_COLUMN_NAME,
+				com.liferay.portal.kernel.dao.orm.Type.LONG);
+
+			QueryPos qPos = QueryPos.getInstance(q);
+
+			qPos.add(userId1);
+
+			qPos.add(userId2);
+
+			Long count = (Long)q.uniqueResult();
+
+			return count.intValue();
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	/**
 	 * Returns the number of social relations where userId1 = &#63; and type = &#63;.
 	 *
 	 * @param userId1 the user id1
@@ -5520,6 +9008,60 @@ public class SocialRelationPersistenceImpl extends BasePersistenceImpl<SocialRel
 	}
 
 	/**
+	 * Returns the number of social relations that the user has permission to view where userId1 = &#63; and type = &#63;.
+	 *
+	 * @param userId1 the user id1
+	 * @param type the type
+	 * @return the number of matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public int filterCountByU1_T(long userId1, int type)
+		throws SystemException {
+		if (!InlineSQLHelperUtil.isEnabled()) {
+			return countByU1_T(userId1, type);
+		}
+
+		StringBundler query = new StringBundler(3);
+
+		query.append(_FILTER_SQL_COUNT_SOCIALRELATION_WHERE);
+
+		query.append(_FINDER_COLUMN_U1_T_USERID1_2);
+
+		query.append(_FINDER_COLUMN_U1_T_TYPE_2);
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(query.toString(),
+				SocialRelation.class.getName(),
+				_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SQLQuery q = session.createSQLQuery(sql);
+
+			q.addScalar(COUNT_COLUMN_NAME,
+				com.liferay.portal.kernel.dao.orm.Type.LONG);
+
+			QueryPos qPos = QueryPos.getInstance(q);
+
+			qPos.add(userId1);
+
+			qPos.add(type);
+
+			Long count = (Long)q.uniqueResult();
+
+			return count.intValue();
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	/**
 	 * Returns the number of social relations where userId2 = &#63; and type = &#63;.
 	 *
 	 * @param userId2 the user id2
@@ -5575,6 +9117,60 @@ public class SocialRelationPersistenceImpl extends BasePersistenceImpl<SocialRel
 		}
 
 		return count.intValue();
+	}
+
+	/**
+	 * Returns the number of social relations that the user has permission to view where userId2 = &#63; and type = &#63;.
+	 *
+	 * @param userId2 the user id2
+	 * @param type the type
+	 * @return the number of matching social relations that the user has permission to view
+	 * @throws SystemException if a system exception occurred
+	 */
+	public int filterCountByU2_T(long userId2, int type)
+		throws SystemException {
+		if (!InlineSQLHelperUtil.isEnabled()) {
+			return countByU2_T(userId2, type);
+		}
+
+		StringBundler query = new StringBundler(3);
+
+		query.append(_FILTER_SQL_COUNT_SOCIALRELATION_WHERE);
+
+		query.append(_FINDER_COLUMN_U2_T_USERID2_2);
+
+		query.append(_FINDER_COLUMN_U2_T_TYPE_2);
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(query.toString(),
+				SocialRelation.class.getName(),
+				_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SQLQuery q = session.createSQLQuery(sql);
+
+			q.addScalar(COUNT_COLUMN_NAME,
+				com.liferay.portal.kernel.dao.orm.Type.LONG);
+
+			QueryPos qPos = QueryPos.getInstance(q);
+
+			qPos.add(userId2);
+
+			qPos.add(type);
+
+			Long count = (Long)q.uniqueResult();
+
+			return count.intValue();
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
 	}
 
 	/**
@@ -5752,7 +9348,17 @@ public class SocialRelationPersistenceImpl extends BasePersistenceImpl<SocialRel
 	private static final String _FINDER_COLUMN_U1_U2_T_USERID1_2 = "socialRelation.userId1 = ? AND ";
 	private static final String _FINDER_COLUMN_U1_U2_T_USERID2_2 = "socialRelation.userId2 = ? AND ";
 	private static final String _FINDER_COLUMN_U1_U2_T_TYPE_2 = "socialRelation.type = ?";
+	private static final String _FILTER_ENTITY_TABLE_FILTER_PK_COLUMN = "socialRelation.relationId";
+	private static final String _FILTER_SQL_SELECT_SOCIALRELATION_WHERE = "SELECT DISTINCT {socialRelation.*} FROM SocialRelation socialRelation WHERE ";
+	private static final String _FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_1 =
+		"SELECT {SocialRelation.*} FROM (SELECT DISTINCT socialRelation.relationId FROM SocialRelation socialRelation WHERE ";
+	private static final String _FILTER_SQL_SELECT_SOCIALRELATION_NO_INLINE_DISTINCT_WHERE_2 =
+		") TEMP_TABLE INNER JOIN SocialRelation ON TEMP_TABLE.relationId = SocialRelation.relationId";
+	private static final String _FILTER_SQL_COUNT_SOCIALRELATION_WHERE = "SELECT COUNT(DISTINCT socialRelation.relationId) AS COUNT_VALUE FROM SocialRelation socialRelation WHERE ";
+	private static final String _FILTER_ENTITY_ALIAS = "socialRelation";
+	private static final String _FILTER_ENTITY_TABLE = "SocialRelation";
 	private static final String _ORDER_BY_ENTITY_ALIAS = "socialRelation.";
+	private static final String _ORDER_BY_ENTITY_TABLE = "SocialRelation.";
 	private static final String _NO_SUCH_ENTITY_WITH_PRIMARY_KEY = "No SocialRelation exists with the primary key ";
 	private static final String _NO_SUCH_ENTITY_WITH_KEY = "No SocialRelation exists with the key {";
 	private static final boolean _HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE = com.liferay.portal.util.PropsValues.HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE;

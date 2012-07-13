@@ -277,10 +277,21 @@ public class SocialRelationLocalServiceWrapper
 	* @throws SystemException if a system exception occurred
 	*/
 	public com.liferay.portlet.social.model.SocialRelation addRelation(
-		long userId1, long userId2, int type)
+		long userId1, long userId2, int type,
+		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
-		return _socialRelationLocalService.addRelation(userId1, userId2, type);
+		return _socialRelationLocalService.addRelation(userId1, userId2, type,
+			serviceContext);
+	}
+
+	public void addRelationResources(
+		com.liferay.portlet.social.model.SocialRelation relation,
+		java.lang.String[] groupPermissions, java.lang.String[] guestPermissions)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		_socialRelationLocalService.addRelationResources(relation,
+			groupPermissions, guestPermissions);
 	}
 
 	/**
