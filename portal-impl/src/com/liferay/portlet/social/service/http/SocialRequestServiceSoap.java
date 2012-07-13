@@ -14,6 +14,13 @@
 
 package com.liferay.portlet.social.service.http;
 
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+
+import com.liferay.portlet.social.service.SocialRequestServiceUtil;
+
+import java.rmi.RemoteException;
+
 /**
  * <p>
  * This class provides a SOAP utility for the
@@ -58,4 +65,48 @@ package com.liferay.portlet.social.service.http;
  * @generated
  */
 public class SocialRequestServiceSoap {
+	/**
+	* Adds a social request to the database.
+	*
+	* <p>
+	* In order to add a social request, both the requesting user and the
+	* receiving user must be from the same company and neither of them can be
+	* the default user.
+	* </p>
+	*
+	* @param userId the primary key of the requesting user
+	* @param groupId the primary key of the group
+	* @param className the class name of the asset that is the subject of the
+	request
+	* @param classPK the primary key of the asset that is the subject of the
+	request
+	* @param type the request's type
+	* @param extraData the extra data regarding the request
+	* @param receiverUserId the primary key of the user receiving the request
+	* @return the social request
+	* @throws PortalException if the users could not be found, if the users
+	were not from the same company, or if either of the users was the
+	default user
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portlet.social.model.SocialRequestSoap addRequest(
+		long userId, long groupId, java.lang.String className, long classPK,
+		int type, java.lang.String extraData, long receiverUserId,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws RemoteException {
+		try {
+			com.liferay.portlet.social.model.SocialRequest returnValue = SocialRequestServiceUtil.addRequest(userId,
+					groupId, className, classPK, type, extraData,
+					receiverUserId, serviceContext);
+
+			return com.liferay.portlet.social.model.SocialRequestSoap.toSoapModel(returnValue);
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
+	private static Log _log = LogFactoryUtil.getLog(SocialRequestServiceSoap.class);
 }

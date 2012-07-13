@@ -307,11 +307,21 @@ public class SocialRequestLocalServiceWrapper
 	*/
 	public com.liferay.portlet.social.model.SocialRequest addRequest(
 		long userId, long groupId, java.lang.String className, long classPK,
-		int type, java.lang.String extraData, long receiverUserId)
+		int type, java.lang.String extraData, long receiverUserId,
+		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		return _socialRequestLocalService.addRequest(userId, groupId,
-			className, classPK, type, extraData, receiverUserId);
+			className, classPK, type, extraData, receiverUserId, serviceContext);
+	}
+
+	public void addRequestResources(
+		com.liferay.portlet.social.model.SocialRequest request,
+		java.lang.String[] groupPermissions, java.lang.String[] guestPermissions)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		_socialRequestLocalService.addRequestResources(request,
+			groupPermissions, guestPermissions);
 	}
 
 	/**
@@ -321,7 +331,8 @@ public class SocialRequestLocalServiceWrapper
 	* @throws SystemException if a system exception occurred
 	*/
 	public void deleteReceiverUserRequests(long receiverUserId)
-		throws com.liferay.portal.kernel.exception.SystemException {
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
 		_socialRequestLocalService.deleteReceiverUserRequests(receiverUserId);
 	}
 
@@ -347,7 +358,8 @@ public class SocialRequestLocalServiceWrapper
 	*/
 	public void deleteRequest(
 		com.liferay.portlet.social.model.SocialRequest request)
-		throws com.liferay.portal.kernel.exception.SystemException {
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
 		_socialRequestLocalService.deleteRequest(request);
 	}
 
@@ -358,7 +370,8 @@ public class SocialRequestLocalServiceWrapper
 	* @throws SystemException if a system exception occurred
 	*/
 	public void deleteUserRequests(long userId)
-		throws com.liferay.portal.kernel.exception.SystemException {
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
 		_socialRequestLocalService.deleteUserRequests(userId);
 	}
 
@@ -592,11 +605,21 @@ public class SocialRequestLocalServiceWrapper
 	*/
 	public com.liferay.portlet.social.model.SocialRequest updateRequest(
 		long requestId, int status,
-		com.liferay.portal.theme.ThemeDisplay themeDisplay)
+		com.liferay.portal.theme.ThemeDisplay themeDisplay,
+		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		return _socialRequestLocalService.updateRequest(requestId, status,
-			themeDisplay);
+			themeDisplay, serviceContext);
+	}
+
+	public void updateRequestResources(
+		com.liferay.portlet.social.model.SocialRequest request,
+		java.lang.String[] groupPermissions, java.lang.String[] guestPermissions)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		_socialRequestLocalService.updateRequestResources(request,
+			groupPermissions, guestPermissions);
 	}
 
 	/**

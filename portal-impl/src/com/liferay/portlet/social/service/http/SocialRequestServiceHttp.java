@@ -14,6 +14,15 @@
 
 package com.liferay.portlet.social.service.http;
 
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.MethodHandler;
+import com.liferay.portal.kernel.util.MethodKey;
+import com.liferay.portal.security.auth.HttpPrincipal;
+import com.liferay.portal.service.http.TunnelUtil;
+
+import com.liferay.portlet.social.service.SocialRequestServiceUtil;
+
 /**
  * <p>
  * This class provides a HTTP utility for the
@@ -45,4 +54,94 @@ package com.liferay.portlet.social.service.http;
  * @generated
  */
 public class SocialRequestServiceHttp {
+	public static com.liferay.portlet.social.model.SocialRequest addRequest(
+		HttpPrincipal httpPrincipal, long userId, long groupId,
+		java.lang.String className, long classPK, int type,
+		java.lang.String extraData, long receiverUserId,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		try {
+			MethodKey methodKey = new MethodKey(SocialRequestServiceUtil.class.getName(),
+					"addRequest", _addRequestParameterTypes0);
+
+			MethodHandler methodHandler = new MethodHandler(methodKey, userId,
+					groupId, className, classPK, type, extraData,
+					receiverUserId, serviceContext);
+
+			Object returnObj = null;
+
+			try {
+				returnObj = TunnelUtil.invoke(httpPrincipal, methodHandler);
+			}
+			catch (Exception e) {
+				if (e instanceof com.liferay.portal.kernel.exception.PortalException) {
+					throw (com.liferay.portal.kernel.exception.PortalException)e;
+				}
+
+				if (e instanceof com.liferay.portal.kernel.exception.SystemException) {
+					throw (com.liferay.portal.kernel.exception.SystemException)e;
+				}
+
+				throw new com.liferay.portal.kernel.exception.SystemException(e);
+			}
+
+			return (com.liferay.portlet.social.model.SocialRequest)returnObj;
+		}
+		catch (com.liferay.portal.kernel.exception.SystemException se) {
+			_log.error(se, se);
+
+			throw se;
+		}
+	}
+
+	public static com.liferay.portlet.social.model.SocialRequest updateRequest(
+		HttpPrincipal httpPrincipal, long requestId, int status,
+		com.liferay.portal.theme.ThemeDisplay themeDisplay,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		try {
+			MethodKey methodKey = new MethodKey(SocialRequestServiceUtil.class.getName(),
+					"updateRequest", _updateRequestParameterTypes1);
+
+			MethodHandler methodHandler = new MethodHandler(methodKey,
+					requestId, status, themeDisplay, serviceContext);
+
+			Object returnObj = null;
+
+			try {
+				returnObj = TunnelUtil.invoke(httpPrincipal, methodHandler);
+			}
+			catch (Exception e) {
+				if (e instanceof com.liferay.portal.kernel.exception.PortalException) {
+					throw (com.liferay.portal.kernel.exception.PortalException)e;
+				}
+
+				if (e instanceof com.liferay.portal.kernel.exception.SystemException) {
+					throw (com.liferay.portal.kernel.exception.SystemException)e;
+				}
+
+				throw new com.liferay.portal.kernel.exception.SystemException(e);
+			}
+
+			return (com.liferay.portlet.social.model.SocialRequest)returnObj;
+		}
+		catch (com.liferay.portal.kernel.exception.SystemException se) {
+			_log.error(se, se);
+
+			throw se;
+		}
+	}
+
+	private static Log _log = LogFactoryUtil.getLog(SocialRequestServiceHttp.class);
+	private static final Class<?>[] _addRequestParameterTypes0 = new Class[] {
+			long.class, long.class, java.lang.String.class, long.class,
+			int.class, java.lang.String.class, long.class,
+			com.liferay.portal.service.ServiceContext.class
+		};
+	private static final Class<?>[] _updateRequestParameterTypes1 = new Class[] {
+			long.class, int.class, com.liferay.portal.theme.ThemeDisplay.class,
+			com.liferay.portal.service.ServiceContext.class
+		};
 }

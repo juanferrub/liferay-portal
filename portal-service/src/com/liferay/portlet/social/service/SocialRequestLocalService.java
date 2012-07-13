@@ -284,7 +284,14 @@ public interface SocialRequestLocalService extends BaseLocalService,
 	*/
 	public com.liferay.portlet.social.model.SocialRequest addRequest(
 		long userId, long groupId, java.lang.String className, long classPK,
-		int type, java.lang.String extraData, long receiverUserId)
+		int type, java.lang.String extraData, long receiverUserId,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException;
+
+	public void addRequestResources(
+		com.liferay.portlet.social.model.SocialRequest request,
+		java.lang.String[] groupPermissions, java.lang.String[] guestPermissions)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException;
 
@@ -295,7 +302,8 @@ public interface SocialRequestLocalService extends BaseLocalService,
 	* @throws SystemException if a system exception occurred
 	*/
 	public void deleteReceiverUserRequests(long receiverUserId)
-		throws com.liferay.portal.kernel.exception.SystemException;
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException;
 
 	/**
 	* Removes the social request identified by its primary key from the
@@ -317,7 +325,8 @@ public interface SocialRequestLocalService extends BaseLocalService,
 	*/
 	public void deleteRequest(
 		com.liferay.portlet.social.model.SocialRequest request)
-		throws com.liferay.portal.kernel.exception.SystemException;
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException;
 
 	/**
 	* Removes all the social requests for the requesting user.
@@ -326,7 +335,8 @@ public interface SocialRequestLocalService extends BaseLocalService,
 	* @throws SystemException if a system exception occurred
 	*/
 	public void deleteUserRequests(long userId)
-		throws com.liferay.portal.kernel.exception.SystemException;
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException;
 
 	/**
 	* Returns a range of all the social requests for the receiving user.
@@ -542,7 +552,14 @@ public interface SocialRequestLocalService extends BaseLocalService,
 	*/
 	public com.liferay.portlet.social.model.SocialRequest updateRequest(
 		long requestId, int status,
-		com.liferay.portal.theme.ThemeDisplay themeDisplay)
+		com.liferay.portal.theme.ThemeDisplay themeDisplay,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException;
+
+	public void updateRequestResources(
+		com.liferay.portlet.social.model.SocialRequest request,
+		java.lang.String[] groupPermissions, java.lang.String[] guestPermissions)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException;
 }

@@ -256,7 +256,14 @@ public interface SocialRelationLocalService extends BaseLocalService,
 	* @throws SystemException if a system exception occurred
 	*/
 	public com.liferay.portlet.social.model.SocialRelation addRelation(
-		long userId1, long userId2, int type)
+		long userId1, long userId2, int type,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException;
+
+	public void addRelationResources(
+		com.liferay.portlet.social.model.SocialRelation relation,
+		java.lang.String[] groupPermissions, java.lang.String[] guestPermissions)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException;
 
