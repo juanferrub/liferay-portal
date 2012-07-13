@@ -54,8 +54,11 @@ import com.liferay.portal.service.permission.TeamPermissionUtil;
 import com.liferay.portal.service.permission.UserGroupPermissionUtil;
 import com.liferay.portal.service.permission.UserGroupRolePermissionUtil;
 import com.liferay.portal.service.permission.UserPermissionUtil;
+import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portlet.announcements.model.AnnouncementsDelivery;
+import com.liferay.portlet.asset.model.AssetEntry;
+import com.liferay.portlet.asset.service.permission.AssetEntryPermission;
 import com.liferay.portlet.usersadmin.util.UsersAdminUtil;
 
 import java.util.List;
@@ -1144,6 +1147,22 @@ public class UserServiceImpl extends UserServiceBaseImpl {
 
 		return userLocalService.updateAgreedToTermsOfUse(
 			userId, agreedToTermsOfUse);
+	}
+
+	public void updateAsset(
+		long userId, User user, long[] assetCategoryIds, String[] assetTagNames)
+		throws PortalException, SystemException {
+
+		long classNameId = PortalUtil.getClassNameId(User.class.getName());
+
+		AssetEntry entry = assetEntryPersistence.fetchByC_C(
+			classNameId, user.getUserId());
+
+		AssetEntryPermission.check(
+			getPermissionChecker(), entry, ActionKeys.UPDATE);
+
+		userLocalService.updateAsset(
+			userId, user, assetCategoryIds, assetTagNames);
 	}
 
 	/**

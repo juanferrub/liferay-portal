@@ -17,6 +17,7 @@ package com.liferay.portlet.social.service.impl;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.model.User;
+import com.liferay.portal.service.ServiceContext;
 import com.liferay.portlet.social.RelationUserIdException;
 import com.liferay.portlet.social.model.SocialRelation;
 import com.liferay.portlet.social.model.SocialRelationConstants;
@@ -69,7 +70,8 @@ public class SocialRelationLocalServiceImpl
 	 *         default user
 	 * @throws SystemException if a system exception occurred
 	 */
-	public SocialRelation addRelation(long userId1, long userId2, int type)
+	public SocialRelation addRelation(
+		long userId1, long userId2, int type, ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
 		if (userId1 == userId2) {
@@ -98,6 +100,12 @@ public class SocialRelationLocalServiceImpl
 			relation.setType(type);
 
 			socialRelationPersistence.update(relation, false);
+
+			//Resources
+
+			addRelationResources(
+				relation, serviceContext.getGroupPermissions(),
+				serviceContext.getGuestPermissions());
 		}
 
 		if (SocialRelationConstants.isTypeBi(type)) {
@@ -117,10 +125,27 @@ public class SocialRelationLocalServiceImpl
 				biRelation.setType(type);
 
 				socialRelationPersistence.update(biRelation, false);
+
+				//Resources
+
+				addRelationResources(
+					relation, serviceContext.getGroupPermissions(),
+					serviceContext.getGuestPermissions());
 			}
 		}
 
 		return relation;
+	}
+
+	public void addRelationResources(
+			SocialRelation relation, String[] groupPermissions,
+			String[] guestPermissions)
+		throws PortalException, SystemException {
+
+		resourceLocalService.addModelResources(
+			relation.getCompanyId(), 0, relation.getUserId1(),
+			SocialRelation.class.getName(), relation.getRelationId(),
+			groupPermissions, guestPermissions);
 	}
 
 	/**
