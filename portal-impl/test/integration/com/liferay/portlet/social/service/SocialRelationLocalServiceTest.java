@@ -16,6 +16,7 @@ package com.liferay.portlet.social.service;
 
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.model.User;
+import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.test.EnvironmentExecutionTestListener;
@@ -79,63 +80,65 @@ public class SocialRelationLocalServiceTest {
 
 		// Friend
 
+		ServiceContext serviceContext = new ServiceContext();
+
 		SocialRelationLocalServiceUtil.addRelation(
 			dlc1User.getUserId(), dlc2User.getUserId(),
-			SocialRelationConstants.TYPE_BI_FRIEND);
+			SocialRelationConstants.TYPE_BI_FRIEND, serviceContext);
 
 		SocialRelationLocalServiceUtil.addRelation(
 			dlc1User.getUserId(), dlc3User.getUserId(),
-			SocialRelationConstants.TYPE_BI_FRIEND);
+			SocialRelationConstants.TYPE_BI_FRIEND, serviceContext);
 
 		SocialRelationLocalServiceUtil.addRelation(
 			dlc1User.getUserId(), dlc4User.getUserId(),
-			SocialRelationConstants.TYPE_BI_FRIEND);
+			SocialRelationConstants.TYPE_BI_FRIEND, serviceContext);
 
 		SocialRelationLocalServiceUtil.addRelation(
 			dlc1User.getUserId(), dlc5User.getUserId(),
-			SocialRelationConstants.TYPE_BI_FRIEND);
+			SocialRelationConstants.TYPE_BI_FRIEND, serviceContext);
 
 		SocialRelationLocalServiceUtil.addRelation(
 			dlc1User.getUserId(), dlc6User.getUserId(),
-			SocialRelationConstants.TYPE_BI_FRIEND);
+			SocialRelationConstants.TYPE_BI_FRIEND, serviceContext);
 
 		SocialRelationLocalServiceUtil.addRelation(
 			dlc1User.getUserId(), dlc7User.getUserId(),
-			SocialRelationConstants.TYPE_BI_FRIEND);
+			SocialRelationConstants.TYPE_BI_FRIEND, serviceContext);
 
 		SocialRelationLocalServiceUtil.addRelation(
 			dlc1User.getUserId(), dlc8User.getUserId(),
-			SocialRelationConstants.TYPE_BI_FRIEND);
+			SocialRelationConstants.TYPE_BI_FRIEND, serviceContext);
 
 		// Friend
 
 		SocialRelationLocalServiceUtil.addRelation(
 			dlc2User.getUserId(), dlc3User.getUserId(),
-			SocialRelationConstants.TYPE_BI_FRIEND);
+			SocialRelationConstants.TYPE_BI_FRIEND, serviceContext);
 
 		SocialRelationLocalServiceUtil.addRelation(
 			dlc2User.getUserId(), dlc4User.getUserId(),
-			SocialRelationConstants.TYPE_BI_FRIEND);
+			SocialRelationConstants.TYPE_BI_FRIEND, serviceContext);
 
 		SocialRelationLocalServiceUtil.addRelation(
 			dlc2User.getUserId(), dlc5User.getUserId(),
-			SocialRelationConstants.TYPE_BI_FRIEND);
+			SocialRelationConstants.TYPE_BI_FRIEND, serviceContext);
 
 		// Coworker
 
 		SocialRelationLocalServiceUtil.addRelation(
 			dlc1User.getUserId(), dlc9User.getUserId(),
-			SocialRelationConstants.TYPE_BI_COWORKER);
+			SocialRelationConstants.TYPE_BI_COWORKER, serviceContext);
 
 		SocialRelationLocalServiceUtil.addRelation(
 			dlc2User.getUserId(), dlc9User.getUserId(),
-			SocialRelationConstants.TYPE_BI_COWORKER);
+			SocialRelationConstants.TYPE_BI_COWORKER, serviceContext);
 
 		// Romantic partner
 
 		SocialRelationLocalServiceUtil.addRelation(
 			dlc1User.getUserId(), dlc2User.getUserId(),
-			SocialRelationConstants.TYPE_BI_ROMANTIC_PARTNER);
+			SocialRelationConstants.TYPE_BI_ROMANTIC_PARTNER, serviceContext);
 	}
 
 	@Test
@@ -169,59 +172,61 @@ public class SocialRelationLocalServiceTest {
 
 		// Parent
 
+		ServiceContext serviceContext = new ServiceContext();
+
 		SocialRelationLocalServiceUtil.addRelation(
 			fra1User.getUserId(), fra2User.getUserId(),
-			SocialRelationConstants.TYPE_UNI_PARENT);
+			SocialRelationConstants.TYPE_UNI_PARENT, serviceContext);
 
 		SocialRelationLocalServiceUtil.addRelation(
 			fra1User.getUserId(), fra3User.getUserId(),
-			SocialRelationConstants.TYPE_UNI_PARENT);
+			SocialRelationConstants.TYPE_UNI_PARENT, serviceContext);
 
 		SocialRelationLocalServiceUtil.addRelation(
 			fra1User.getUserId(), fra4User.getUserId(),
-			SocialRelationConstants.TYPE_UNI_PARENT);
+			SocialRelationConstants.TYPE_UNI_PARENT, serviceContext);
 
 		SocialRelationLocalServiceUtil.addRelation(
 			fra1User.getUserId(), fra5User.getUserId(),
-			SocialRelationConstants.TYPE_UNI_PARENT);
+			SocialRelationConstants.TYPE_UNI_PARENT, serviceContext);
 
 		SocialRelationLocalServiceUtil.addRelation(
 			fra1User.getUserId(), fra6User.getUserId(),
-			SocialRelationConstants.TYPE_UNI_PARENT);
+			SocialRelationConstants.TYPE_UNI_PARENT, serviceContext);
 
 		SocialRelationLocalServiceUtil.addRelation(
 			fra1User.getUserId(), fra7User.getUserId(),
-			SocialRelationConstants.TYPE_UNI_PARENT);
+			SocialRelationConstants.TYPE_UNI_PARENT, serviceContext);
 
 		SocialRelationLocalServiceUtil.addRelation(
 			fra1User.getUserId(), fra8User.getUserId(),
-			SocialRelationConstants.TYPE_UNI_PARENT);
+			SocialRelationConstants.TYPE_UNI_PARENT, serviceContext);
 
 		SocialRelationLocalServiceUtil.addRelation(
 			fra1User.getUserId(), fra9User.getUserId(),
-			SocialRelationConstants.TYPE_UNI_PARENT);
+			SocialRelationConstants.TYPE_UNI_PARENT, serviceContext);
 
 		// Child
 
 		SocialRelationLocalServiceUtil.addRelation(
 			fra3User.getUserId(), fra1User.getUserId(),
-			SocialRelationConstants.TYPE_UNI_CHILD);
+			SocialRelationConstants.TYPE_UNI_CHILD, serviceContext);
 
 		SocialRelationLocalServiceUtil.addRelation(
 			fra3User.getUserId(), fra2User.getUserId(),
-			SocialRelationConstants.TYPE_UNI_CHILD);
+			SocialRelationConstants.TYPE_UNI_CHILD, serviceContext);
 
 		SocialRelationLocalServiceUtil.addRelation(
 			fra4User.getUserId(), fra1User.getUserId(),
-			SocialRelationConstants.TYPE_UNI_CHILD);
+			SocialRelationConstants.TYPE_UNI_CHILD, serviceContext);
 
 		SocialRelationLocalServiceUtil.addRelation(
 			fra4User.getUserId(), fra2User.getUserId(),
-			SocialRelationConstants.TYPE_UNI_CHILD);
+			SocialRelationConstants.TYPE_UNI_CHILD, serviceContext);
 
 		SocialRelationLocalServiceUtil.addRelation(
 			fra5User.getUserId(), fra1User.getUserId(),
-			SocialRelationConstants.TYPE_UNI_CHILD);
+			SocialRelationConstants.TYPE_UNI_CHILD, serviceContext);
 	}
 
 	@Test
