@@ -57,4 +57,63 @@ public interface SocialRelationService extends BaseService {
 	* @param beanIdentifier the Spring bean ID for this bean
 	*/
 	public void setBeanIdentifier(java.lang.String beanIdentifier);
+
+	/**
+	* Adds a social relation between the two users to the database.
+	*
+	* @param userId1 the user that is the subject of the relation
+	* @param userId2 the user at the other end of the relation
+	* @param type the type of the relation
+	* @return the social relation
+	* @throws PortalException if the users could not be found, if the users
+	were not from the same company, or if either of the users was the
+	default user
+	* @throws SystemException if a system exception occurred
+	*/
+	public com.liferay.portlet.social.model.SocialRelation addRelation(
+		long userId1, long userId2, int type,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException;
+
+	/**
+	* Removes the matching relation (and its inverse in case of a bidirectional
+	* relation) from the database.
+	*
+	* @param userId1 the user that is the subject of the relation
+	* @param userId2 the user at the other end of the relation
+	* @param type the relation's type
+	* @throws PortalException if the relation or its inverse relation (if
+	applicable) could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public void deleteRelation(long userId1, long userId2, int type)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException;
+
+	/**
+	* Removes the relation (and its inverse in case of a bidirectional
+	* relation) from the database.
+	*
+	* @param relation the relation to be removed
+	* @throws PortalException if the relation is bidirectional and its inverse
+	relation could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public void deleteRelation(
+		com.liferay.portlet.social.model.SocialRelation relation)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException;
+
+	/**
+	* Removes all relations between User1 and User2.
+	*
+	* @param userId1 the user that is the subject of the relation
+	* @param userId2 the user at the other end of the relation
+	* @throws PortalException if the inverse relation could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public void deleteRelations(long userId1, long userId2)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException;
 }

@@ -868,6 +868,13 @@ public class UserServiceWrapper implements UserService,
 		return _userService.updateAgreedToTermsOfUse(userId, agreedToTermsOfUse);
 	}
 
+	public void updateAsset(long userId, com.liferay.portal.model.User user,
+		long[] assetCategoryIds, java.lang.String[] assetTagNames)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		_userService.updateAsset(userId, user, assetCategoryIds, assetTagNames);
+	}
+
 	/**
 	* Updates the user's email address.
 	*

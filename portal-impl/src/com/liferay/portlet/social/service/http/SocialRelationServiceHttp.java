@@ -14,6 +14,15 @@
 
 package com.liferay.portlet.social.service.http;
 
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.MethodHandler;
+import com.liferay.portal.kernel.util.MethodKey;
+import com.liferay.portal.security.auth.HttpPrincipal;
+import com.liferay.portal.service.http.TunnelUtil;
+
+import com.liferay.portlet.social.service.SocialRelationServiceUtil;
+
 /**
  * <p>
  * This class provides a HTTP utility for the
@@ -45,4 +54,154 @@ package com.liferay.portlet.social.service.http;
  * @generated
  */
 public class SocialRelationServiceHttp {
+	public static com.liferay.portlet.social.model.SocialRelation addRelation(
+		HttpPrincipal httpPrincipal, long userId1, long userId2, int type,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		try {
+			MethodKey methodKey = new MethodKey(SocialRelationServiceUtil.class.getName(),
+					"addRelation", _addRelationParameterTypes0);
+
+			MethodHandler methodHandler = new MethodHandler(methodKey, userId1,
+					userId2, type, serviceContext);
+
+			Object returnObj = null;
+
+			try {
+				returnObj = TunnelUtil.invoke(httpPrincipal, methodHandler);
+			}
+			catch (Exception e) {
+				if (e instanceof com.liferay.portal.kernel.exception.PortalException) {
+					throw (com.liferay.portal.kernel.exception.PortalException)e;
+				}
+
+				if (e instanceof com.liferay.portal.kernel.exception.SystemException) {
+					throw (com.liferay.portal.kernel.exception.SystemException)e;
+				}
+
+				throw new com.liferay.portal.kernel.exception.SystemException(e);
+			}
+
+			return (com.liferay.portlet.social.model.SocialRelation)returnObj;
+		}
+		catch (com.liferay.portal.kernel.exception.SystemException se) {
+			_log.error(se, se);
+
+			throw se;
+		}
+	}
+
+	public static void deleteRelation(HttpPrincipal httpPrincipal,
+		long userId1, long userId2, int type)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		try {
+			MethodKey methodKey = new MethodKey(SocialRelationServiceUtil.class.getName(),
+					"deleteRelation", _deleteRelationParameterTypes1);
+
+			MethodHandler methodHandler = new MethodHandler(methodKey, userId1,
+					userId2, type);
+
+			try {
+				TunnelUtil.invoke(httpPrincipal, methodHandler);
+			}
+			catch (Exception e) {
+				if (e instanceof com.liferay.portal.kernel.exception.PortalException) {
+					throw (com.liferay.portal.kernel.exception.PortalException)e;
+				}
+
+				if (e instanceof com.liferay.portal.kernel.exception.SystemException) {
+					throw (com.liferay.portal.kernel.exception.SystemException)e;
+				}
+
+				throw new com.liferay.portal.kernel.exception.SystemException(e);
+			}
+		}
+		catch (com.liferay.portal.kernel.exception.SystemException se) {
+			_log.error(se, se);
+
+			throw se;
+		}
+	}
+
+	public static void deleteRelation(HttpPrincipal httpPrincipal,
+		com.liferay.portlet.social.model.SocialRelation relation)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		try {
+			MethodKey methodKey = new MethodKey(SocialRelationServiceUtil.class.getName(),
+					"deleteRelation", _deleteRelationParameterTypes2);
+
+			MethodHandler methodHandler = new MethodHandler(methodKey, relation);
+
+			try {
+				TunnelUtil.invoke(httpPrincipal, methodHandler);
+			}
+			catch (Exception e) {
+				if (e instanceof com.liferay.portal.kernel.exception.PortalException) {
+					throw (com.liferay.portal.kernel.exception.PortalException)e;
+				}
+
+				if (e instanceof com.liferay.portal.kernel.exception.SystemException) {
+					throw (com.liferay.portal.kernel.exception.SystemException)e;
+				}
+
+				throw new com.liferay.portal.kernel.exception.SystemException(e);
+			}
+		}
+		catch (com.liferay.portal.kernel.exception.SystemException se) {
+			_log.error(se, se);
+
+			throw se;
+		}
+	}
+
+	public static void deleteRelations(HttpPrincipal httpPrincipal,
+		long userId1, long userId2)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		try {
+			MethodKey methodKey = new MethodKey(SocialRelationServiceUtil.class.getName(),
+					"deleteRelations", _deleteRelationsParameterTypes3);
+
+			MethodHandler methodHandler = new MethodHandler(methodKey, userId1,
+					userId2);
+
+			try {
+				TunnelUtil.invoke(httpPrincipal, methodHandler);
+			}
+			catch (Exception e) {
+				if (e instanceof com.liferay.portal.kernel.exception.PortalException) {
+					throw (com.liferay.portal.kernel.exception.PortalException)e;
+				}
+
+				if (e instanceof com.liferay.portal.kernel.exception.SystemException) {
+					throw (com.liferay.portal.kernel.exception.SystemException)e;
+				}
+
+				throw new com.liferay.portal.kernel.exception.SystemException(e);
+			}
+		}
+		catch (com.liferay.portal.kernel.exception.SystemException se) {
+			_log.error(se, se);
+
+			throw se;
+		}
+	}
+
+	private static Log _log = LogFactoryUtil.getLog(SocialRelationServiceHttp.class);
+	private static final Class<?>[] _addRelationParameterTypes0 = new Class[] {
+			long.class, long.class, int.class,
+			com.liferay.portal.service.ServiceContext.class
+		};
+	private static final Class<?>[] _deleteRelationParameterTypes1 = new Class[] {
+			long.class, long.class, int.class
+		};
+	private static final Class<?>[] _deleteRelationParameterTypes2 = new Class[] {
+			com.liferay.portlet.social.model.SocialRelation.class
+		};
+	private static final Class<?>[] _deleteRelationsParameterTypes3 = new Class[] {
+			long.class, long.class
+		};
 }
