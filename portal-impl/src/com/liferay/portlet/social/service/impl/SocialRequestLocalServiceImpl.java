@@ -16,7 +16,9 @@ package com.liferay.portlet.social.service.impl;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.model.ResourceConstants;
 import com.liferay.portal.model.User;
+import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.social.NoSuchRequestException;
@@ -62,7 +64,8 @@ public class SocialRequestLocalServiceImpl
 	 */
 	public SocialRequest addRequest(
 			long userId, long groupId, String className, long classPK, int type,
-			String extraData, long receiverUserId)
+			String extraData, long receiverUserId,
+			ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
 		User user = userPersistence.findByPrimaryKey(userId);
@@ -103,7 +106,24 @@ public class SocialRequestLocalServiceImpl
 
 		socialRequestPersistence.update(request, false);
 
+		//Resources
+
+		addRequestResources(
+			request, serviceContext.getGroupPermissions(),
+			serviceContext.getGuestPermissions());
+
 		return request;
+	}
+
+	public void addRequestResources(
+			SocialRequest request, String[] groupPermissions,
+			String[] guestPermissions)
+		throws PortalException, SystemException {
+
+		resourceLocalService.addModelResources(
+			request.getCompanyId(), request.getGroupId(), request.getUserId(),
+			SocialRequest.class.getName(), request.getRequestId(),
+			groupPermissions, guestPermissions);
 	}
 
 	/**
@@ -113,7 +133,7 @@ public class SocialRequestLocalServiceImpl
 	 * @throws SystemException if a system exception occurred
 	 */
 	public void deleteReceiverUserRequests(long receiverUserId)
-		throws SystemException {
+		throws PortalException, SystemException {
 
 		List<SocialRequest> requests =
 			socialRequestPersistence.findByReceiverUserId(receiverUserId);
@@ -146,8 +166,18 @@ public class SocialRequestLocalServiceImpl
 	 * @param  request the social request to be removed
 	 * @throws SystemException if a system exception occurred
 	 */
-	public void deleteRequest(SocialRequest request) throws SystemException {
+	public void deleteRequest(SocialRequest request)
+		throws PortalException, SystemException {
+
+		// Request
+
 		socialRequestPersistence.remove(request);
+
+		// Resources
+
+		resourceLocalService.deleteResource(
+			request.getCompanyId(), SocialRequest.class.getName(),
+			ResourceConstants.SCOPE_INDIVIDUAL, request.getRequestId());
 	}
 
 	/**
@@ -156,7 +186,9 @@ public class SocialRequestLocalServiceImpl
 	 * @param  userId the primary key of the requesting user
 	 * @throws SystemException if a system exception occurred
 	 */
-	public void deleteUserRequests(long userId) throws SystemException {
+	public void deleteUserRequests(long userId)
+		throws PortalException, SystemException {
+
 		List<SocialRequest> requests = socialRequestPersistence.findByUserId(
 			userId);
 
@@ -417,7 +449,8 @@ public class SocialRequestLocalServiceImpl
 	 * @throws SystemException if a system exception occurred
 	 */
 	public SocialRequest updateRequest(
-			long requestId, int status, ThemeDisplay themeDisplay)
+			long requestId, int status, ThemeDisplay themeDisplay,
+			ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
 		SocialRequest request = socialRequestPersistence.findByPrimaryKey(
@@ -437,7 +470,28 @@ public class SocialRequestLocalServiceImpl
 				request, themeDisplay);
 		}
 
+		// Resources
+
+		if ((serviceContext.getGroupPermissions() != null) ||
+			(serviceContext.getGuestPermissions() != null)) {
+
+			updateRequestResources(
+				request, serviceContext.getGroupPermissions(),
+				serviceContext.getGuestPermissions());
+		}
+
 		return request;
+	}
+
+	public void updateRequestResources(
+			SocialRequest request, String[] groupPermissions,
+			String[] guestPermissions)
+		throws PortalException, SystemException {
+
+		resourceLocalService.updateResources(
+			request.getCompanyId(), request.getGroupId(),
+			SocialRequest.class.getName(), request.getRequestId(),
+			groupPermissions, guestPermissions);
 	}
 
 }
