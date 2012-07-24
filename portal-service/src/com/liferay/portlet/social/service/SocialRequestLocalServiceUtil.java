@@ -309,12 +309,22 @@ public class SocialRequestLocalServiceUtil {
 	*/
 	public static com.liferay.portlet.social.model.SocialRequest addRequest(
 		long userId, long groupId, java.lang.String className, long classPK,
-		int type, java.lang.String extraData, long receiverUserId)
+		int type, java.lang.String extraData, long receiverUserId,
+		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		return getService()
 				   .addRequest(userId, groupId, className, classPK, type,
-			extraData, receiverUserId);
+			extraData, receiverUserId, serviceContext);
+	}
+
+	public static void addRequestResources(
+		com.liferay.portlet.social.model.SocialRequest request,
+		java.lang.String[] groupPermissions, java.lang.String[] guestPermissions)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		getService()
+			.addRequestResources(request, groupPermissions, guestPermissions);
 	}
 
 	/**
@@ -324,7 +334,8 @@ public class SocialRequestLocalServiceUtil {
 	* @throws SystemException if a system exception occurred
 	*/
 	public static void deleteReceiverUserRequests(long receiverUserId)
-		throws com.liferay.portal.kernel.exception.SystemException {
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
 		getService().deleteReceiverUserRequests(receiverUserId);
 	}
 
@@ -350,7 +361,8 @@ public class SocialRequestLocalServiceUtil {
 	*/
 	public static void deleteRequest(
 		com.liferay.portlet.social.model.SocialRequest request)
-		throws com.liferay.portal.kernel.exception.SystemException {
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
 		getService().deleteRequest(request);
 	}
 
@@ -361,7 +373,8 @@ public class SocialRequestLocalServiceUtil {
 	* @throws SystemException if a system exception occurred
 	*/
 	public static void deleteUserRequests(long userId)
-		throws com.liferay.portal.kernel.exception.SystemException {
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
 		getService().deleteUserRequests(userId);
 	}
 
@@ -592,10 +605,22 @@ public class SocialRequestLocalServiceUtil {
 	*/
 	public static com.liferay.portlet.social.model.SocialRequest updateRequest(
 		long requestId, int status,
-		com.liferay.portal.theme.ThemeDisplay themeDisplay)
+		com.liferay.portal.theme.ThemeDisplay themeDisplay,
+		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
-		return getService().updateRequest(requestId, status, themeDisplay);
+		return getService()
+				   .updateRequest(requestId, status, themeDisplay,
+			serviceContext);
+	}
+
+	public static void updateRequestResources(
+		com.liferay.portlet.social.model.SocialRequest request,
+		java.lang.String[] groupPermissions, java.lang.String[] guestPermissions)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		getService()
+			.updateRequestResources(request, groupPermissions, guestPermissions);
 	}
 
 	public static SocialRequestLocalService getService() {

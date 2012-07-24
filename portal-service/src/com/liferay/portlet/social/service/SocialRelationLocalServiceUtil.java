@@ -280,10 +280,20 @@ public class SocialRelationLocalServiceUtil {
 	* @throws SystemException if a system exception occurred
 	*/
 	public static com.liferay.portlet.social.model.SocialRelation addRelation(
-		long userId1, long userId2, int type)
+		long userId1, long userId2, int type,
+		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
-		return getService().addRelation(userId1, userId2, type);
+		return getService().addRelation(userId1, userId2, type, serviceContext);
+	}
+
+	public static void addRelationResources(
+		com.liferay.portlet.social.model.SocialRelation relation,
+		java.lang.String[] groupPermissions, java.lang.String[] guestPermissions)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		getService()
+			.addRelationResources(relation, groupPermissions, guestPermissions);
 	}
 
 	/**
