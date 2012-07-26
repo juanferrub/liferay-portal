@@ -136,7 +136,7 @@ portletsList = ListUtil.sort(portletsList, new PortletTitleComparator(applicatio
 				LocaleException le = (LocaleException)errorException;
 				%>
 
-				<liferay-ui:message arguments="<%= new String[] {StringUtil.merge(le.getSourceAvailableLocales()), StringUtil.merge(le.getTargetAvailableLocales())} %>" key="the-available-languages-in-the-lar-file-x-do-not-match-the-portal's-available-languages-x" />
+				<liferay-ui:message arguments="<%= new String[] {le.getSourceAvailableLocalesString(), le.getTargetAvailableLocalesString()} %>" key="the-available-languages-in-the-lar-file-x-do-not-match-the-portal's-available-languages-x" />
 			</liferay-ui:error>
 
 			<c:choose>
