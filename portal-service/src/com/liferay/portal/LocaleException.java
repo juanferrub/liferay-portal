@@ -15,6 +15,8 @@
 package com.liferay.portal;
 
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.StringUtil;
 
 import java.util.Locale;
 
@@ -43,8 +45,18 @@ public class LocaleException extends PortalException {
 		return _sourceAvailableLocales;
 	}
 
+	public String getSourceAvailableLocalesString() {
+		return StringUtil.merge(
+			_sourceAvailableLocales, StringPool.COMMA_AND_SPACE);
+	}
+
 	public Locale[] getTargetAvailableLocales() {
 		return _targetAvailableLocales;
+	}
+
+	public String getTargetAvailableLocalesString() {
+		return StringUtil.merge(
+			_targetAvailableLocales, StringPool.COMMA_AND_SPACE);
 	}
 
 	public void setSourceAvailableLocales(Locale[] sourceAvailableLocales) {
