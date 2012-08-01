@@ -38,7 +38,9 @@ import com.liferay.portlet.journal.model.JournalArticle;
 import com.liferay.portlet.journal.model.JournalTemplate;
 import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
 import com.liferay.portlet.journal.service.JournalContentSearchLocalServiceUtil;
+import com.liferay.portlet.journal.service.JournalTemplateLocalServiceUtil;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.portlet.PortletPreferences;
@@ -225,6 +227,7 @@ public class JournalContentPortletDataHandlerImpl
 
 		articleElement.addAttribute("path", path);
 
+		Element templatesElement = rootElement.addElement("templates");
 		Element dlFileEntryTypesElement = rootElement.addElement(
 			"dl-file-entry-types");
 		Element dlFoldersElement = rootElement.addElement("dl-folders");
@@ -235,14 +238,31 @@ public class JournalContentPortletDataHandlerImpl
 		Element dlRepositoryEntriesElement = rootElement.addElement(
 			"dl-repository-entries");
 
+		JournalPortletDataHandlerImpl.exportArticle(
+			portletDataContext, rootElement, rootElement, templatesElement,
+			dlFileEntryTypesElement, dlFoldersElement, dlFilesElement,
+			dlFileRanksElement, dlRepositoriesElement,
+			dlRepositoryEntriesElement, article, false);
+
+		String defaultTemplateId = article.getTemplateId();
 		String preferenceTemplateId = portletPreferences.getValue(
 			"templateId", null);
 
-		JournalPortletDataHandlerImpl.exportArticle(
-			portletDataContext, rootElement, rootElement, rootElement,
-			dlFileEntryTypesElement, dlFoldersElement, dlFilesElement,
-			dlFileRanksElement, dlRepositoriesElement,
-			dlRepositoryEntriesElement, article, preferenceTemplateId, false);
+		if (Validator.isNotNull(defaultTemplateId) &&
+			Validator.isNotNull(preferenceTemplateId) &&
+			!defaultTemplateId.equals(preferenceTemplateId)) {
+
+			JournalTemplate template =
+				JournalTemplateLocalServiceUtil.getTemplate(
+					article.getGroupId(), preferenceTemplateId, true);
+
+			articleElement.addAttribute("template-uuid", template.getUuid());
+
+			JournalPortletDataHandlerImpl.exportTemplate(
+				portletDataContext, templatesElement, dlFileEntryTypesElement,
+				dlFoldersElement, dlFilesElement, dlFileRanksElement,
+				dlRepositoriesElement, dlRepositoryEntriesElement, template);
+		}
 
 		portletDataContext.setScopeGroupId(previousScopeGroupId);
 
@@ -287,9 +307,11 @@ public class JournalContentPortletDataHandlerImpl
 				portletDataContext, structureElement);
 		}
 
-		Element templateElement = rootElement.element("template");
+		Element templatesElement = rootElement.element("templates");
 
-		if (templateElement != null) {
+		List<Element> templateElements = templatesElement.elements("template");
+
+		for (Element templateElement : templateElements) {
 			JournalPortletDataHandlerImpl.importTemplate(
 				portletDataContext, templateElement);
 		}
