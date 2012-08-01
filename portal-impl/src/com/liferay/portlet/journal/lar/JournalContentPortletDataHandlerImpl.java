@@ -247,14 +247,13 @@ public class JournalContentPortletDataHandlerImpl
 		String preferenceTemplateId = portletPreferences.getValue(
 			"templateId", null);
 
-		if (Validator.isNotNull(defaultTemplateId)
-				&& !defaultTemplateId.equals(preferenceTemplateId)) {
+		if (Validator.isNotNull(defaultTemplateId) &&
+			Validator.isNotNull(preferenceTemplateId) &&
+			!defaultTemplateId.equals(preferenceTemplateId)) {
 
 			JournalTemplate template =
 				JournalTemplateLocalServiceUtil.getTemplate(
 					article.getGroupId(), preferenceTemplateId, true);
-
-			articleElement.addAttribute("template-uuid", template.getUuid());
 
 			JournalPortletDataHandlerImpl.exportTemplate(
 				portletDataContext, rootElement, dlFileEntryTypesElement,
