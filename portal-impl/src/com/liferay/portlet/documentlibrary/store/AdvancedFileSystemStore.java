@@ -184,6 +184,12 @@ public class AdvancedFileSystemStore extends FileSystemStore {
 			repositoryDir + StringPool.SLASH + sb.toString() +
 				StringPool.SLASH + fileNameFragment + ext);
 
+		File parentDir = fileNameDir.getParentFile();
+
+		if (!parentDir.exists()) {
+			parentDir.mkdirs();
+		}
+
 		return fileNameDir;
 	}
 
