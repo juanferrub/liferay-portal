@@ -53,8 +53,8 @@ public class DDMTemplateMenuTag extends IncludeTag {
 	protected void cleanUp() {
 		_classNameId = 0;
 		_defaultOptions = null;
-		_label = null;
-		_preferenceName = null;
+		_label = "display-template";
+		_preferenceName = "displayStyle";
 		_showDefaultOption = false;
 	}
 
@@ -85,8 +85,8 @@ public class DDMTemplateMenuTag extends IncludeTag {
 
 	private long _classNameId;
 	private List<String> _defaultOptions;
-	private String _label;
-	private String _preferenceName;
+	private String _label = "display-template";
+	private String _preferenceName = "displayStyle";
 	private String _preferenceValue;
 	private boolean _showDefaultOption;
 
