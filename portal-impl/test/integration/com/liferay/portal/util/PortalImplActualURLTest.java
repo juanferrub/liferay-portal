@@ -36,7 +36,6 @@ import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.test.EnvironmentExecutionTestListener;
 import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayIntegrationJUnitTestRunner;
-import com.liferay.portal.test.TransactionalExecutionTestListener;
 import com.liferay.portal.webdav.methods.Method;
 import com.liferay.portlet.journal.model.JournalArticle;
 import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
@@ -54,11 +53,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 /**
  * @author Vilmos Papp
  */
-@ExecutionTestListeners(
-		listeners = {
-			EnvironmentExecutionTestListener.class,
-			TransactionalExecutionTestListener.class
-		})
+@ExecutionTestListeners(listeners = {EnvironmentExecutionTestListener.class})
 @RunWith(LiferayIntegrationJUnitTestRunner.class)
 public class PortalImplActualURLTest {
 
@@ -146,10 +141,13 @@ public class PortalImplActualURLTest {
 
 		ServiceContext serviceContext = ServiceTestUtil.getServiceContext();
 
+		String siteName = "Test" + ServiceTestUtil.nextInt();
+		String siteFriendlyURL = StringPool.SLASH + siteName.toLowerCase();
+
 		_testSite = GroupLocalServiceUtil.addGroup(
 			serviceContext.getUserId(), GroupConstants.DEFAULT_PARENT_GROUP_ID,
-			null, 0, "Test", StringPool.BLANK, GroupConstants.TYPE_SITE_OPEN,
-			"/testsite", true, true, ServiceTestUtil.getServiceContext());
+			null, 0, siteName, StringPool.BLANK, GroupConstants.TYPE_SITE_OPEN,
+			siteFriendlyURL, true, true, ServiceTestUtil.getServiceContext());
 
 		_homePage = LayoutLocalServiceUtil.addLayout(
 			serviceContext.getUserId(), _testSite.getGroupId(), false,
@@ -231,7 +229,7 @@ public class PortalImplActualURLTest {
 		_userGroup.setDescription("Test User Group");
 		_userGroup.setExpandoBridgeAttributes(
 			ServiceTestUtil.getServiceContext());
-		_userGroup.setName("A");
+		_userGroup.setName("TestGroup_" + userGroupId);
 		_userGroup.setNew(true);
 		_userGroup.setParentUserGroupId(
 			UserGroupConstants.DEFAULT_PARENT_USER_GROUP_ID);
