@@ -16,11 +16,10 @@ package com.liferay.portlet.assetcategoriesnavigation.template;
 
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.template.PortletDisplayTemplateHandler;
-import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PortletKeys;
-import com.liferay.portal.util.PropsUtil;
+import com.liferay.portal.util.PropsValues;
 import com.liferay.portlet.asset.model.AssetCategory;
 
 import java.util.Locale;
@@ -36,9 +35,8 @@ public class AssetCategoriesNavigationPortletDisplayTemplateHandler implements
 	}
 
 	public String getDefaultTemplateLocation() {
-		return PropsUtil.get(
-			PropsKeys.
-				ASSET_CATEGORIES_NAVIGATION_DISPLAY_STYLES_TEMPLATE_CONTENT);
+		return PropsValues.
+			ASSET_CATEGORIES_NAVIGATION_DISPLAY_STYLES_TEMPLATE_CONTENT;
 	}
 
 	public String getName(Locale locale) {
