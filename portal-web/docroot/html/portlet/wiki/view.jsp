@@ -146,13 +146,12 @@ if (wikiPage != null) {
 	<c:when test="<%= portletDisplayDDMTemplateId > 0 %>">
 
 		<%
-			List entries = new ArrayList();
+		List entries = new ArrayList();
 
-			entries.add(wikiPage);
+		entries.add(wikiPage);
 		%>
 
 		<%= PortletDisplayTemplatesUtil.renderDDMTemplate(renderRequest, renderResponse, portletDisplayDDMTemplateId, entries) %>
-
 	</c:when>
 	<c:otherwise>
 

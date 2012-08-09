@@ -22,9 +22,7 @@ List<Layout> rootLayouts = LayoutLocalServiceUtil.getLayouts(layout.getGroupId()
 
 <c:choose>
 	<c:when test="<%= portletDisplayDDMTemplateId > 0 %>">
-
 		<%= PortletDisplayTemplatesUtil.renderDDMTemplate(renderRequest, renderResponse, portletDisplayDDMTemplateId, rootLayouts) %>
-
 	</c:when>
 	<c:otherwise>
 
@@ -35,7 +33,6 @@ List<Layout> rootLayouts = LayoutLocalServiceUtil.getLayouts(layout.getGroupId()
 		%>
 
 		<%= sb.toString() %>
-
 	</c:otherwise>
 </c:choose>
 
