@@ -53,6 +53,8 @@ public interface AssetRenderer {
 
 	public String getSummary(Locale locale);
 
+	public String getSummary(Locale locale, int length);
+
 	public String getTitle(Locale locale);
 
 	public String getURLDownload(ThemeDisplay themeDisplay);
