@@ -58,19 +58,6 @@ else {
 if (rootLayoutId == LayoutConstants.DEFAULT_PARENT_LAYOUT_ID) {
 	includeRootInTree = false;
 }
-
-DDMTemplate portletDisplayDDMTemplate = null;
-long portletDisplayDDMTemplateGroupId = PortletDisplayTemplatesUtil.getDDMTemplateGroupId(themeDisplay);
-long portletDisplayDDMTemplateId = 0;
-PortletDisplayTemplateHandler portletDisplayTemplateHandler = PortletDisplayTemplateHandlerRegistryUtil.getPortletDisplayTemplateHandler(LayoutSet.class.getName());
-
-if (displayStyle.startsWith("ddmTemplate_")) {
-	portletDisplayDDMTemplate = PortletDisplayTemplatesUtil.fetchDDMTemplate(portletDisplayDDMTemplateGroupId, displayStyle);
-
-	if (portletDisplayDDMTemplate != null) {
-		portletDisplayDDMTemplateId = portletDisplayDDMTemplate.getTemplateId();
-	}
-}
 %>
 
 <%@ include file="/html/portlet/site_map/init-ext.jsp" %>

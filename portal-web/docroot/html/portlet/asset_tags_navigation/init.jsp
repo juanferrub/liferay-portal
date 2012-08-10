@@ -41,20 +41,6 @@ String displayStyle = PrefsParamUtil.getString(preferences, request, "displaySty
 int maxAssetTags = PrefsParamUtil.getInteger(preferences, request, "maxAssetTags", 10);
 boolean showAssetCount = PrefsParamUtil.getBoolean(preferences, request, "showAssetCount");
 boolean showZeroAssetCount = PrefsParamUtil.getBoolean(preferences, request, "showZeroAssetCount");
-
-PortletDisplayTemplateHandler portletDisplayTemplateHandler = PortletDisplayTemplateHandlerRegistryUtil.getPortletDisplayTemplateHandler(AssetTag.class.getName());
-
-DDMTemplate portletDisplayDDMTemplate = null;
-long portletDisplayDDMTemplateId = 0;
-long portletDisplayDDMTemplateGroupId = PortletDisplayTemplatesUtil.getDDMTemplateGroupId(themeDisplay);
-
-if (displayStyle.startsWith("ddmTemplate_")) {
-	portletDisplayDDMTemplate = PortletDisplayTemplatesUtil.fetchDDMTemplate(portletDisplayDDMTemplateGroupId, displayStyle);
-
-	if (portletDisplayDDMTemplate != null) {
-		portletDisplayDDMTemplateId = portletDisplayDDMTemplate.getTemplateId();
-	}
-}
 %>
 
 <%@ include file="/html/portlet/asset_tags_navigation/init-ext.jsp" %>

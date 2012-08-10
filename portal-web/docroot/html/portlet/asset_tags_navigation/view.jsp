@@ -16,6 +16,10 @@
 
 <%@ include file="/html/portlet/asset_tags_navigation/init.jsp" %>
 
+<%
+long portletDisplayDDMTemplateId = PortletDisplayTemplatesUtil.getPortletDisplayTemplateDDMTemplateId(themeDisplay, displayStyle);
+%>
+
 <c:choose>
 	<c:when test="<%= portletDisplayDDMTemplateId > 0 %>">
 
