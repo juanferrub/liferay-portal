@@ -61,7 +61,7 @@ iteratorURL.setParameter("viewTrashAttachments", Boolean.TRUE.toString());
 />
 
 <liferay-ui:search-container
-	emptyResultsMessage="this-wiki-node-does-not-have-any-file-attachments-in-the-recycle-bin"
+	emptyResultsMessage="this-wiki-node-does-not-have-file-attachments-in-the-recycle-bin"
 	iteratorURL="<%= iteratorURL %>"
 >
 	<liferay-ui:search-container-results

@@ -89,6 +89,11 @@ List<Group> mySites = user.getMySites(true, max);
 			else if ((defaultPrivateLayout != null ) && !LayoutPermissionUtil.contains(permissionChecker, defaultPrivateLayout, true, ActionKeys.VIEW)) {
 				showPrivateSite = false;
 			}
+
+			if (!mySite.isControlPanel() && !mySite.isSite() && !mySite.isUser()) {
+				showPublicSite = false;
+				showPrivateSite = false;
+			}
 		%>
 
 			<c:if test="<%= showPublicSite || showPrivateSite %>">
@@ -165,12 +170,14 @@ List<Group> mySites = user.getMySites(true, max);
 
 									stagingGroupId = stagingGroup.getGroupId();
 
-									if ((mySite.getPublicLayoutsPageCount() == 0) && (stagingGroup.getPublicLayoutsPageCount() > 0) && GroupPermissionUtil.contains(permissionChecker, mySite.getGroupId(), ActionKeys.VIEW_STAGING)) {
-										showPublicSiteStaging = true;
-									}
+									if (GroupPermissionUtil.contains(permissionChecker, mySite.getGroupId(), ActionKeys.VIEW_STAGING)) {
+										if ((mySite.getPublicLayoutsPageCount() == 0) && (stagingGroup.getPublicLayoutsPageCount() > 0)) {
+											showPublicSiteStaging = true;
+										}
 
-									if ((mySite.getPrivateLayoutsPageCount() == 0) && (stagingGroup.getPrivateLayoutsPageCount() > 0) && GroupPermissionUtil.contains(permissionChecker, mySite.getGroupId(), ActionKeys.VIEW_STAGING)) {
-										showPrivateSiteStaging = true;
+										if ((mySite.getPrivateLayoutsPageCount() == 0) && (stagingGroup.getPrivateLayoutsPageCount() > 0)) {
+											showPrivateSiteStaging = true;
+										}
 									}
 								}
 								%>

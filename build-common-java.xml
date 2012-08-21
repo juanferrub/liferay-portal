@@ -77,23 +77,25 @@
 		<if>
 			<available file="bnd.bnd" />
 			<then>
-				<bndexpand propertyfile="bnd.bnd" />
+				<bndexpand propertyfile="${project.dir}/common.bnd" />
 
 				<bnd
 					eclipse="false"
 					exceptions="true"
 					failok="false"
+					inherit="true"
 					output="."
 					sourcepath="."
 				>
+					<bndfiles path="bnd.bnd" />
 					<classpath>
 						<pathelement location="classes" />
 					</classpath>
-
-					<bndfiles path="bnd.bnd" />
 				</bnd>
 			</then>
 			<else>
+				<antcall target="manifest" />
+
 				<jar
 					basedir="classes"
 					jarfile="${jar.file}.jar"
@@ -140,77 +142,30 @@
 				<available file="classes/META-INF/MANIFEST.MF" />
 			</not>
 			<then>
-				<script classpathref="project.classpath" language="beanshell">
-					<![CDATA[
-						import com.liferay.portal.kernel.util.PackagingUtil;
-						import com.liferay.portal.kernel.util.ReleaseInfo;
-						import com.liferay.portal.kernel.util.StringUtil;
+				<trycatch>
+					<try>
+						<taskdef
+							classname="com.liferay.util.ant.ManifestHelperTask"
+							classpathref="project.classpath"
+							name="liferay-manifest-helper"
+						/>
+					</try>
+					<catch>
+						<ant antfile="${project.dir}/portal-service/build.xml" target="compile" inheritAll="false" />
+						<ant antfile="${project.dir}/util-java/build.xml" target="compile" inheritAll="false" />
 
-						import java.io.File;
+						<taskdef
+							classname="com.liferay.util.ant.ManifestHelperTask"
+							classpathref="project.classpath"
+							name="liferay-manifest-helper"
+						/>
+					</catch>
+				</trycatch>
 
-						String os = System.getProperty("os.name").toLowerCase();
-
-						String buildRevision = "";
-
-						try {
-							File projectDir = new File(project.getBaseDir(), project.getProperty("project.dir"));
-
-							File svnDir = new File(projectDir, ".svn");
-
-							String command = null;
-
-							if (svnDir.exists()) {
-								if (os.contains("win")) {
-									command = "cmd /c svnversion .";
-								}
-								else {
-									command = "svnversion .";
-								}
-							}
-
-							File gitDir = new File(projectDir, ".git");
-
-							if (gitDir.exists()) {
-								if (os.contains("win")) {
-									command = "cmd /c git rev-parse HEAD";
-								}
-								else {
-									command = "git rev-parse HEAD";
-								}
-							}
-
-							if (command != null) {
-								Runtime runtime = Runtime.getRuntime();
-
-								Process process = runtime.exec(command);
-
-								buildRevision = StringUtil.read(process.getInputStream());
-							}
-						}
-						catch (Exception e) {
-							e.printStackTrace();
-						}
-
-						project.setProperty("build.revision", buildRevision);
-
-						project.setProperty("release.info.code.name", ReleaseInfo.getCodeName());
-						project.setProperty("release.info.build.date", String.valueOf(ReleaseInfo.getBuildDate()));
-						project.setProperty("release.info.build.number", String.valueOf(ReleaseInfo.getBuildNumber()));
-						project.setProperty("release.info.parent.build.number", String.valueOf(ReleaseInfo.getParentBuildNumber()));
-						project.setProperty("release.info.release.info", ReleaseInfo.getReleaseInfo());
-						project.setProperty("release.info.server.info", ReleaseInfo.getServerInfo());
-						project.setProperty("release.info.vendor", ReleaseInfo.getVendor());
-						project.setProperty("release.info.version", ReleaseInfo.getVersion());
-
-						File classesFolder = new File(project.getBaseDir(), "classes");
-
-						packages = PackagingUtil.getPackagesFromPath(classesFolder);
-
-						packages = StringUtil.merge(packages, ";version=\"" + ReleaseInfo.getVersion() +  "\",") + ";version=\"" + ReleaseInfo.getVersion() +  "\"";
-
-						project.setProperty("export.packages", packages);
-					]]>
-				</script>
+				<liferay-manifest-helper
+					analyze="true"
+					classpathref="project.classpath"
+				/>
 
 				<mkdir dir="classes/META-INF" />
 
@@ -228,11 +183,11 @@
 					<attribute name="Java-Debug" value="javac.debug=${javac.debug}" />
 					<attribute name="Java-Deprecation" value="javac.encoding=${javac.encoding}" />
 					<attribute name="Jsp-Precompile" value="jsp.precompile=${jsp.precompile}" />
-					<attribute name="Liferay-Portal-Code-Name" value="${release.info.code.name}" />
 					<attribute name="Liferay-Portal-Build-Date" value="${release.info.build.date}" />
 					<attribute name="Liferay-Portal-Build-Number" value="${release.info.build.number}" />
 					<attribute name="Liferay-Portal-Build-Revision" value="${build.revision}" />
 					<attribute name="Liferay-Portal-Build-Time" value="${build.time}" />
+					<attribute name="Liferay-Portal-Code-Name" value="${release.info.code.name}" />
 					<attribute name="Liferay-Portal-Parent-Build-Number" value="${release.info.parent.build.number}" />
 					<attribute name="Liferay-Portal-Release-Info" value="${release.info.release.info}" />
 					<attribute name="Liferay-Portal-Server-Info" value="${release.info.server.info}" />

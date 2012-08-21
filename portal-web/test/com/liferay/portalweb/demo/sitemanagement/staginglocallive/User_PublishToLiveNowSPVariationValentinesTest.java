@@ -150,10 +150,124 @@ public class User_PublishToLiveNowSPVariationValentinesTest extends BaseTestCase
 
 				Thread.sleep(5000);
 
+				for (int second = 0;; second++) {
+					if (second >= 90) {
+						fail("timeout");
+					}
+
+					try {
+						if (selenium.isVisible(
+									"//input[@value='Change Selection']")) {
+							break;
+						}
+					}
+					catch (Exception e) {
+					}
+
+					Thread.sleep(1000);
+				}
+
+				selenium.clickAt("//input[@value='Change Selection']",
+					RuntimeVariables.replace("Change Selection"));
+
+				for (int second = 0;; second++) {
+					if (second >= 90) {
+						fail("timeout");
+					}
+
+					try {
+						if (RuntimeVariables.replace(
+									"Note that selecting no pages from the tree reverts to implicit selection of all pages.")
+												.equals(selenium.getText(
+										"//div[@class='portlet-msg-info']"))) {
+							break;
+						}
+					}
+					catch (Exception e) {
+					}
+
+					Thread.sleep(1000);
+				}
+
+				assertEquals(RuntimeVariables.replace(
+						"Note that selecting no pages from the tree reverts to implicit selection of all pages."),
+					selenium.getText("//div[@class='portlet-msg-info']"));
+
+				boolean treeNotExpanded = selenium.isElementPresent(
+						"//div[contains(@class,'aui-tree-expanded')]");
+
+				if (treeNotExpanded) {
+					label = 3;
+
+					continue;
+				}
+
+				selenium.clickAt("//li/div/div[1]",
+					RuntimeVariables.replace("Drop Down Arrow"));
+				selenium.clickAt("//li/div/div[1]",
+					RuntimeVariables.replace("Drop Down Arrow"));
+
+				for (int second = 0;; second++) {
+					if (second >= 90) {
+						fail("timeout");
+					}
+
+					try {
+						if (selenium.isVisible(
+									"//div[contains(@class,'aui-tree-expanded')]")) {
+							break;
+						}
+					}
+					catch (Exception e) {
+					}
+
+					Thread.sleep(1000);
+				}
+
+				assertTrue(selenium.isVisible(
+						"//div[contains(@class,'aui-tree-expanded')]"));
+				assertTrue(selenium.isVisible(
+						"//div[contains(@class,'aui-tree-collapsed')]"));
+
+			case 3:
+				Thread.sleep(5000);
+
+				for (int second = 0;; second++) {
+					if (second >= 90) {
+						fail("timeout");
+					}
+
+					try {
+						if (selenium.isVisible("//div[4]")) {
+							break;
+						}
+					}
+					catch (Exception e) {
+					}
+
+					Thread.sleep(1000);
+				}
+
+				assertEquals(RuntimeVariables.replace("Public Pages"),
+					selenium.getText("//div[4]"));
+				selenium.clickAt("//div[4]",
+					RuntimeVariables.replace("Public Pages"));
+				selenium.clickAt("//div[4]",
+					RuntimeVariables.replace("Public Pages"));
+				Thread.sleep(5000);
+				assertEquals(RuntimeVariables.replace("Prices"),
+					selenium.getText("//li[5]/div/div[4]"));
+				selenium.clickAt("//li[5]/div/div[4]",
+					RuntimeVariables.replace("Prices"));
+				Thread.sleep(5000);
+				selenium.clickAt("//input[@value='Select']",
+					RuntimeVariables.replace("Select"));
+				Thread.sleep(5000);
+
 				boolean allVisible = selenium.isVisible("_88_rangeAll");
 
 				if (allVisible) {
-					label = 3;
+					label = 4;
 
 					continue;
 				}
@@ -161,7 +275,7 @@ public class User_PublishToLiveNowSPVariationValentinesTest extends BaseTestCase
 				selenium.clickAt("//div[2]/div[1]/a",
 					RuntimeVariables.replace("Plus"));
 
-			case 3:
+			case 4:
 
 				for (int second = 0;; second++) {
 					if (second >= 90) {

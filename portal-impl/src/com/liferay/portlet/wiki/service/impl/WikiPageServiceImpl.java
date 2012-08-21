@@ -201,6 +201,15 @@ public class WikiPageServiceImpl extends WikiPageServiceBaseImpl {
 		wikiPageLocalService.deletePageAttachment(nodeId, title, fileName);
 	}
 
+	public void deletePageAttachments(long nodeId, String title)
+		throws PortalException, SystemException {
+
+		WikiPagePermission.check(
+			getPermissionChecker(), nodeId, title, ActionKeys.DELETE);
+
+		wikiPageLocalService.deletePageAttachments(nodeId, title);
+	}
+
 	public void deleteTempPageAttachment(
 			long nodeId, String fileName, String tempFolderName)
 		throws PortalException, SystemException {
@@ -210,15 +219,6 @@ public class WikiPageServiceImpl extends WikiPageServiceBaseImpl {
 
 		wikiPageLocalService.deleteTempPageAttachment(
 			getUserId(), fileName, tempFolderName);
-	}
-
-	public void emptyPageAttachments(long nodeId, String title)
-		throws PortalException, SystemException {
-
-		WikiPagePermission.check(
-			getPermissionChecker(), nodeId, title, ActionKeys.DELETE);
-
-		wikiPageLocalService.emptyPageAttachments(nodeId, title);
 	}
 
 	public WikiPage getDraftPage(long nodeId, String title)
@@ -444,9 +444,7 @@ public class WikiPageServiceImpl extends WikiPageServiceBaseImpl {
 		StringBundler link = new StringBundler(7);
 
 		for (WikiPage page : pages) {
-			String author = HtmlUtil.escape(
-				PortalUtil.getUserName(page.getUserId(), page.getUserName()));
-
+			String author = PortalUtil.getUserName(page);
 			String title =
 				page.getTitle() + StringPool.SPACE + page.getVersion();
 

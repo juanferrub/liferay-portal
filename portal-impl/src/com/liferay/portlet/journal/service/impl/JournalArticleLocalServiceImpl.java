@@ -878,8 +878,8 @@ public class JournalArticleLocalServiceImpl
 
 		if (articles.isEmpty()) {
 			throw new NoSuchArticleException(
-				"No approved JournalArticle exists with the key {groupId="
-					+ groupId + ", className=" + className + ", classPK=" +
+				"No approved JournalArticle exists with the key {groupId=" +
+					groupId + ", className=" + className + ", classPK=" +
 						classPK + "}");
 		}
 
@@ -2558,12 +2558,6 @@ public class JournalArticleLocalServiceImpl
 						article.getResourcePrimKey(), displayDate,
 						expirationDate, true);
 				}
-
-				// Expando
-
-				ExpandoBridge expandoBridge = article.getExpandoBridge();
-
-				expandoBridge.setAttributes(serviceContext);
 
 				// Indexer
 

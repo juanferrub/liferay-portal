@@ -19,6 +19,7 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portalweb.portal.BaseTestCase;
 import com.liferay.portalweb.portal.util.TestPropsValues;
 
 import com.thoughtworks.selenium.Selenium;
@@ -36,7 +37,9 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Action;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.internal.WrapsDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * @author Brian Wing Shun Chan
@@ -48,6 +51,8 @@ public class WebDriverToSeleniumBridge
 		super(webDriver);
 
 		initKeys();
+
+		_parentFrameHandle = getWindowHandle();
 	}
 
 	public void addCustomRequestHeader(String key, String value) {
@@ -494,7 +499,9 @@ public class WebDriverToSeleniumBridge
 	public String getText(String locator) {
 		WebElement webElement = getWebElement(locator);
 
-		return webElement.getText();
+		String text = webElement.getText();
+
+		return text.trim();
 	}
 
 	@Override
@@ -913,32 +920,57 @@ public class WebDriverToSeleniumBridge
 	}
 
 	public void selectFrame(String locator) {
-		if (locator.equals("relative=top")) {
-			WebDriver.TargetLocator targetLocator = switchTo();
+		WebDriver.TargetLocator targetLocator = switchTo();
 
+		if (locator.equals("relative=parent")) {
+			targetLocator.window(_parentFrameHandle);
+		}
+		else if (locator.equals("relative=top")) {
 			targetLocator.defaultContent();
 		}
 		else {
-			WebElement webElement = getWebElement(locator);
+			_parentFrameHandle = getWindowHandle();
 
-			WebDriver.TargetLocator targetLocator = switchTo();
+			WebElement webElement = getWebElement(locator);
 
 			targetLocator.frame(webElement);
 		}
 	}
 
 	public void selectPopUp(String windowID) {
-		throw new UnsupportedOperationException();
+		Set<String> windowHandles = getWindowHandles();
+
+		if (windowID.equals("") || windowID.equals("null")) {
+			String currentWindowTitle = getTitle();
+
+			for (String windowHandle : windowHandles) {
+				WebDriver.TargetLocator targetLocator = switchTo();
+
+				targetLocator.window(windowHandle);
+
+				if (!currentWindowTitle.equals(getTitle())) {
+					return;
+				}
+			}
+		}
+		else {
+			selectWindow(windowID);
+		}
 	}
 
 	public void selectWindow(String windowID) {
 		Set<String> windowHandles = getWindowHandles();
 
-		if (!windowHandles.isEmpty()) {
-			String title = windowID;
+		if (windowID.equals("null")) {
+			WebDriver.TargetLocator targetLocator = switchTo();
 
-			if (title.startsWith("title=")) {
-				title = title.substring(6);
+			targetLocator.defaultContent();
+		}
+		else {
+			String targetWindowTitle = windowID;
+
+			if (targetWindowTitle.startsWith("title=")) {
+				targetWindowTitle = targetWindowTitle.substring(6);
 			}
 
 			for (String windowHandle : windowHandles) {
@@ -946,15 +978,10 @@ public class WebDriverToSeleniumBridge
 
 				targetLocator.window(windowHandle);
 
-				if (title.equals(getTitle())) {
+				if (targetWindowTitle.equals(getTitle())) {
 					return;
 				}
 			}
-		}
-		else if (windowID.equals("null")) {
-			WebDriver.TargetLocator targetLocator = switchTo();
-
-			targetLocator.defaultContent();
 		}
 	}
 
@@ -1073,7 +1100,59 @@ public class WebDriverToSeleniumBridge
 	}
 
 	public void waitForPopUp(String windowID, String timeout) {
-		throw new UnsupportedOperationException();
+		int wait = 0;
+
+		if (timeout.equals("")) {
+			wait = 30;
+		}
+		else {
+			wait = GetterUtil.getInteger(timeout) / 1000;
+		}
+
+		if (windowID.equals("") || windowID.equals("null")) {
+			for (int i = 0; i <= wait; i++) {
+				Set<String> windowHandles = getWindowHandles();
+
+				if (windowHandles.size() > 1) {
+					return;
+				}
+
+				try {
+					Thread.sleep(1000);
+				}
+				catch (Exception e) {
+				}
+			}
+		}
+		else {
+			String targetWindowTitle = windowID;
+
+			if (targetWindowTitle.startsWith("title=")) {
+				targetWindowTitle = targetWindowTitle.substring(6);
+			}
+
+			for (int i = 0; i <= wait; i++) {
+				for (String windowHandle : getWindowHandles()) {
+					WebDriver.TargetLocator targetLocator = switchTo();
+
+					targetLocator.window(windowHandle);
+
+					if (targetWindowTitle.equals(getTitle())) {
+						targetLocator.window(_parentFrameHandle);
+
+						return;
+					}
+				}
+
+				try {
+					Thread.sleep(1000);
+				}
+				catch (Exception e) {
+				}
+			}
+		}
+
+		BaseTestCase.fail("Unable to find the window ID \"" + windowID + "\"");
 	}
 
 	public void windowFocus() {
@@ -1093,57 +1172,99 @@ public class WebDriverToSeleniumBridge
 	}
 
 	protected WebElement getWebElement(String locator) {
+		WebDriverWait wait = new WebDriverWait(this, 10);
+
+		WebElement webElement;
+
 		if (locator.startsWith("//")) {
-			return findElement(By.xpath(locator));
+			webElement = wait.until(
+				ExpectedConditions.presenceOfElementLocated(By.xpath(locator)));
 		}
 		else if (locator.startsWith("class=")) {
-			return findElement(By.className(locator.substring(6)));
+			webElement = wait.until(
+				ExpectedConditions.presenceOfElementLocated(
+					By.className(locator.substring(6))));
 		}
 		else if (locator.startsWith("css=")) {
-			return findElement(By.cssSelector(locator.substring(4)));
+			webElement = wait.until(
+				ExpectedConditions.presenceOfElementLocated(
+					By.cssSelector(locator.substring(4))));
 		}
 		else if (locator.startsWith("link=")) {
-			return findElement(By.linkText(locator.substring(5)));
+			webElement = wait.until(
+				ExpectedConditions.presenceOfElementLocated(
+					By.linkText(locator.substring(5))));
 		}
 		else if (locator.startsWith("name=")) {
-			return findElement(By.name(locator.substring(5)));
+			webElement = wait.until(
+				ExpectedConditions.presenceOfElementLocated(
+					By.name(locator.substring(5))));
 		}
 		else if (locator.startsWith("tag=")) {
-			return findElement(By.tagName(locator.substring(4)));
+			webElement = wait.until(
+				ExpectedConditions.presenceOfElementLocated(
+					By.tagName(locator.substring(4))));
 		}
 		else if (locator.startsWith("xpath=") || locator.startsWith("xPath=")) {
-			return findElement(By.xpath(locator.substring(6)));
+			webElement = wait.until(
+				ExpectedConditions.presenceOfElementLocated(
+					By.xpath(locator.substring(6))));
 		}
 		else {
-			return findElement(By.id(locator));
+			webElement = wait.until(
+				ExpectedConditions.presenceOfElementLocated(By.id(locator)));
 		}
+
+		return webElement;
 	}
 
 	protected List<WebElement> getWebElements(String locator) {
+		WebDriverWait wait = new WebDriverWait(this, 10);
+
+		List<WebElement> webElements;
+
 		if (locator.startsWith("//")) {
-			return findElements(By.xpath(locator));
+			webElements =
+				wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(
+					By.xpath(locator)));
 		}
 		else if (locator.startsWith("class=")) {
-			return findElements(By.className(locator.substring(6)));
+			webElements =
+				wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(
+					By.className(locator.substring(6))));
 		}
 		else if (locator.startsWith("css=")) {
-			return findElements(By.cssSelector(locator.substring(4)));
+			webElements =
+				wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(
+					By.cssSelector(locator.substring(4))));
 		}
 		else if (locator.startsWith("link=")) {
-			return findElements(By.linkText(locator.substring(5)));
+			webElements =
+				wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(
+					By.linkText(locator.substring(5))));
 		}
 		else if (locator.startsWith("name=")) {
-			return findElements(By.name(locator.substring(5)));
+			webElements =
+				wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(
+					By.name(locator.substring(5))));
 		}
 		else if (locator.startsWith("tag=")) {
-			return findElements(By.tagName(locator.substring(4)));
+			webElements =
+				wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(
+					By.tagName(locator.substring(4))));
 		}
 		else if (locator.startsWith("xpath=") || locator.startsWith("xPath=")) {
-			return findElements(By.xpath(locator.substring(6)));
+			webElements =
+				wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(
+					By.xpath(locator.substring(6))));
 		}
 		else {
-			return findElements(By.id(locator));
+			webElements =
+				wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(
+					By.id(locator)));
 		}
+
+		return webElements;
 	}
 
 	protected void initKeys() {
@@ -1215,5 +1336,7 @@ public class WebDriverToSeleniumBridge
 	}
 
 	private Keys[] _keysArray = new Keys[128];
+
+	private String _parentFrameHandle;
 
 }

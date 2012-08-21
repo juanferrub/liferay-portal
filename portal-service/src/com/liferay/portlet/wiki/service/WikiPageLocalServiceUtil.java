@@ -418,6 +418,12 @@ public class WikiPageLocalServiceUtil {
 		getService().deletePageAttachment(nodeId, title, fileName);
 	}
 
+	public static void deletePageAttachments(long nodeId, java.lang.String title)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		getService().deletePageAttachments(nodeId, title);
+	}
+
 	public static void deletePages(long nodeId)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
@@ -429,12 +435,6 @@ public class WikiPageLocalServiceUtil {
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		getService().deleteTempPageAttachment(userId, fileName, tempFolderName);
-	}
-
-	public static void emptyPageAttachments(long nodeId, java.lang.String title)
-		throws com.liferay.portal.kernel.exception.PortalException,
-			com.liferay.portal.kernel.exception.SystemException {
-		getService().emptyPageAttachments(nodeId, title);
 	}
 
 	public static java.util.List<com.liferay.portlet.wiki.model.WikiPage> getChildren(

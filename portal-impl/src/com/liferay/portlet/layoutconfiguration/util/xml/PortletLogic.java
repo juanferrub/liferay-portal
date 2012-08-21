@@ -84,13 +84,34 @@ public class PortletLogic extends RuntimeLogic {
 		ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
-		Portlet portlet = PortletLocalServiceUtil.getPortletById(
-			themeDisplay.getCompanyId(), portletId);
+		Portlet portlet = getPortlet(themeDisplay.getCompanyId(), portletId);
 
 		PortletContainerUtil.render(
 			request, bufferCacheServletResponse, portlet);
 
 		return bufferCacheServletResponse.getString();
+	}
+
+	/**
+	 * @see com.liferay.portal.model.impl.LayoutTypePortletImpl#getStaticPortlets(
+	 *      String)
+	 */
+	protected Portlet getPortlet(long companyId, String portletId)
+		throws Exception {
+
+		Portlet portlet = PortletLocalServiceUtil.getPortletById(
+			companyId, portletId);
+
+		// See LayoutTypePortletImpl#getStaticPortlets for why we only clone
+		// non-instanceable portlets
+
+		if (!portlet.isInstanceable()) {
+			portlet = (Portlet)portlet.clone();
+		}
+
+		portlet.setStatic(true);
+
+		return portlet;
 	}
 
 	private HttpServletRequest _request;

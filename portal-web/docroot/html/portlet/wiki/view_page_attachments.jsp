@@ -77,10 +77,10 @@ headerNames.add(StringPool.BLANK);
 String emptyResultsMessage = null;
 
 if (viewTrashAttachments) {
-	emptyResultsMessage = "this-page-does-not-have-any-file-attachments-in-the-recycle-bin";
+	emptyResultsMessage = "this-page-does-not-have-file-attachments-in-the-recycle-bin";
 }
 else {
-	emptyResultsMessage = "this-page-does-not-have-any-file-attachments";
+	emptyResultsMessage = "this-page-does-not-have-file-attachments";
 }
 
 SearchContainer searchContainer = new SearchContainer(renderRequest, null, null, SearchContainer.DEFAULT_CUR_PARAM, SearchContainer.DEFAULT_DELTA, currentURLObj, headerNames, emptyResultsMessage);

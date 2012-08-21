@@ -188,6 +188,7 @@ public class PortletPreferencesFactoryImpl
 		}
 
 		portalPreferences.setSignedIn(signedIn);
+		portalPreferences.setUserId(userId);
 
 		return portalPreferences;
 	}

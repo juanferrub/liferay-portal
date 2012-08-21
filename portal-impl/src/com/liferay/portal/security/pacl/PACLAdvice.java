@@ -19,7 +19,6 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.security.lang.PortalSecurityManagerThreadLocal;
 import com.liferay.portal.service.impl.PortalServiceImpl;
 import com.liferay.portal.spring.aop.ChainableMethodAdvice;
-import com.liferay.portal.spring.aop.ServiceBeanAopProxy;
 
 import java.lang.reflect.Method;
 
@@ -32,23 +31,11 @@ public class PACLAdvice extends ChainableMethodAdvice {
 
 	@Override
 	public Object invoke(MethodInvocation methodInvocation) throws Throwable {
-		if (!PortalSecurityManagerThreadLocal.isEnabled()) {
-
-			// Proceed so that we do not remove the advice
-
-			try {
-				return methodInvocation.proceed();
-			}
-			catch (Throwable throwable) {
-				throw throwable;
-			}
-		}
-
-		if (!PACLPolicyManager.isActive()) {
-			ServiceBeanAopProxy.removeMethodInterceptor(methodInvocation, this);
+		if (!PACLPolicyManager.isActive() ||
+			!PortalSecurityManagerThreadLocal.isEnabled()) {
 
 			try {
-				return methodInvocation.proceed();
+				return proceed(methodInvocation);
 			}
 			catch (Throwable throwable) {
 				throw throwable;
@@ -89,12 +76,8 @@ public class PACLAdvice extends ChainableMethodAdvice {
 				}
 			}
 			else if (methodName.equals("toString")) {
-				return method.invoke(thisObject, arguments);
+				return proceed(methodInvocation);
 			}
-		}
-
-		if (!PACLPolicyManager.isActive()) {
-			return method.invoke(thisObject, arguments);
 		}
 
 		PACLPolicy paclPolicy = PACLClassUtil.getPACLPolicy(false, debug);
@@ -108,7 +91,7 @@ public class PACLAdvice extends ChainableMethodAdvice {
 		}
 
 		if (paclPolicy == null) {
-			return methodInvocation.proceed();
+			return proceed(methodInvocation);
 		}
 
 		if (!paclPolicy.hasPortalService(thisObject, method, arguments)) {
@@ -118,10 +101,10 @@ public class PACLAdvice extends ChainableMethodAdvice {
 		boolean checkSQL = PortalSecurityManagerThreadLocal.isCheckSQL();
 
 		try {
-			Class<?> thisObjectClass = thisObject.getClass();
+			Class<?> clazz = thisObject.getClass();
 
 			if (paclPolicy.getClassLoader() !=
-					PACLClassLoaderUtil.getClassLoader(thisObjectClass)) {
+					PACLClassLoaderUtil.getClassLoader(clazz)) {
 
 				// Disable the portal security manager so that PACLDataSource
 				// does not try to check access to tables that can be accessed
@@ -130,10 +113,36 @@ public class PACLAdvice extends ChainableMethodAdvice {
 				PortalSecurityManagerThreadLocal.setCheckSQL(false);
 			}
 
-			return methodInvocation.proceed();
+			return proceed(methodInvocation);
 		}
 		finally {
 			PortalSecurityManagerThreadLocal.setCheckSQL(checkSQL);
+		}
+	}
+
+	protected Object proceed(MethodInvocation methodInvocation)
+		throws Throwable {
+
+		ClassLoader contextClassLoader =
+			PACLClassLoaderUtil.getContextClassLoader();
+
+		Object thisObject = methodInvocation.getThis();
+
+		Class<?> clazz = thisObject.getClass();
+
+		ClassLoader classLoader = PACLClassLoaderUtil.getClassLoader(clazz);
+
+		try {
+			if (contextClassLoader != classLoader) {
+				PACLClassLoaderUtil.setContextClassLoader(classLoader);
+			}
+
+			return methodInvocation.proceed();
+		}
+		finally {
+			if (contextClassLoader != classLoader) {
+				PACLClassLoaderUtil.setContextClassLoader(contextClassLoader);
+			}
 		}
 	}
 

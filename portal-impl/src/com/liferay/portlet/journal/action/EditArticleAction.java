@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.upload.UploadPortletRequest;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.HttpUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
@@ -168,27 +169,27 @@ public class EditArticleAction extends PortletAction {
 					portletConfig, actionRequest, article, redirect);
 			}
 
-			if (redirect.contains("/content/" + oldUrlTitle + "?")) {
-				int pos = redirect.indexOf("?");
+			if (Validator.isNotNull(oldUrlTitle)) {
+				String portletId = HttpUtil.getParameter(
+					redirect, "p_p_id", false);
 
-				if (pos == -1) {
-					pos = redirect.length();
+				String oldRedirectParam =
+					PortalUtil.getPortletNamespace(portletId) + "redirect";
+
+				String oldRedirect = HttpUtil.getParameter(
+					redirect, oldRedirectParam, false);
+
+				if (Validator.isNotNull(oldRedirect)) {
+					String newRedirect = HttpUtil.decodeURL(oldRedirect);
+
+					newRedirect = StringUtil.replace(
+						newRedirect, oldUrlTitle, article.getUrlTitle());
+					newRedirect = StringUtil.replace(
+						newRedirect, oldRedirectParam, "redirect");
+
+					redirect = StringUtil.replace(
+						redirect, oldRedirect, newRedirect);
 				}
-
-				String newRedirect = redirect.substring(
-					0, pos - oldUrlTitle.length());
-
-				newRedirect += article.getUrlTitle();
-
-				if (oldUrlTitle.contains("/maximized")) {
-					newRedirect += "/maximized";
-				}
-
-				if (pos < redirect.length()) {
-					newRedirect += "?" + redirect.substring(pos + 1);
-				}
-
-				redirect = newRedirect;
 			}
 
 			WindowState windowState = actionRequest.getWindowState();
@@ -430,6 +431,10 @@ public class EditArticleAction extends PortletAction {
 		for (String removeArticleLocaleId : removeArticleLocaleIds) {
 			int pos = removeArticleLocaleId.lastIndexOf(VERSION_SEPARATOR);
 
+			if (pos == -1) {
+				continue;
+			}
+
 			String articleId = removeArticleLocaleId.substring(0, pos);
 			double version = GetterUtil.getDouble(
 				removeArticleLocaleId.substring(
@@ -473,8 +478,16 @@ public class EditArticleAction extends PortletAction {
 		long classNameId = ParamUtil.getLong(
 			uploadPortletRequest, "classNameId");
 		long classPK = ParamUtil.getLong(uploadPortletRequest, "classPK");
+
 		String articleId = ParamUtil.getString(
 			uploadPortletRequest, "articleId");
+
+		int pos = articleId.lastIndexOf(VERSION_SEPARATOR);
+
+		if (pos != -1) {
+			articleId = articleId.substring(0, pos);
+		}
+
 		boolean autoArticleId = ParamUtil.getBoolean(
 			uploadPortletRequest, "autoArticleId");
 		double version = ParamUtil.getDouble(uploadPortletRequest, "version");
