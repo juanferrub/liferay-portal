@@ -21,11 +21,14 @@ import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.util.HttpUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.security.permission.PermissionChecker;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.asset.AssetRendererFactoryRegistryUtil;
+
+import java.util.Locale;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
@@ -68,6 +71,10 @@ public abstract class BaseAssetRenderer implements AssetRenderer {
 
 	public String getRestorePath(RenderRequest renderRequest) {
 		return null;
+	}
+
+	public String getSummary(Locale locale, int length) {
+		return StringUtil.shorten(getSummary(locale), length);
 	}
 
 	public String getURLDownload(ThemeDisplay themeDisplay) {
