@@ -1,5 +1,3 @@
-<%@ page import="com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalServiceUtil" %>
-<%@ page import="com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalServiceUtil" %>
 <%--
 /**
  * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
@@ -33,7 +31,7 @@ long parentStructureId = BeanParamUtil.getLong(structure, request, "parentStruct
 String parentStructureName = StringPool.BLANK;
 
 try {
-	DDMStructure parentStructure = DDMStructureLocalServiceUtil.getStructure(parentStructureId);
+	DDMStructure parentStructure = DDMStructureServiceUtil.getStructure(parentStructureId);
 
 	parentStructureName = parentStructure.getName(locale);
 }
