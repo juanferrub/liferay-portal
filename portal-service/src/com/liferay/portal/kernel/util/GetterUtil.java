@@ -891,6 +891,20 @@ public class GetterUtil {
 		return get(value, defaultValue);
 	}
 
+	public static String getString(
+		String value, String defaultValue, boolean allowEmptyString) {
+
+		if (allowEmptyString) {
+			return get(value, defaultValue);
+		}
+
+		if (Validator.isNull(value)) {
+			return defaultValue;
+		}
+
+		return get(value, defaultValue);
+	}
+
 	private static int _parseInt(String value, int defaultValue) {
 		int length = value.length();
 
