@@ -70,7 +70,7 @@ public class CookieKeysImpl implements CookieKeys {
 
 		cookie.setSecure(secure);
 		cookie.setValue(encodedValue);
-		cookie.setVersion(VERSION);
+		cookie.setVersion(CookieKeysUtil.VERSION);
 
 		// Setting a cookie will cause the TCK to lose its ability to track
 		// sessions
@@ -81,10 +81,11 @@ public class CookieKeysImpl implements CookieKeys {
 	public void addSupportCookie(
 		HttpServletRequest request, HttpServletResponse response) {
 
-		Cookie cookieSupportCookie = new Cookie(COOKIE_SUPPORT, "true");
+		Cookie cookieSupportCookie = new Cookie(
+			CookieKeysUtil.COOKIE_SUPPORT, "true");
 
 		cookieSupportCookie.setPath(StringPool.SLASH);
-		cookieSupportCookie.setMaxAge(MAX_AGE);
+		cookieSupportCookie.setMaxAge(CookieKeysUtil.MAX_AGE);
 
 		addCookie(request, response, cookieSupportCookie);
 	}
@@ -178,7 +179,8 @@ public class CookieKeysImpl implements CookieKeys {
 	}
 
 	public boolean hasSessionId(HttpServletRequest request) {
-		String jsessionid = getCookie(request, JSESSIONID, false);
+		String jsessionid = getCookie(
+			request, CookieKeysUtil.JSESSIONID, false);
 
 		if (jsessionid != null) {
 			return true;
@@ -189,8 +191,10 @@ public class CookieKeysImpl implements CookieKeys {
 	}
 
 	public boolean isEncodedCookie(String name) {
-		if (name.equals(ID) || name.equals(LOGIN) || name.equals(PASSWORD) ||
-			name.equals(SCREEN_NAME)) {
+		if (name.equals(CookieKeysUtil.ID) ||
+			name.equals(CookieKeysUtil.LOGIN) ||
+			name.equals(CookieKeysUtil.PASSWORD) ||
+			name.equals(CookieKeysUtil.SCREEN_NAME)) {
 
 			return true;
 		}
@@ -205,7 +209,8 @@ public class CookieKeysImpl implements CookieKeys {
 		if (PropsValues.SESSION_ENABLE_PERSISTENT_COOKIES &&
 			PropsValues.SESSION_TEST_COOKIE_SUPPORT) {
 
-			String cookieSupport = getCookie(request, COOKIE_SUPPORT, false);
+			String cookieSupport = getCookie(
+				request, CookieKeysUtil.COOKIE_SUPPORT, false);
 
 			if (Validator.isNull(cookieSupport)) {
 				throw new CookieNotSupportedException();

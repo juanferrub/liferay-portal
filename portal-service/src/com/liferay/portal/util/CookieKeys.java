@@ -27,30 +27,6 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface CookieKeys {
 
-	public static final String COMPANY_ID = "COMPANY_ID";
-
-	public static final String COOKIE_SUPPORT = "COOKIE_SUPPORT";
-
-	public static final String GUEST_LANGUAGE_ID = "GUEST_LANGUAGE_ID";
-
-	public static final String ID = "ID";
-
-	public static final String JSESSIONID = "JSESSIONID";
-
-	public static final String LOGIN = "LOGIN";
-
-	public static final int MAX_AGE = 31536000;
-
-	public static final String PASSWORD = "PASSWORD";
-
-	public static final String REMEMBER_ME = "REMEMBER_ME";
-
-	public static final String SCREEN_NAME = "SCREEN_NAME";
-
-	public static final String USER_UUID = "USER_UUID";
-
-	public static final int VERSION = 0;
-
 	public void addCookie(
 		HttpServletRequest request, HttpServletResponse response,
 		Cookie cookie);
