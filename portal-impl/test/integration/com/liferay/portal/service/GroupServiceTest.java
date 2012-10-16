@@ -16,11 +16,13 @@ package com.liferay.portal.service;
 
 import com.liferay.portal.NoSuchRoleException;
 import com.liferay.portal.kernel.dao.orm.FinderCacheUtil;
+import com.liferay.portal.kernel.dao.orm.QueryDefinition;
 import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.util.FriendlyURLNormalizerUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.GroupConstants;
 import com.liferay.portal.model.Layout;
@@ -35,9 +37,23 @@ import com.liferay.portal.security.permission.PermissionCheckerFactoryUtil;
 import com.liferay.portal.security.permission.PermissionThreadLocal;
 import com.liferay.portal.test.EnvironmentExecutionTestListener;
 import com.liferay.portal.test.LiferayIntegrationJUnitTestRunner;
+import com.liferay.portal.test.MainServletExecutionTestListener;
 import com.liferay.portal.test.TransactionalCallbackAwareExecutionTestListener;
 import com.liferay.portal.util.TestPropsValues;
-
+import com.liferay.portlet.blogs.BlogsServiceDataTestUtil;
+import com.liferay.portlet.blogs.service.BlogsEntryLocalServiceUtil;
+import com.liferay.portlet.bookmarks.service.BookmarksEntryLocalServiceUtil;
+import com.liferay.portlet.bookmarks.service.BookmarksServiceDataTestUtil;
+import com.liferay.portlet.calendar.service.CalEventLocalServiceUtil;
+import com.liferay.portlet.calendar.service.persistence.CalEventServiceDataTestUtil;
+import com.liferay.portlet.documentlibrary.service.DLFileEntryLocalServiceUtil;
+import com.liferay.portlet.documentlibrary.service.persistence.DLAppServiceDataTestUtil;
+import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
+import com.liferay.portlet.journal.service.JournalServiceDataTestUtil;
+import com.liferay.portlet.wiki.model.WikiNode;
+import com.liferay.portlet.wiki.service.WikiNodeLocalServiceUtil;
+import com.liferay.portlet.wiki.service.WikiPageLocalServiceUtil;
+import com.liferay.portlet.wiki.service.WikiServiceDataTestUtil;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,9 +61,11 @@ import org.junit.runner.RunWith;
 
 /**
  * @author Julio Camarero
+ * @author Juan Fernández
  */
 @ExecutionTestListeners(
 	listeners = {
+		MainServletExecutionTestListener.class,
 		EnvironmentExecutionTestListener.class,
 		TransactionalCallbackAwareExecutionTestListener.class
 	})
@@ -80,7 +98,7 @@ public class GroupServiceTest {
 		Group group1 = ServiceTestUtil.addGroup("Test 1");
 
 		Group group11 = ServiceTestUtil.addGroup(
-			group1.getGroupId(), "Test 1.1");
+				group1.getGroupId(), "Test 1.1");
 
 		User user = ServiceTestUtil.addUser(
 			null, true, new long[] {group11.getGroupId()});
@@ -137,6 +155,60 @@ public class GroupServiceTest {
 			user, group1, group11, null, true, false, false, true, false, true,
 			true);
 	}
+
+	@Test
+	@Transactional
+	public void testDeleteGroupData() throws Exception {
+		Group group = ServiceTestUtil.addGroup("Test Group Deletion");
+
+		long groupId = group.getGroupId();
+
+		BlogsServiceDataTestUtil.addBlogsEntry(group, false);
+		BookmarksServiceDataTestUtil.addEntry();
+		CalEventServiceDataTestUtil.addCalEvent();
+		DLAppServiceDataTestUtil.addFileEntry(true, "Test Document");
+		JournalServiceDataTestUtil.addArticle(group.getGroupId());
+		WikiNode node = WikiServiceDataTestUtil.addNode();
+		WikiServiceDataTestUtil.addPage(node.getNodeId());
+
+		GroupLocalServiceUtil.deleteGroup(group);
+
+		int actualJournalArticles =
+			JournalArticleLocalServiceUtil.getArticlesCount(groupId);
+
+		Assert.assertEquals(0, actualJournalArticles);
+
+		int actualBlogEntries =
+			BlogsEntryLocalServiceUtil.getGroupEntriesCount(
+				groupId, new QueryDefinition(WorkflowConstants.STATUS_ANY));
+
+		Assert.assertEquals(0, actualBlogEntries);
+
+		int actualBookmarksEntries =
+			BookmarksEntryLocalServiceUtil.getGroupEntriesCount(groupId);
+
+		Assert.assertEquals(0, actualBookmarksEntries);
+
+		int actualCalEvents = CalEventLocalServiceUtil.getEventsCount(
+			groupId, "");
+
+		Assert.assertEquals(0, actualCalEvents);
+
+		int actualFileEntries =
+			DLFileEntryLocalServiceUtil.getGroupFileEntriesCount(groupId);
+
+		Assert.assertEquals(0, actualFileEntries);
+
+		int actualNodes = WikiNodeLocalServiceUtil.getNodesCount(groupId);
+
+		Assert.assertEquals(0, actualNodes);
+
+		int actualPages = WikiPageLocalServiceUtil.getPagesCount(
+			node.getNodeId());
+
+		Assert.assertEquals(0,actualPages);
+	}
+
 
 	@Test
 	@Transactional

@@ -25,12 +25,12 @@ import com.liferay.portal.test.TransactionalExecutionTestListener;
 import com.liferay.portal.util.TestPropsValues;
 import com.liferay.portlet.journal.model.JournalArticle;
 import com.liferay.portlet.journal.model.JournalFolder;
+import com.liferay.portlet.journal.model.JournalFolderConstants;
+import org.junit.runner.RunWith;
 
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
-import org.junit.runner.RunWith;
 
 /**
  * @author Juan Fernández
@@ -42,6 +42,12 @@ import org.junit.runner.RunWith;
 	})
 @RunWith(LiferayIntegrationJUnitTestRunner.class)
 public class JournalServiceDataTestUtil {
+
+	public static JournalArticle addArticle(long groupId) throws Exception {
+		return addArticle(
+			groupId, JournalFolderConstants.DEFAULT_PARENT_FOLDER_ID,
+			"Test Name", "Test Content");
+	}
 
 	public static JournalArticle addArticle(
 			long groupId, long folderId, String name, String content)
