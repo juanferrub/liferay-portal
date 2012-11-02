@@ -16,7 +16,9 @@
 
 <%@ include file="/html/portlet/init.jsp" %>
 
-<%@ page import="com.liferay.portal.kernel.repository.RepositoryException" %><%@
+<%@ page import="com.liferay.portal.kernel.portletdisplaytemplate.PortletDisplayTemplateHandler" %><%@
+page import="com.liferay.portal.kernel.portletdisplaytemplate.PortletDisplayTemplateHandlerRegistryUtil" %><%@
+page import="com.liferay.portal.kernel.repository.RepositoryException" %><%@
 page import="com.liferay.portal.kernel.repository.model.FileEntry" %><%@
 page import="com.liferay.portal.kernel.repository.model.FileVersion" %><%@
 page import="com.liferay.portal.kernel.repository.model.Folder" %><%@
@@ -47,6 +49,7 @@ page import="com.liferay.portlet.documentlibrary.util.DLUtil" %><%@
 page import="com.liferay.portlet.journal.search.FileEntryDisplayTerms" %><%@
 page import="com.liferay.portlet.journal.search.FileEntrySearch" %><%@
 page import="com.liferay.portlet.journal.search.FileEntrySearchTerms" %><%@
+page import="com.liferay.portlet.portletdisplaytemplate.util.PortletDisplayTemplateUtil" %><%@
 page import="com.liferay.portlet.trash.util.TrashUtil" %>
 
 <%
@@ -138,6 +141,7 @@ else if (!portletId.equals(PortletKeys.DOCUMENT_LIBRARY) && !ArrayUtil.contains(
 	fileEntryColumns = ArrayUtil.append(fileEntryColumns, "action");
 }
 
+String displayTemplate = preferences.getValue("displayTemplate", StringPool.BLANK);
 boolean enableRatings = GetterUtil.getBoolean(preferences.getValue("enableRatings", null), true);
 boolean enableCommentRatings = GetterUtil.getBoolean(preferences.getValue("enableCommentRatings", null), true);
 

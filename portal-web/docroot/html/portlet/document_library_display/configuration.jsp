@@ -41,13 +41,35 @@ String portletNameSpace = PortalUtil.getPortletNamespace(portletResource);
 
 	<liferay-ui:panel-container extended="<%= true %>" id="documentLibrarySettingsPanelContainer" persistState="<%= true %>">
 		<liferay-ui:panel collapsible="<%= true %>" extended="<%= true %>" id="documentLibraryDisplay" persistState="<%= true %>" title="display-settings">
-			<aui:input label="show-actions" name="preferences--showActions--" type="checkbox" value="<%= showActions %>" />
+			<aui:fieldset>
+				<aui:input label="show-actions" name="preferences--showActions--" type="checkbox" value="<%= showActions %>" />
 
-			<aui:input label="show-folder-menu" name="preferences--showFolderMenu--" type="checkbox" value="<%= showFolderMenu %>" />
+				<aui:input label="show-folder-menu" name="preferences--showFolderMenu--" type="checkbox" value="<%= showFolderMenu %>" />
 
-			<aui:input label="show-navigation-links" name="preferences--showTabs--" type="checkbox" value="<%= showTabs %>" />
+				<aui:input label="show-navigation-links" name="preferences--showTabs--" type="checkbox" value="<%= showTabs %>" />
 
-			<aui:input label="show-search" name="preferences--showFoldersSearch--" type="checkbox" value="<%= showFoldersSearch %>" />
+				<aui:input label="show-search" name="preferences--showFoldersSearch--" type="checkbox" value="<%= showFoldersSearch %>" />
+
+				<div class="display-template">
+
+					<%
+					PortletDisplayTemplateHandler portletDisplayTemplateHandler = PortletDisplayTemplateHandlerRegistryUtil.getPortletDisplayTemplateHandler(FileEntry.class.getName());
+					%>
+
+					<liferay-ui:ddm-template-menu
+						classNameId="<%= PortalUtil.getClassNameId(portletDisplayTemplateHandler.getClassName()) %>"
+						preferenceName="displayTemplate"
+						preferenceValue="<%= displayTemplate %>"
+						showEmptyOption="<%= true %>"
+					/>
+
+					<liferay-ui:ddm-template-selector
+						classNameId="<%= PortalUtil.getClassNameId(portletDisplayTemplateHandler.getClassName()) %>"
+						message='<%= LanguageUtil.format(pageContext, "manage-display-templates-for-x", themeDisplay.getScopeGroupName(), false) %>'
+						refreshURL="<%= configurationURL %>"
+					/>
+				</div>
+			</aui:fieldset>
 		</liferay-ui:panel>
 
 		<liferay-ui:panel collapsible="<%= true %>" extended="<%= true %>" id="documentLibraryFoldersListingPanel" persistState="<%= true %>" title="folders-listing">
