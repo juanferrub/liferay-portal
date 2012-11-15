@@ -291,6 +291,10 @@ public class ComboServlet extends HttpServlet {
 
 		URL resourceURL = servletContext.getResource(path);
 
+		if (!PropsValues.COMBO_CHECK_FILE_PATH) {
+			return resourceURL;
+		}
+
 		if (resourceURL == null) {
 			return null;
 		}
