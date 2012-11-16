@@ -78,6 +78,27 @@ String redirect = ParamUtil.getString(request, "redirect");
 						rightTitle="available"
 					/>
 				</aui:field-wrapper>
+
+				<div class="display-template">
+
+					<%
+					PortletDisplayTemplateHandler portletDisplayTemplateHandler = PortletDisplayTemplateHandlerRegistryUtil.getPortletDisplayTemplateHandler(FileEntry.class.getName());
+					%>
+
+					<liferay-ui:ddm-template-menu
+						classNameId="<%= PortalUtil.getClassNameId(portletDisplayTemplateHandler.getClassName()) %>"
+						preferenceName="displayTemplate"
+						preferenceValue="<%= displayTemplate %>"
+						showEmptyOption="<%= true %>"
+					/>
+
+					<liferay-ui:ddm-template-selector
+						classNameId="<%= PortalUtil.getClassNameId(portletDisplayTemplateHandler.getClassName()) %>"
+						message='<%= LanguageUtil.format(pageContext, "manage-display-templates-for-x", themeDisplay.getScopeGroupName(), false) %>'
+						refreshURL="<%= configurationURL %>"
+					/>
+				</div>
+
 			</aui:fieldset>
 		</liferay-ui:panel>
 
