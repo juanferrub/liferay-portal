@@ -65,8 +65,8 @@ public class XMLStorageAdapter extends BaseStorageAdapter {
 
 		DDMContent ddmContent = DDMContentLocalServiceUtil.addContent(
 			serviceContext.getUserId(), serviceContext.getScopeGroupId(),
-			DDMStorageLink.class.getName(), null,
-			DDMXMLUtil.getXML(0, fields, false), serviceContext);
+			DDMStorageLink.class.getName(), null, DDMXMLUtil.getXML(fields),
+			serviceContext);
 
 		DDMStorageLinkLocalServiceUtil.addStorageLink(
 			classNameId, ddmContent.getPrimaryKey(), ddmStructureId,

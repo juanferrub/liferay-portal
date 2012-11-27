@@ -69,15 +69,19 @@ public class DDMXMLImpl implements DDMXML {
 		return xml;
 	}
 
-	public String getXML(long classPK, Fields fields, boolean mergeFields)
+	public String getXML(Fields fields) throws Exception {
+		return getXML(0, fields, false);
+	}
+
+	public String getXML(long ddmContentId, Fields fields, boolean mergeFields)
 		throws Exception {
 
 		Document document = null;
 		Element rootElement = null;
 
-		if (mergeFields) {
+		if (mergeFields && (ddmContentId > 0)) {
 			DDMContent ddmContent = DDMContentLocalServiceUtil.getContent(
-				classPK);
+				ddmContentId);
 
 			document = SAXReaderUtil.read(ddmContent.getXml());
 			rootElement = document.getRootElement();
@@ -100,17 +104,21 @@ public class DDMXMLImpl implements DDMXML {
 				value = valueDate.getTime();
 			}
 
-			String fieldName = field.getName();
-			String fieldValue = String.valueOf(value);
+			String valueString = String.valueOf(value);
 
-			Element dynamicElementElement = _getElementByName(
-				document, fieldName);
+			if (valueString != null) {
+				valueString = valueString.trim();
+			}
+
+			Element dynamicElementElement = getElementByName(
+				document, field.getName());
 
 			if (dynamicElementElement == null) {
-				_appendField(rootElement, fieldName, fieldValue);
+				appendField(rootElement, field.getName(), valueString);
 			}
 			else {
-				_updateField(dynamicElementElement, fieldName, fieldValue);
+				updateField(
+					dynamicElementElement, field.getName(), valueString);
 			}
 		}
 
@@ -162,6 +170,19 @@ public class DDMXMLImpl implements DDMXML {
 		return document.formattedString();
 	}
 
+	protected Element appendField(
+		Element rootElement, String fieldName, String fieldValue) {
+
+		Element dynamicElementElement = rootElement.addElement(
+			"dynamic-element");
+
+		dynamicElementElement.addElement("dynamic-content");
+
+		updateField(dynamicElementElement, fieldName, fieldValue);
+
+		return dynamicElementElement;
+	}
+
 	protected void fixElementsDefaultLocale(
 		Element element, Locale contentDefaultLocale,
 		Locale contentNewDefaultLocale) {
@@ -199,20 +220,7 @@ public class DDMXMLImpl implements DDMXML {
 		}
 	}
 
-	private Element _appendField(
-		Element rootElement, String fieldName, String fieldValue) {
-
-		Element dynamicElementElement = rootElement.addElement(
-			"dynamic-element");
-
-		dynamicElementElement.addElement("dynamic-content");
-
-		_updateField(dynamicElementElement, fieldName, fieldValue);
-
-		return dynamicElementElement;
-	}
-
-	private Element _getElementByName(Document document, String name) {
+	protected Element getElementByName(Document document, String name) {
 		name = HtmlUtil.escapeXPathAttribute(name);
 
 		XPath xPathSelector = SAXReaderUtil.createXPath(
@@ -228,7 +236,7 @@ public class DDMXMLImpl implements DDMXML {
 		}
 	}
 
-	private void _updateField(
+	protected void updateField(
 		Element dynamicElementElement, String fieldName, String value) {
 
 		Element dynamicContentElement = dynamicElementElement.element(

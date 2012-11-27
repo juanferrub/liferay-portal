@@ -45,11 +45,15 @@ public class DDMXMLUtil {
 		return _ddmXML;
 	}
 
+	public static String getXML(Fields fields) throws Exception {
+		return getDDMXML().getXML(fields);
+	}
+
 	public static String getXML(
-		long classPK, Fields fields, boolean mergeFields)
+			long ddmContentId, Fields fields, boolean mergeFields)
 		throws Exception {
 
-		return getDDMXML().getXML(classPK, fields, mergeFields);
+		return getDDMXML().getXML(ddmContentId, fields, mergeFields);
 	}
 
 	public static String updateXMLDefaultLocale(

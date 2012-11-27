@@ -32,7 +32,10 @@ public interface DDMXML {
 
 	public String formatXML(String xml) throws DocumentException, IOException;
 
-	public String getXML(long classPK, Fields fields, boolean mergeFields)
+	public String getXML(Fields fields)
+		throws Exception;
+
+	public String getXML(long ddmContentId, Fields fields, boolean mergeFields)
 		throws Exception;
 
 	public String updateXMLDefaultLocale(
