@@ -1,3 +1,6 @@
+<%@ page import="com.liferay.portlet.dynamicdatamapping.model.DDMStructure" %>
+<%@ page import="com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalServiceUtil" %>
+
 <%--
 /**
  * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
@@ -57,15 +60,15 @@ double version = BeanParamUtil.getDouble(article, request, "version", JournalArt
 
 String structureId = BeanParamUtil.getString(article, request, "structureId");
 
-JournalStructure structure = null;
+DDMStructure ddmStructure = null;
 
 long structureGroupId = groupId;
 
 if (Validator.isNotNull(structureId)) {
 	try {
-		structure = JournalStructureLocalServiceUtil.getStructure(groupId, structureId, true);
+		ddmStructure = DDMStructureLocalServiceUtil.getStructure(scopeGroupId, structureId);
 
-		structureGroupId = structure.getGroupId();
+		structureGroupId = ddmStructure.getGroupId();
 	}
 	catch (NoSuchStructureException nsse) {
 	}
@@ -115,7 +118,7 @@ String[][] categorySections = {mainSections};
 
 request.setAttribute("edit_article.jsp-redirect", redirect);
 
-request.setAttribute("edit_article.jsp-structure", structure);
+request.setAttribute("edit_article.jsp-structure", ddmStructure);
 
 request.setAttribute("edit_article.jsp-languageId", languageId);
 request.setAttribute("edit_article.jsp-defaultLanguageId", defaultLanguageId);

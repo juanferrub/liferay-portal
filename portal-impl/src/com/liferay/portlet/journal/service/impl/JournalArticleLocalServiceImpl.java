@@ -77,6 +77,10 @@ import com.liferay.portlet.asset.NoSuchEntryException;
 import com.liferay.portlet.asset.model.AssetEntry;
 import com.liferay.portlet.asset.model.AssetLink;
 import com.liferay.portlet.asset.model.AssetLinkConstants;
+import com.liferay.portlet.dynamicdatamapping.NoSuchStructureException;
+import com.liferay.portlet.dynamicdatamapping.NoSuchTemplateException;
+import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
+import com.liferay.portlet.dynamicdatamapping.model.DDMTemplate;
 import com.liferay.portlet.dynamicdatamapping.util.DDMXMLUtil;
 import com.liferay.portlet.expando.model.ExpandoBridge;
 import com.liferay.portlet.journal.ArticleContentException;
@@ -92,15 +96,11 @@ import com.liferay.portlet.journal.ArticleVersionException;
 import com.liferay.portlet.journal.DuplicateArticleIdException;
 import com.liferay.portlet.journal.NoSuchArticleException;
 import com.liferay.portlet.journal.NoSuchArticleResourceException;
-import com.liferay.portlet.journal.NoSuchStructureException;
-import com.liferay.portlet.journal.NoSuchTemplateException;
 import com.liferay.portlet.journal.StructureXsdException;
 import com.liferay.portlet.journal.model.JournalArticle;
 import com.liferay.portlet.journal.model.JournalArticleConstants;
 import com.liferay.portlet.journal.model.JournalArticleDisplay;
 import com.liferay.portlet.journal.model.JournalArticleResource;
-import com.liferay.portlet.journal.model.JournalStructure;
-import com.liferay.portlet.journal.model.JournalTemplate;
 import com.liferay.portlet.journal.model.impl.JournalArticleDisplayImpl;
 import com.liferay.portlet.journal.service.base.JournalArticleLocalServiceBaseImpl;
 import com.liferay.portlet.journal.util.JournalUtil;
@@ -1109,10 +1109,10 @@ public class JournalArticleLocalServiceImpl
 				// default one. If the default one does not exist, throw an
 				// exception.
 
-				JournalTemplate template = null;
+				DDMTemplate ddmTtemplate = null;
 
 				try {
-					template = journalTemplatePersistence.findByG_T(
+					ddmTtemplate = ddmTemplatePersistence.findByG_T(
 						article.getGroupId(), templateId);
 				}
 				catch (NoSuchTemplateException nste1) {
@@ -1120,7 +1120,7 @@ public class JournalArticleLocalServiceImpl
 						Group companyGroup = groupLocalService.getCompanyGroup(
 							article.getCompanyId());
 
-						template = journalTemplatePersistence.findByG_T(
+						ddmTtemplate = ddmTemplatePersistence.findByG_T(
 							companyGroup.getGroupId(), templateId);
 
 						tokens.put(
@@ -1129,7 +1129,7 @@ public class JournalArticleLocalServiceImpl
 					}
 					catch (NoSuchTemplateException nste2) {
 						if (!defaultTemplateId.equals(templateId)) {
-							template = journalTemplatePersistence.findByG_T(
+							ddmTtemplate = ddmTemplatePersistence.findByG_T(
 								article.getGroupId(), defaultTemplateId);
 						}
 						else {
@@ -1138,9 +1138,9 @@ public class JournalArticleLocalServiceImpl
 					}
 				}
 
-				script = template.getXsl();
-				langType = template.getLangType();
-				cacheable = template.isCacheable();
+				script = ddmTtemplate.getScript();
+				langType = ddmTtemplate.getLanguage();
+				cacheable = ddmTtemplate.isCacheable();
 			}
 
 			content = JournalUtil.transform(
@@ -2696,14 +2696,14 @@ public class JournalArticleLocalServiceImpl
 		Group companyGroup = groupLocalService.getCompanyGroup(
 			article.getCompanyId());
 
-		JournalStructure structure = null;
+		DDMStructure structure = null;
 
 		try {
-			structure = journalStructurePersistence.findByG_S(
+			structure = ddmStructurePersistence.findByG_S(
 				article.getGroupId(), article.getStructureId());
 		}
 		catch (NoSuchStructureException nsse) {
-			structure = journalStructurePersistence.findByG_S(
+			structure = ddmStructurePersistence.findByG_S(
 				companyGroup.getGroupId(), article.getStructureId());
 		}
 
@@ -3080,19 +3080,19 @@ public class JournalArticleLocalServiceImpl
 		long classTypeId = 0;
 
 		try {
-			JournalStructure structure = journalStructurePersistence.fetchByG_S(
+			DDMStructure ddmStructure = ddmStructurePersistence.fetchByG_S(
 				article.getGroupId(), article.getStructureId());
 
-			if (structure == null) {
+			if (ddmStructure == null) {
 				Group companyGroup = groupLocalService.getCompanyGroup(
 					article.getCompanyId());
 
-				structure = journalStructurePersistence.fetchByG_S(
+				ddmStructure = ddmStructurePersistence.fetchByG_S(
 					companyGroup.getGroupId(), article.getStructureId());
 			}
 
-			if (structure != null) {
-				classTypeId = structure.getId();
+			if (ddmStructure != null) {
+				classTypeId = ddmStructure.getStructureId();
 			}
 		}
 		catch (Exception e) {
@@ -3558,27 +3558,30 @@ public class JournalArticleLocalServiceImpl
 		if (Validator.isNotNull(structureId)) {
 			Group companyGroup = groupLocalService.getCompanyGroup(companyId);
 
+			DDMStructure ddmStructure = null;
+
 			try {
-				journalStructurePersistence.findByG_S(groupId, structureId);
+				ddmStructure = ddmStructurePersistence.findByG_S(
+					groupId, structureId);
 			}
 			catch (NoSuchStructureException nsse) {
-				journalStructurePersistence.findByG_S(
+				ddmStructure = ddmStructurePersistence.findByG_S(
 					companyGroup.getGroupId(), structureId);
 			}
 
-			JournalTemplate template = null;
+			DDMTemplate ddmTemplate = null;
 
 			if (Validator.isNotNull(templateId)) {
 				try {
-					template = journalTemplatePersistence.findByG_T(
+					ddmTemplate = ddmTemplatePersistence.findByG_T(
 						groupId, templateId);
 				}
 				catch (NoSuchTemplateException nste) {
-					template = journalTemplatePersistence.findByG_T(
+					ddmTemplate = ddmTemplatePersistence.findByG_T(
 						companyGroup.getGroupId(), templateId);
 				}
 
-				if (!template.getStructureId().equals(structureId)) {
+				if (ddmTemplate.getClassPK() != ddmStructure.getStructureId()) {
 					throw new NoSuchTemplateException();
 				}
 			}

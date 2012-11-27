@@ -47,6 +47,10 @@ import com.liferay.portlet.PortletURLImpl;
 import com.liferay.portlet.asset.AssetCategoryException;
 import com.liferay.portlet.asset.AssetTagException;
 import com.liferay.portlet.assetpublisher.util.AssetPublisherUtil;
+import com.liferay.portlet.dynamicdatamapping.NoSuchStructureException;
+import com.liferay.portlet.dynamicdatamapping.NoSuchTemplateException;
+import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
+import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.portlet.journal.ArticleContentException;
 import com.liferay.portlet.journal.ArticleContentSizeException;
 import com.liferay.portlet.journal.ArticleDisplayDateException;
@@ -59,13 +63,9 @@ import com.liferay.portlet.journal.ArticleTypeException;
 import com.liferay.portlet.journal.ArticleVersionException;
 import com.liferay.portlet.journal.DuplicateArticleIdException;
 import com.liferay.portlet.journal.NoSuchArticleException;
-import com.liferay.portlet.journal.NoSuchStructureException;
-import com.liferay.portlet.journal.NoSuchTemplateException;
 import com.liferay.portlet.journal.model.JournalArticle;
-import com.liferay.portlet.journal.model.JournalStructure;
 import com.liferay.portlet.journal.service.JournalArticleServiceUtil;
 import com.liferay.portlet.journal.service.JournalContentSearchLocalServiceUtil;
-import com.liferay.portlet.journal.service.JournalStructureLocalServiceUtil;
 import com.liferay.portlet.journal.util.JournalUtil;
 
 import java.io.File;
@@ -705,8 +705,8 @@ public class EditArticleAction extends PortletAction {
 			}
 			else {
 				if (curArticle.isTemplateDriven()) {
-					JournalStructure structure =
-						JournalStructureLocalServiceUtil.getStructure(
+					DDMStructure ddmStructure =
+						DDMStructureLocalServiceUtil.getStructure(
 							groupId, structureId, true);
 
 					boolean translate = cmd.equals(Constants.TRANSLATE);
@@ -714,7 +714,7 @@ public class EditArticleAction extends PortletAction {
 					content = JournalUtil.mergeArticleContent(
 						curArticle.getContent(), content, !translate);
 					content = JournalUtil.removeOldContent(
-						content, structure.getMergedXsd());
+						content, ddmStructure.getXsd());
 				}
 			}
 

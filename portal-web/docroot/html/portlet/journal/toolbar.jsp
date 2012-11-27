@@ -116,14 +116,19 @@
 	</c:if>
 
 	function <portlet:namespace />openStructuresView() {
-		Liferay.Util.openWindow(
+		Liferay.Util.openDDMPortlet(
 			{
+				ddmResource: '<%= ddmResource %>',
+				ddmResourceActionId: '<%= ActionKeys.ADD_TEMPLATE %>',
 				dialog: {
 					width: 820
 				},
-				id: '<portlet:namespace />openStructuresView',
-				title: '<%= UnicodeLanguageUtil.get(pageContext, "structures") %>',
-				uri: '<liferay-portlet:renderURL windowState="<%= LiferayWindowState.POP_UP.toString() %>"><portlet:param name="struts_action" value="/journal/view_structures" /></liferay-portlet:renderURL>'
+				showGlobalScope: 'false',
+				showManageTemplates: 'true',
+				storageType: 'xml',
+				structureName: 'structure',
+				structureType: 'com.liferay.portlet.journal.model.JournalArticle',
+				title: '<%= UnicodeLanguageUtil.get(pageContext, "structures") %>'
 			}
 		);
 	}
