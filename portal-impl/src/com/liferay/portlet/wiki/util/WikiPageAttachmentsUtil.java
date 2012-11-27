@@ -29,24 +29,9 @@ import com.liferay.portlet.wiki.service.WikiPageLocalServiceUtil;
 /**
  * @author Eudaldo Alonso
  */
-public class WikiPageAttachmentUtil {
+public class WikiPageAttachmentsUtil {
 
-	public static WikiPage getPageByFileEntryId(long fileEntryId)
-		throws PortalException, SystemException {
-
-		FileEntry fileEntry = PortletFileRepositoryUtil.getPortletFileEntry(
-			fileEntryId);
-
-		long folderId = fileEntry.getFolderId();
-
-		Folder folder = PortletFileRepositoryUtil.getPortletFolder(folderId);
-
-		long resourcePrimKey = GetterUtil.getLong(folder.getName());
-
-		return WikiPageLocalServiceUtil.getPage(resourcePrimKey);
-	}
-
-	public static long getPageFolderId(
+	public static long getFolderId(
 			long groupId, long userId, long nodeId, long pageId)
 		throws PortalException, SystemException {
 
@@ -67,6 +52,20 @@ public class WikiPageAttachmentUtil {
 			String.valueOf(pageId), serviceContext);
 
 		return pageFolder.getFolderId();
+	}
+
+	public static WikiPage getPage(long fileEntryId)
+		throws PortalException, SystemException {
+
+		FileEntry fileEntry = PortletFileRepositoryUtil.getPortletFileEntry(
+			fileEntryId);
+
+		Folder folder = PortletFileRepositoryUtil.getPortletFolder(
+			fileEntry.getFolderId());
+
+		long resourcePrimKey = GetterUtil.getLong(folder.getName());
+
+		return WikiPageLocalServiceUtil.getPage(resourcePrimKey);
 	}
 
 }
