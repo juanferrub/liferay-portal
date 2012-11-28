@@ -31,20 +31,18 @@ import com.liferay.portal.kernel.xml.XPath;
 import com.liferay.portlet.dynamicdatamapping.model.DDMContent;
 import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.service.DDMContentLocalServiceUtil;
-import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.portlet.dynamicdatamapping.storage.Field;
 import com.liferay.portlet.dynamicdatamapping.storage.FieldConstants;
 import com.liferay.portlet.dynamicdatamapping.storage.Fields;
 import com.liferay.util.xml.XMLFormatter;
 
 import java.io.IOException;
-
 import java.io.Serializable;
+
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 /**
  * @author Bruno Basto
@@ -82,31 +80,28 @@ public class DDMXMLImpl implements DDMXML {
 		}
 	}
 
-	public Fields getFields(long ddmStructureId, String xml)
-		throws SystemException, PortalException {
+	public Fields getFields(DDMStructure ddmStructure, String xml)
+		throws PortalException, SystemException {
 
-		return getFields(ddmStructureId, null, xml);
+		return getFields(ddmStructure, null, xml, null);
 	}
 
 	public Fields getFields(
-			long ddmStructureId, XPath conditionXPath, String xml)
+		DDMStructure ddmStructure, XPath conditionXPath, String xml,
+			List<String> fieldNames)
 		throws PortalException, SystemException {
-
-		DDMStructure ddmStructure = DDMStructureLocalServiceUtil.getStructure(
-			ddmStructureId);
-
-		Set<String> fieldNames = ddmStructure.getFieldNames();
 
 		Document document = null;
 
 		try {
 			document = SAXReaderUtil.read(xml);
-		} catch (DocumentException e) {
+		}
+		catch (DocumentException e) {
 			return null;
 		}
 
 		if ((conditionXPath != null) &&
-			!conditionXPath.booleanValueOf(document)) {
+				!conditionXPath.booleanValueOf(document)) {
 
 			return null;
 		}
@@ -135,7 +130,8 @@ public class DDMXMLImpl implements DDMXML {
 				FieldConstants.getSerializable(fieldDataType, fieldValue);
 
 			Field field = new Field(
-				ddmStructureId, fieldName, fieldValueSerializable);
+				ddmStructure.getStructureId(), fieldName,
+				fieldValueSerializable);
 
 			fields.put(field);
 		}

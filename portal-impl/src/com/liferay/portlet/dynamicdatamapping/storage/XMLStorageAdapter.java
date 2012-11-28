@@ -26,8 +26,10 @@ import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.dynamicdatamapping.model.DDMContent;
 import com.liferay.portlet.dynamicdatamapping.model.DDMStorageLink;
+import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.service.DDMContentLocalServiceUtil;
 import com.liferay.portlet.dynamicdatamapping.service.DDMStorageLinkLocalServiceUtil;
+import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.portlet.dynamicdatamapping.storage.query.ComparisonOperator;
 import com.liferay.portlet.dynamicdatamapping.storage.query.Condition;
 import com.liferay.portlet.dynamicdatamapping.storage.query.FieldCondition;
@@ -219,12 +221,15 @@ public class XMLStorageAdapter extends BaseStorageAdapter {
 			conditionXPath = _parseCondition(condition);
 		}
 
+		DDMStructure ddmStructure =
+			DDMStructureLocalServiceUtil.getDDMStructure(ddmStructureId);
+
 		for (long classPK : classPKs) {
 			DDMContent ddmContent = DDMContentLocalServiceUtil.getContent(
 				classPK);
 
 			Fields fields = DDMXMLUtil.getFields(
-				ddmStructureId, conditionXPath, ddmContent.getXml());
+				ddmStructure, conditionXPath, ddmContent.getXml(), fieldNames);
 
 			fieldsList.add(fields);
 		}
