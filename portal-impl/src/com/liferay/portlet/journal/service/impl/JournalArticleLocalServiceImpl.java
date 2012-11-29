@@ -3564,8 +3564,8 @@ public class JournalArticleLocalServiceImpl
 			DDMTemplate ddmTemplate = null;
 
 			if (Validator.isNotNull(templateId)) {
-				ddmTemplate = ddmTemplatePersistence.findByPrimaryKey(
-					Long.parseLong(templateId));
+				ddmTemplate = ddmTemplateService.getTemplate(
+					groupId, templateId);
 
 				if (ddmTemplate.getClassPK() != ddmStructure.getStructureId()) {
 					throw new NoSuchTemplateException();
