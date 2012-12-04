@@ -151,7 +151,6 @@ if (template == null) {
 
 		<aui:input cssClass="lfr-textarea-container" name="description" />
 
-		<aui:input helpMessage="journal-template-cacheable-help" name="cacheable" value="<%= new Boolean(cacheable) %>" />
 
 		<c:if test="<%= template != null %>">
 			<aui:field-wrapper label="url">
@@ -205,33 +204,54 @@ if (template == null) {
 
 		</aui:select>
 
-		<aui:field-wrapper label="script">
-			<aui:input label="" name="xsl" type="file" />
+		<liferay-ui:panel-container extended="<%= false %>" id="templateScriptPanelContainer" persistState="<%= true %>">
+			<liferay-ui:panel collapsible="<%= true %>" defaultState="closed" extended="<%= false %>" helpMessage="template-script-allows-you-to-use-already-existing-file-as-a-template" id="templateScript" persistState="<%= true %>" title="script">
 
-			<aui:button name="editorButton" value="launch-editor" />
+				<aui:field-wrapper label="script">
+					<aui:input label="" name="xsl" type="file" />
+				</aui:field-wrapper>
 
-			<c:if test="<%= template != null %>">
-				<aui:button onClick='<%= renderResponse.getNamespace() + "downloadTemplateContent();" %>' value="download" />
-			</c:if>
-		</aui:field-wrapper>
+			</liferay-ui:panel>
+		</liferay-ui:panel-container>
 
-		<aui:input label="format-script" name="formatXsl" type="checkbox" />
+		<liferay-ui:panel-container extended="<%= false %>" id="templateEditorPanelContainer" persistState="<%= true %>">
+			<liferay-ui:panel collapsible="<%= true %>" defaultState="closed" extended="<%= false %>" helpMessage="template-editor-allows-you-to-create-template-on-the-fly" id="templateEditor" persistState="<%= true %>" title="editor">
+				
+				<aui:button name="editorButton" value="launch-editor" />
 
-		<aui:input cssClass="lfr-input-text-container" label="small-image-url" name="smallImageURL" />
+			</liferay-ui:panel>
+		</liferay-ui:panel-container>
 
-		<span style="font-size: xx-small;">-- <%= LanguageUtil.get(pageContext, "or").toUpperCase() %> --</span>
-
-		<aui:input cssClass="lfr-input-text-container" label="small-image" name="smallFile" type="file" />
-
-		<aui:input name="smallImage" />
-
-		<c:if test="<%= template == null %>">
-			<aui:field-wrapper label="permissions">
-				<liferay-ui:input-permissions
-					modelName="<%= JournalTemplate.class.getName() %>"
-				/>
-			</aui:field-wrapper>
+		<c:if test="<%= template != null %>">
+			<aui:button onClick='<%= renderResponse.getNamespace() + "downloadTemplateContent();" %>' value="download" />
 		</c:if>
+
+		<liferay-ui:panel-container extended="<%= false %>" id="templateDetailslateDetailsPanelContainer" persistState="<%= true %>">
+			<liferay-ui:panel collapsible="<%= true %>" defaultState="closed" extended="<%= false %>" helpMessage="template-details-allow-you-to-specify-more-information-such-as-images-and-permissions" id="templateDetails" persistState="<%= true %>" title="details">
+
+				<aui:input helpMessage="journal-template-cacheable-help" name="cacheable" value="<%= new Boolean(cacheable) %>" />
+
+				<aui:input label="format-script" name="formatXsl" type="checkbox" />
+
+				<aui:input cssClass="lfr-input-text-container" label="small-image-url" name="smallImageURL" />
+
+				<span style="font-size: xx-small;">-- <%= LanguageUtil.get(pageContext, "or").toUpperCase() %> --</span>
+
+				<aui:input cssClass="lfr-input-text-container" label="small-image" name="smallFile" type="file" />
+
+				<aui:input name="smallImage" />
+
+				<c:if test="<%= template == null %>">
+					<aui:field-wrapper label="permissions">
+						<liferay-ui:input-permissions
+							modelName="<%= JournalTemplate.class.getName() %>"
+						/>
+					</aui:field-wrapper>
+				</c:if>
+
+			</liferay-ui:panel>
+		</liferay-ui:panel-container>
+
 	</aui:fieldset>
 
 	<aui:button-row>
