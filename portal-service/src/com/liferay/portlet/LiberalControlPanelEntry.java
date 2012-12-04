@@ -12,24 +12,23 @@
  * details.
  */
 
-package com.liferay.portalweb.properties.users.screennamenumeric.adduserscreennamenumber;
+package com.liferay.portlet;
 
-import com.liferay.portalweb.portal.BaseTestSuite;
-import com.liferay.portalweb.portal.controlpanel.users.user.adduser.TearDownUserTest;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import com.liferay.portal.model.Group;
+import com.liferay.portal.model.Portlet;
+import com.liferay.portal.security.permission.PermissionChecker;
 
 /**
  * @author Brian Wing Shun Chan
  */
-public class AddUserScreenNameNumberTests extends BaseTestSuite {
-	public static Test suite() {
-		TestSuite testSuite = new TestSuite();
-		testSuite.addTestSuite(AddUserScreenNameNumberTest.class);
-		testSuite.addTestSuite(ViewUserScreenNameNumberTest.class);
-		testSuite.addTestSuite(TearDownUserTest.class);
+public class LiberalControlPanelEntry extends BaseControlPanelEntry {
 
-		return testSuite;
+	@Override
+	public boolean hasAccessPermission(
+			PermissionChecker permissionChecker, Group group, Portlet portlet)
+		throws Exception {
+
+		return true;
 	}
+
 }
