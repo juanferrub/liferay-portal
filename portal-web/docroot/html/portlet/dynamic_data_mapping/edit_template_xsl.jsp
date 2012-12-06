@@ -155,6 +155,8 @@ else if (langType.equals("xml") || langType.equals("xsl") || langType.equals("xs
 				setEditorContent(editorType, editorContentInputElement.val());
 			}
 
+			window.<portlet:namespace />getEditorContent = getEditorContent;
+
 			A.one('#<portlet:namespace />editorType').on('change', updateEditorType);
 			A.one('#<portlet:namespace />update-button').on('click', updateTemplateXsl);
 		},
