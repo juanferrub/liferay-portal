@@ -19,8 +19,8 @@
 <%
 String langType = ParamUtil.getString(request, "langType");
 
-String editorContentInputElement = ParamUtil.getString(request, "editorContentInputElement");
-String editorContentOutputElement = ParamUtil.getString(request, "editorContentOutputElement");
+String editorContentInputElement = "#" + renderResponse.getNamespace() + "scriptContent";
+String editorContentOutputElement = "#" + renderResponse.getNamespace() + "scriptContent";
 
 String editorType = ParamUtil.getString(request, "editorType");
 
@@ -59,10 +59,8 @@ else if (langType.equals("xml") || langType.equals("xsl") || langType.equals("xs
 <aui:script use="aui-ace-editor,aui-dialog,aui-io-request">
 	var editorType = '<%= HtmlUtil.escapeJS(editorType) %>';
 
-	var openerAUI = Liferay.Util.getOpener().AUI();
-
-	var editorContentInputElement = openerAUI.one('<%= HtmlUtil.escapeJS(editorContentInputElement) %>');
-	var editorContentOutputElement = openerAUI.one('<%= HtmlUtil.escapeJS(editorContentOutputElement) %>');
+	var editorContentInputElement = A.one('<%= HtmlUtil.escapeJS(editorContentInputElement) %>');
+	var editorContentOutputElement = A.one('<%= HtmlUtil.escapeJS(editorContentOutputElement) %>');
 
 	var plainEditorField = A.one('#<portlet:namespace />plainEditorField');
 
@@ -151,9 +149,12 @@ else if (langType.equals("xml") || langType.equals("xsl") || langType.equals("xs
 				}
 			).render();
 
+			debugger;
 			if (editorContentInputElement) {
 				setEditorContent(editorType, editorContentInputElement.val());
 			}
+
+			window.<portlet:namespace />getEditorContent = getEditorContent;
 
 			A.one('#<portlet:namespace />editorType').on('change', updateEditorType);
 			A.one('#<portlet:namespace />update-button').on('click', updateTemplateXsl);
