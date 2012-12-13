@@ -32,6 +32,7 @@ import com.liferay.portal.service.LayoutLocalServiceUtil;
 import com.liferay.portal.service.PortletLocalServiceUtil;
 import com.liferay.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.portlet.journal.NoSuchArticleException;
+import com.liferay.portlet.journal.NoSuchContentSearchException;
 import com.liferay.portlet.journal.NoSuchTemplateException;
 import com.liferay.portlet.journal.model.JournalArticle;
 import com.liferay.portlet.journal.model.JournalTemplate;
@@ -119,6 +120,9 @@ public class JournalContentPortletLayoutListener
 				PortletLocalServiceUtil.deletePortlets(
 					layout.getCompanyId(), runtimePortletIds, layout.getPlid());
 			}
+		}
+		catch (NoSuchContentSearchException nscse) {
+			return;
 		}
 		catch (Exception e) {
 			throw new PortletLayoutListenerException(e);
