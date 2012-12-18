@@ -749,7 +749,7 @@ if (Validator.isNotNull(content)) {
 							width: 820
 						},
 						id: windowId,
-						title: '<%= UnicodeLanguageUtil.get(pageContext, "application-display-templates") %>',
+						title: '<%= UnicodeLanguageUtil.get(pageContext, "templates") %>',
 						uri: templateURL
 						}
 					);
