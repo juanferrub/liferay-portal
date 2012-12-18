@@ -48,6 +48,7 @@ import org.apache.struts.action.ActionMapping;
 /**
  * @author Jorge Ferrer
  * @author Vilmos Papp
+ * @author Josef Sustacek
  */
 public class EditLayoutPrototypeAction extends PortletAction {
 
