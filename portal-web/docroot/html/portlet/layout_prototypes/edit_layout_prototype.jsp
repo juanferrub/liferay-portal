@@ -78,6 +78,35 @@ Locale[] locales = LanguageUtil.getAvailableLocales();
 					url="<%= viewURL %>"
 				/>
 			</aui:field-wrapper>
+
+			<aui:field-wrapper label="merge-fail-count[page-template]">
+
+				<%
+					Layout layoutPrototypeLayout = layoutPrototype.getLayout();
+
+					UnicodeProperties layoutPrototypeLayoutTypeSettingsProperties =
+							layoutPrototypeLayout.getTypeSettingsProperties();
+
+					int mergeFailCount = GetterUtil.getInteger(
+							layoutPrototypeLayoutTypeSettingsProperties.getProperty("merge-fail-count"), 0);
+
+				%>
+
+				<%= mergeFailCount %>
+
+				<c:if test="<%= mergeFailCount > PropsValues.LAYOUT_PROTOTYPE_MERGE_FAIL_THRESHOLD %>">
+
+					<div class="portlet-msg-alert">
+						<liferay-ui:message key="merge-fail-count-exceeds-threshold-x-no-further-merges-will-be-done"
+						                    arguments="<%= new Object[]{PropsValues.LAYOUT_PROTOTYPE_MERGE_FAIL_THRESHOLD} %>" />
+
+						<aui:button onClick='<%= renderResponse.getNamespace() + "resetMergeFailCount()" %>'
+						            value="reset-merge-fail-count" />
+
+					</div>
+
+				</c:if>
+			</aui:field-wrapper>
 		</c:if>
 	</aui:fieldset>
 
@@ -91,6 +120,19 @@ Locale[] locales = LanguageUtil.getAvailableLocales();
 <aui:script>
 	function <portlet:namespace />saveLayoutPrototype() {
 		document.<portlet:namespace />fm.<portlet:namespace /><%= Constants.CMD %>.value = "<%= (layoutPrototype == null) ? Constants.ADD : Constants.UPDATE %>";
+		submitForm(document.<portlet:namespace />fm, "<portlet:actionURL><portlet:param name="struts_action" value="/layout_prototypes/edit_layout_prototype" /></portlet:actionURL>");
+	}
+
+	function <portlet:namespace />resetMergeFailCount() {
+
+		<portlet:renderURL var="currentEditURL">
+			<portlet:param name="struts_action" value="/layout_prototypes/edit_layout_prototype" />
+			<portlet:param name="redirect" value="<%= redirect %>" />
+			<portlet:param name="layoutPrototypeId" value="<%= String.valueOf(layoutPrototypeId) %>" />
+		</portlet:renderURL>
+
+		document.<portlet:namespace />fm.<portlet:namespace /><%= Constants.CMD %>.value = "<%= Constants.RESET_MERGE_FAIL_COUNT %>";
+		document.<portlet:namespace />fm.<portlet:namespace />redirect.value = "<%= currentEditURL %>";
 		submitForm(document.<portlet:namespace />fm, "<portlet:actionURL><portlet:param name="struts_action" value="/layout_prototypes/edit_layout_prototype" /></portlet:actionURL>");
 	}
 
