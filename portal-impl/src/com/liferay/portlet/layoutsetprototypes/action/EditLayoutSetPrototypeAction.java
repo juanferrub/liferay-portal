@@ -139,6 +139,37 @@ public class EditLayoutSetPrototypeAction extends PortletAction {
 		}
 	}
 
+	/**
+	 * Resets the counter of failed merges done from this site template. This
+	 * is necessary, when threshold was met and no more merges would be done.
+	 * For details on threshold, see SitesUtil class.
+	 *
+	 * @param actionRequest
+	 * @throws Exception
+	 * @see com.liferay.portlet.sites.util.SitesUtil
+	 */
+	protected void resetMergeFailCount(ActionRequest actionRequest)
+		throws Exception {
+
+		long layoutSetPrototypeId = ParamUtil.getLong(
+			actionRequest, "layoutSetPrototypeId");
+
+		LayoutSetPrototype layoutSetPrototype =
+			LayoutSetPrototypeServiceUtil.getLayoutSetPrototype(
+				layoutSetPrototypeId);
+
+		LayoutSet layoutSetPrototypeLayoutSet =
+			layoutSetPrototype.getLayoutSet();
+
+		UnicodeProperties layoutSetPrototypeLayoutSetSettingsProperties =
+			layoutSetPrototypeLayoutSet.getSettingsProperties();
+
+		layoutSetPrototypeLayoutSetSettingsProperties.remove(
+			"merge-fail-count");
+
+		LayoutSetLocalServiceUtil.updateLayoutSet(layoutSetPrototypeLayoutSet);
+	}
+
 	protected void updateLayoutSetPrototype(ActionRequest actionRequest)
 		throws Exception {
 
@@ -190,37 +221,6 @@ public class EditLayoutSetPrototypeAction extends PortletAction {
 		LayoutSetPrototypeServiceUtil.updateLayoutSetPrototype(
 			layoutSetPrototype.getLayoutSetPrototypeId(),
 			settingsProperties.toString());
-	}
-
-	/**
-	 * Resets the counter of failed merges done from this site template. This
-	 * is necessary, when threshold was met and no more merges would be done.
-	 * For details on threshold, see SitesUtil class.
-	 *
-	 * @param actionRequest
-	 * @throws Exception
-	 * @see com.liferay.portlet.sites.util.SitesUtil
-	 */
-	protected void resetMergeFailCount(ActionRequest actionRequest)
-		throws Exception {
-
-		long layoutSetPrototypeId = ParamUtil.getLong(
-			actionRequest, "layoutSetPrototypeId");
-
-		LayoutSetPrototype layoutSetPrototype =
-			LayoutSetPrototypeServiceUtil.getLayoutSetPrototype(
-				layoutSetPrototypeId);
-
-		LayoutSet layoutSetPrototypeLayoutSet =
-			layoutSetPrototype.getLayoutSet();
-
-		UnicodeProperties layoutSetPrototypeLayoutSetSettingsProperties =
-			layoutSetPrototypeLayoutSet.getSettingsProperties();
-
-		layoutSetPrototypeLayoutSetSettingsProperties.remove(
-			"merge-fail-count");
-
-		LayoutSetLocalServiceUtil.updateLayoutSet(layoutSetPrototypeLayoutSet);
 	}
 
 }

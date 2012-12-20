@@ -93,7 +93,6 @@ Locale[] locales = LanguageUtil.getAvailableLocales();
 
 					int mergeFailCount = GetterUtil.getInteger(
 							layoutSetPrototypeLayoutSetSettingsProperties.getProperty("merge-fail-count"), 0);
-
 				%>
 
 				<%= mergeFailCount %>

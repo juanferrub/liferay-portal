@@ -133,6 +133,34 @@ public class EditLayoutPrototypeAction extends PortletAction {
 		}
 	}
 
+	/**
+	 * Resets the counter of failed merges done from this page template. This
+	 * is necessary, when threshold was met and no more merges would be done.
+	 * For details on threshold, see SitesUtil class.
+	 *
+	 * @param actionRequest
+	 * @throws Exception
+	 * @see com.liferay.portlet.sites.util.SitesUtil
+	 */
+	protected void resetMergeFailCount(ActionRequest actionRequest)
+		throws Exception {
+
+		long layoutPrototypeId = ParamUtil.getLong(
+			actionRequest, "layoutPrototypeId");
+
+		LayoutPrototype layoutPrototype =
+			LayoutPrototypeServiceUtil.getLayoutPrototype(layoutPrototypeId);
+
+		Layout layoutPrototypeLayout = layoutPrototype.getLayout();
+
+		UnicodeProperties layoutPrototypeLayoutTypeSettingsProperties =
+			layoutPrototypeLayout.getTypeSettingsProperties();
+
+		layoutPrototypeLayoutTypeSettingsProperties.remove("merge-fail-count");
+
+		LayoutLocalServiceUtil.updateLayout(layoutPrototypeLayout);
+	}
+
 	protected void updateLayoutPrototype(ActionRequest actionRequest)
 		throws Exception {
 
@@ -158,35 +186,6 @@ public class EditLayoutPrototypeAction extends PortletAction {
 			LayoutPrototypeServiceUtil.updateLayoutPrototype(
 				layoutPrototypeId, nameMap, description, active);
 		}
-	}
-
-	/**
-	 * Resets the counter of failed merges done from this page template. This
-	 * is necessary, when threshold was met and no more merges would be done.
-	 * For details on threshold, see SitesUtil class.
-	 *
-	 * @param actionRequest
-	 * @throws Exception
-	 * @see com.liferay.portlet.sites.util.SitesUtil
-	 */
-	protected void resetMergeFailCount(ActionRequest actionRequest)
-		throws Exception {
-
-		long layoutPrototypeId = ParamUtil.getLong(
-			actionRequest, "layoutPrototypeId");
-
-		LayoutPrototype layoutPrototype =
-			LayoutPrototypeServiceUtil.getLayoutPrototype(layoutPrototypeId);
-
-		Layout layoutPrototypeLayout = layoutPrototype.getLayout();
-
-
-		UnicodeProperties layoutPrototypeLayoutTypeSettingsProperties =
-			layoutPrototypeLayout.getTypeSettingsProperties();
-
-		layoutPrototypeLayoutTypeSettingsProperties.remove("merge-fail-count");
-
-		LayoutLocalServiceUtil.updateLayout(layoutPrototypeLayout);
 	}
 
 }
