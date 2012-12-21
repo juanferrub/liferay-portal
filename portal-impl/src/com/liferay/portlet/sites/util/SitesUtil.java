@@ -1020,7 +1020,7 @@ public class SitesUtil {
 				sb.append("Merge not performed because the fail threshold ");
 				sb.append("was reached for layoutSetPrototypeId ");
 				sb.append(layoutSetPrototype.getLayoutSetPrototypeId());
-				sb.append(" and layoutId ");
+				sb.append(" and layoutSetId ");
 				sb.append(layoutSetPrototypeLayoutSet.getLayoutSetId());
 				sb.append(". Update the count in the database to try again.");
 
