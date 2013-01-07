@@ -101,7 +101,8 @@ public interface Constants {
 
 	public static final String RESET = "reset";
 
-	public static final String RESET_MERGE_FAIL_COUNT = "reset_merge_fail_count";
+	public static final String RESET_MERGE_FAIL_COUNT =
+		"reset_merge_fail_count";
 
 	public static final String RESTORE = "restore";
 

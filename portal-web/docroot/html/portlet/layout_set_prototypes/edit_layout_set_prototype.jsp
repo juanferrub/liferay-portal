@@ -101,10 +101,10 @@ Locale[] locales = LanguageUtil.getAvailableLocales();
 
 					<div class="portlet-msg-alert">
 						<liferay-ui:message key="merge-fail-count-exceeds-threshold-x-no-further-merges-will-be-done"
-						                    arguments="<%= new Object[]{PropsValues.LAYOUT_SET_PROTOTYPE_MERGE_FAIL_THRESHOLD} %>" />
+											arguments="<%= new Object[]{PropsValues.LAYOUT_SET_PROTOTYPE_MERGE_FAIL_THRESHOLD} %>" />
 
 						<aui:button onClick='<%= renderResponse.getNamespace() + "resetMergeFailCount()" %>'
-						            value="reset-merge-fail-count" />
+									value="reset-merge-fail-count" />
 
 					</div>
 
