@@ -814,11 +814,17 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	}
 
 	/**
-	 * Returns the list of children groups of type site for a given parent group
+	 * Returns all the groups of type site that are children of the parent
+	 * group.
 	 *
 	 * @param  companyId the primary key of the company
-	 * @param  parentGroupId the primary key of the parent group.
-	 * @return the list of children groups of type site for a given parent group
+	 * @param  parentGroupId the primary key of the parent group. Set this to
+	 *         {@link
+	 *         com.liferay.portal.model.GroupConstants#ANY_PARENT_GROUP_ID} to
+	 *         return all the groups of type site that are children of any
+	 *         parent group.
+	 * @return the matching groups, or <code>null</code> if no matches were
+	 *         found
 	 * @throws SystemException if a system exception occurred
 	 */
 	public List<Group> getChildrenSites(long companyId, long parentGroupId)
@@ -1028,8 +1034,10 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	 * Returns all the groups that are children of the parent group.
 	 *
 	 * @param  companyId the primary key of the company
-	 * @param  parentGroupId the primary key of the parent group.
-	 *         this can be set to -1 to be ignored
+	 * @param  parentGroupId the primary key of the parent group. Set this to
+	 *         {@link
+	 *         com.liferay.portal.model.GroupConstants#ANY_PARENT_GROUP_ID} to
+	 *         return all the groups that are children of any parent group.
 	 * @param  site whether the returned groups are sites
 	 * @return the matching groups, or <code>null</code> if no matches were
 	 *         found
