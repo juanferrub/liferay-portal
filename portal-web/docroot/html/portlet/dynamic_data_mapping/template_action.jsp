@@ -17,20 +17,29 @@
 <%@ include file="/html/portlet/dynamic_data_mapping/init.jsp" %>
 
 <%
+String closeRedirect = ParamUtil.getString(request, "closeRedirect");
+long classPK = ParamUtil.getLong(request, "classPK");
+
 ResultRow row = (ResultRow)request.getAttribute(WebKeys.SEARCH_CONTAINER_RESULT_ROW);
 
 DDMTemplate template = (DDMTemplate)row.getObject();
 %>
 
+<portlet:renderURL var="viewTemplatesURL">
+	<portlet:param name="struts_action" value="/dynamic_data_mapping/view_template" />
+	<portlet:param name="classNameId" value="<%= String.valueOf(PortalUtil.getClassNameId(DDMStructure.class)) %>" />
+	<portlet:param name="classPK" value="<%= String.valueOf(classPK) %>" />
+</portlet:renderURL>
+
 <liferay-ui:icon-menu showExpanded="<%= false %>" showWhenSingleIcon="<%= false %>">
 	<c:if test="<%= DDMTemplatePermission.contains(permissionChecker, template, ActionKeys.UPDATE) %>">
-		<portlet:renderURL var="editURL">
+		<portlet:renderURL copyCurrentRenderParameters="<%= false %>" var="editURL">
 			<portlet:param name="struts_action" value="/dynamic_data_mapping/edit_template" />
-			<portlet:param name="redirect" value="<%= currentURL %>" />
 			<portlet:param name="groupId" value="<%= String.valueOf(template.getGroupId()) %>" />
 			<portlet:param name="templateId" value="<%= String.valueOf(template.getTemplateId()) %>" />
 			<portlet:param name="type" value="<%= template.getType() %>" />
 			<portlet:param name="structureAvailableFields" value='<%= renderResponse.getNamespace() + "structureAvailableFields" %>' />
+			<liferay-util:param name="closeRedirect" value="<%= closeRedirect %>" />
 		</portlet:renderURL>
 
 		<liferay-ui:icon
@@ -43,6 +52,7 @@ DDMTemplate template = (DDMTemplate)row.getObject();
 		<liferay-security:permissionsURL
 			modelResource="<%= DDMTemplate.class.getName() %>"
 			modelResourceDescription="<%= template.getName(locale) %>"
+			redirect="<%= viewTemplatesURL %>"
 			resourcePrimKey="<%= String.valueOf(template.getTemplateId()) %>"
 			var="permissionsURL"
 		/>
@@ -94,8 +104,9 @@ DDMTemplate template = (DDMTemplate)row.getObject();
 		<portlet:actionURL var="deleteURL">
 			<portlet:param name="struts_action" value="/dynamic_data_mapping/edit_template" />
 			<portlet:param name="<%= Constants.CMD %>" value="<%= Constants.DELETE %>" />
-			<portlet:param name="redirect" value="<%= currentURL %>" />
+			<portlet:param name="redirect" value="<%= viewTemplatesURL %>" />
 			<portlet:param name="templateId" value="<%= String.valueOf(template.getTemplateId()) %>" />
+			<liferay-util:param name="closeRedirect" value="<%= closeRedirect %>" />
 		</portlet:actionURL>
 
 		<liferay-ui:icon-delete url="<%= deleteURL %>" />

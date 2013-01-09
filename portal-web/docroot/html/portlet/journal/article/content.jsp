@@ -62,22 +62,36 @@ if (ddmStructure != null) {
 
 String templateId = BeanParamUtil.getString(article, request, "templateId");
 
-if ((ddmStructure == null) && Validator.isNotNull(templateId)) {
-	DDMTemplate ddmTemplate = null;
+DDMTemplate ddmTemplate = null;
 
-	try {
-		ddmTemplate = DDMTemplateLocalServiceUtil.getTemplate(groupId, templateId, true);
+if (Validator.isNotNull(templateId)) {
+
+	if (ddmStructure == null) {
+		try {
+			ddmTemplate = DDMTemplateLocalServiceUtil.getTemplate(groupId, templateId, true);
+		}
+		catch (NoSuchTemplateException nste) {
+		}
+
+		if (ddmTemplate != null) {
+			ddmStructure = DDMStructureLocalServiceUtil.getStructure(ddmTemplate.getClassPK());
+
+			ddmStructureName = ddmStructure.getName(locale);
+
+			ddmTemplates = DDMTemplateLocalServiceUtil.getTemplates(ddmStructureGroupId, PortalUtil.getClassNameId(DDMStructure.class), ddmTemplate.getClassPK());
+		}
 	}
-	catch (NoSuchTemplateException nste) {
+	else {
+		try {
+			ddmTemplate = DDMTemplateLocalServiceUtil.getDDMTemplate(Long.valueOf(templateId));
+		}
+		catch (NoSuchTemplateException nste) {
+		}
 	}
+}
 
-	if (ddmTemplate != null) {
-		ddmStructure = DDMStructureLocalServiceUtil.getStructure(ddmTemplate.getClassPK());
-
-		ddmStructureName = ddmStructure.getName(locale);
-
-		ddmTemplates = DDMTemplateLocalServiceUtil.getTemplates(ddmStructureGroupId, PortalUtil.getClassNameId(DDMStructure.class), ddmTemplate.getClassPK());
-	}
+if ((ddmTemplate == null) && !ddmTemplates.isEmpty()) {
+	ddmTemplate = ddmTemplates.get(0);
 }
 
 String languageId = (String)request.getAttribute("edit_article.jsp-languageId");
@@ -261,23 +275,18 @@ if (Validator.isNotNull(content)) {
 							<aui:fieldset cssClass="article-template-toolbar">
 								<div class="journal-form-presentation-label">
 									<c:choose>
-										<c:when test="<%= ddmTemplates.isEmpty() %>">
-											<aui:input name="templateId" type="hidden" value="<%= templateId %>" />
-
-											<div id="selectTemplateMessage"></div>
-
-											<span class="template-name-label">
-												<liferay-ui:message key="none" />
-											</span>
+										<c:when test="<%= ddmStructure == null %>">
+											<liferay-ui:message key="none" />
 										</c:when>
-										<c:when test="<%= ddmTemplates.size() == 1 %>">
-
-											<%
-											DDMTemplate ddmTemplate = ddmTemplates.get(0);
-
-											templateId = ddmTemplate.getTemplateKey();
-											%>
-
+										<c:when test="<%= ddmTemplates.isEmpty() %>">
+											<liferay-ui:icon
+												image="add"
+												label="<%= true %>"
+												message="add-template"
+												url='<%= "javascript:" + renderResponse.getNamespace() + "openDDMTemplateSelector();" %>'
+											/>
+										</c:when>
+										<c:otherwise>
 											<aui:input name="templateId" type="hidden" value="<%= templateId %>" />
 
 											<span class="template-name-label">
@@ -289,41 +298,13 @@ if (Validator.isNotNull(content)) {
 													<img class="article-template-image" id="<portlet:namespace />templateImage" src="<%= _getTemplateImage(themeDisplay, ddmTemplate) %>" />
 												</c:if>
 
-												<liferay-ui:icon id="editDDMTemplate" image="edit" url="javascript:;" />
-											</c:if>
-										</c:when>
-										<c:otherwise>
-											<aui:select inlineField="<%= true %>" label="" name="templateId">
-
-												<%
-												for (DDMTemplate ddmTemplate : ddmTemplates) {
-													String imageURL = _getTemplateImage(themeDisplay, ddmTemplate);
-												%>
-
-													<liferay-portlet:renderURL portletName="<%= PortletKeys.DYNAMIC_DATA_MAPPING %>" var="editTemplateURL" windowState="<%= LiferayWindowState.POP_UP.toString() %>">
-														<portlet:param name="struts_action" value="/dynamic_data_mapping/edit_template" />
-														<portlet:param name="groupId" value="<%= String.valueOf(scopeGroupId) %>" />
-														<portlet:param name="classNameId" value="<%= String.valueOf(classNameId) %>" />
-														<portlet:param name="templateId" value="<%= String.valueOf(ddmTemplate.getTemplateId()) %>" />
-													</liferay-portlet:renderURL>
-
-													<aui:option
-														data-img="<%= imageURL != null ? imageURL : StringPool.BLANK %>"
-														data-url="<%= editTemplateURL %>"
-														label="<%= HtmlUtil.escape(ddmTemplate.getName(locale)) %>"
-														selected="<%= templateId.equals(ddmTemplate.getTemplateId()) %>"
-														value="<%= ddmTemplate.getTemplateId() %>"
+												<liferay-ui:icon
+													image="add"
+													label="<%= true %>"
+													message="select"
+													url='<%= "javascript:" + renderResponse.getNamespace() + "openDDMTemplateSelector();" %>'
 													/>
-
-												<%
-												}
-												%>
-
-											</aui:select>
-
-											<img border="0" class="aui-helper-hidden article-template-image" hspace="0" id="<portlet:namespace />templateImage" src="" vspace="0" />
-
-											<liferay-ui:icon id="editTemplateLink" image="edit" url="javascript:;" />
+											</c:if>
 										</c:otherwise>
 									</c:choose>
 								</div>
@@ -661,12 +642,43 @@ if (Validator.isNotNull(content)) {
 				},
 				groupId: <%= groupId %>,
 				saveCallback: '<portlet:namespace />selectStructure',
+				showManageTemplates: 'false',
 				storageType: '<%= PropsValues.JOURNAL_ARTICLE_STORAGE_TYPE %>',
 				structureName: 'structure',
 				structureType: 'com.liferay.portlet.journal.model.JournalArticle',
 				struts_action: strutsAction,
 				templateType: '<%= DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY %>',
 				title: '<%= UnicodeLanguageUtil.get(pageContext, "structures") %>'
+			}
+		);
+	}
+</aui:script>
+
+<aui:script>
+	function <portlet:namespace />openDDMTemplateSelector()
+		{
+		Liferay.Util.openDDMPortlet(
+			{
+				chooseCallback: '<portlet:namespace />selectTemplate',
+				classNameId: '<%= PortalUtil.getClassNameId(DDMStructure.class) %>',
+				classPK: <%= ddmStructure.getStructureId() %>,
+				closeRedirect: '<%= currentURL %>',
+				ddmResource: '<%= ddmResource %>',
+				ddmResourceActionId: '<%= ActionKeys.ADD_TEMPLATE %>',
+				dialog: {
+					constrain: true,
+					width: 820
+				},
+				groupId: <%= groupId %>,
+				portletResource: <%= portletDisplay.getId() %>,
+				saveCallback: '<portlet:namespace />selectTemplate',
+				storageType: '<%= PropsValues.JOURNAL_ARTICLE_STORAGE_TYPE %>',
+				structureAvailableFields: '<%= renderResponse.getNamespace() + "getAvailableFields" %>',
+				structureName: 'structure',
+				structureType: 'com.liferay.portlet.journal.model.JournalArticle',
+				struts_action: '/dynamic_data_mapping/view_template',
+				templateType: '<%= DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY %>',
+				title: '<%= UnicodeLanguageUtil.get(pageContext, "templates") %>'
 			}
 		);
 	}
@@ -691,7 +703,7 @@ if (Validator.isNotNull(content)) {
 						title: '<%= UnicodeLanguageUtil.get(pageContext, "templates") %>',
 
 						<%
-						DDMTemplate ddmTemplate = DDMTemplateLocalServiceUtil.fetchTemplate(groupId, templateId);
+						ddmTemplate = DDMTemplateLocalServiceUtil.fetchTemplate(groupId, templateId);
 						%>
 
 						<liferay-portlet:renderURL portletName="<%= PortletKeys.DYNAMIC_DATA_MAPPING %>" var="editTemplateURL" windowState="<%= LiferayWindowState.POP_UP.toString() %>">
