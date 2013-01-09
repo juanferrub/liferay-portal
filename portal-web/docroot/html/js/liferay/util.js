@@ -1218,9 +1218,11 @@
 			ddmURL.setParameter('chooseCallback', config.chooseCallback);
 			ddmURL.setParameter('classNameId', config.classNameId);
 			ddmURL.setParameter('classPK', config.classPK);
+			ddmURL.setParameter('closeRedirect', config.closeRedirect);
 			ddmURL.setParameter('ddmResource', config.ddmResource);
 			ddmURL.setParameter('ddmResourceActionId', config.ddmResourceActionId);
 			ddmURL.setParameter('groupId', config.groupId);
+			ddmURL.setParameter('portletResource', config.portletResource);
 			ddmURL.setParameter('saveCallback', config.saveCallback);
 			ddmURL.setParameter('scopeAvailableFields', config.availableFields);
 			ddmURL.setParameter('scopeStorageType', config.storageType);
