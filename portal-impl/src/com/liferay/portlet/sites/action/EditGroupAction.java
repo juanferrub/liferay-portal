@@ -47,6 +47,7 @@ import com.liferay.portal.model.GroupConstants;
 import com.liferay.portal.model.Layout;
 import com.liferay.portal.model.LayoutConstants;
 import com.liferay.portal.model.LayoutSet;
+import com.liferay.portal.model.LayoutSetPrototype;
 import com.liferay.portal.model.MembershipRequest;
 import com.liferay.portal.model.MembershipRequestConstants;
 import com.liferay.portal.model.Role;
@@ -55,6 +56,8 @@ import com.liferay.portal.security.auth.PrincipalException;
 import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.service.GroupServiceUtil;
 import com.liferay.portal.service.LayoutLocalServiceUtil;
+import com.liferay.portal.service.LayoutSetLocalServiceUtil;
+import com.liferay.portal.service.LayoutSetPrototypeServiceUtil;
 import com.liferay.portal.service.LayoutSetServiceUtil;
 import com.liferay.portal.service.MembershipRequestLocalServiceUtil;
 import com.liferay.portal.service.MembershipRequestServiceUtil;
@@ -131,6 +134,9 @@ public class EditGroupAction extends PortletAction {
 			}
 			else if (cmd.equals(Constants.DELETE)) {
 				deleteGroups(actionRequest);
+			}
+			else if(cmd.equals(Constants.RESET_MERGE_FAIL_COUNT)){
+				resetMergeFailCountAndMerge(actionRequest);
 			}
 
 			sendRedirect(
@@ -276,6 +282,53 @@ public class EditGroupAction extends PortletAction {
 
 		return teams;
 	}
+
+	protected void resetMergeFailCountAndMerge(ActionRequest actionRequest)
+		throws Exception {
+
+		long groupId = ParamUtil.getLong(actionRequest, "groupId");
+		boolean privateLayoutSet = ParamUtil.getBoolean(
+			actionRequest, "privateLayoutSet");
+
+		LayoutSet targetGroupLayoutSet =
+			LayoutSetLocalServiceUtil.getLayoutSet(groupId, privateLayoutSet);
+
+		long layoutSetPrototypeId =
+			targetGroupLayoutSet.getLayoutSetPrototypeId();
+
+		Group group = GroupLocalServiceUtil.getGroup(groupId);
+
+		// reset counter
+		LayoutSetPrototype layoutSetPrototype =
+			LayoutSetPrototypeServiceUtil.getLayoutSetPrototype(
+				layoutSetPrototypeId);
+
+		LayoutSet layoutSetPrototypeLayoutSet =
+			layoutSetPrototype.getLayoutSet();
+
+		SitesUtil.setMergeFailCount(layoutSetPrototypeLayoutSet, 0);
+
+		LayoutSetLocalServiceUtil.updateLayoutSet(layoutSetPrototypeLayoutSet);
+
+		// force merge
+		// TODO how to forcibly merge site template?
+
+
+		// check whether merge was successful
+		layoutSetPrototype =
+			LayoutSetPrototypeServiceUtil.getLayoutSetPrototype(
+				layoutSetPrototypeId);
+
+		int mergeFailCountAfterMerge = SitesUtil.getMergeFailCount(
+			layoutSetPrototype);
+
+		if(mergeFailCountAfterMerge > 0) {
+
+			SessionErrors.add(actionRequest,
+				"template-merge-failed-see-logs-for-details");
+		}
+	}
+
 
 	protected void updateActive(ActionRequest actionRequest, String cmd)
 		throws Exception {
