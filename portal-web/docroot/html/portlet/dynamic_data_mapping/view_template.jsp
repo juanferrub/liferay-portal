@@ -20,6 +20,8 @@
 String tabs1 = ParamUtil.getString(request, "tabs1", "templates");
 
 String backURL = ParamUtil.getString(request, "backURL");
+String closeRedirect = ParamUtil.getString(request, "closeRedirect");
+String portletResource = ParamUtil.getString(request, "portletResource");
 
 long classNameId = ParamUtil.getLong(request, "classNameId");
 long classPK = ParamUtil.getLong(request, "classPK");
@@ -57,13 +59,14 @@ if (!portletName.equals(PortletKeys.PORTLET_DISPLAY_TEMPLATES)) {
 </portlet:renderURL>
 
 <liferay-ui:header
-	backURL="<%= portletName.equals(PortletKeys.PORTLET_DISPLAY_TEMPLATES) ? backURL : viewRecordsURL %>"
+	backURL="<%= portletName.equals(PortletKeys.PORTLET_DISPLAY_TEMPLATES) || Validator.isNotNull(portletResource) ? backURL : viewRecordsURL %>"
 	title="<%= title %>"
 />
 
 <liferay-util:include page="/html/portlet/dynamic_data_mapping/template_toolbar.jsp">
 	<liferay-util:param name="classNameId" value="<%= String.valueOf(classNameId) %>" />
 	<liferay-util:param name="classPK" value="<%= String.valueOf(classPK) %>" />
+	<liferay-util:param name="closeRedirect" value="<%= closeRedirect %>" />
 </liferay-util:include>
 
 <aui:form action="<%= portletURL.toString() %>" method="post" name="fm">
@@ -117,9 +120,9 @@ if (!portletName.equals(PortletKeys.PORTLET_DISPLAY_TEMPLATES)) {
 				sb.append("javascript:Liferay.Util.getOpener()['");
 				sb.append(HtmlUtil.escapeJS(chooseCallback));
 				sb.append("']('");
-				sb.append(template.getTemplateId());
+				sb.append(structure.getStructureKey());
 				sb.append("', '");
-				sb.append(HtmlUtil.escapeJS(template.getName(locale)));
+				sb.append(template.getTemplateId());
 				sb.append("', Liferay.Util.getWindow());");
 
 				rowHREF = sb.toString();
