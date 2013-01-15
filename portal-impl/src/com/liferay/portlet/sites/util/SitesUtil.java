@@ -642,6 +642,53 @@ public class SitesUtil {
 		return parameterMap;
 	}
 
+	/**
+	 * Returns count of failed merge attempts done from given
+	 * layoutSetPrototype to some linked site.
+	 *
+	 * @param layoutSetPrototype site template that is being inspected
+	 * @return count of failed merge attempts since last success
+	 * @throws SystemException
+	 * @throws PortalException
+	 */
+	public static int getMergeFailCount(LayoutSetPrototype layoutSetPrototype)
+		throws SystemException, PortalException {
+
+		LayoutSet layoutSetPrototypeLayoutSet =
+			layoutSetPrototype.getLayoutSet();
+
+		UnicodeProperties layoutSetPrototypeSettingsProperties =
+			layoutSetPrototypeLayoutSet.getSettingsProperties();
+
+		int mergeFailCount = GetterUtil.getInteger(
+			layoutSetPrototypeSettingsProperties.getProperty(MERGE_FAIL_COUNT));
+
+		return mergeFailCount;
+	}
+
+	/**
+	 * Returns count of failed merge attempts done from given
+	 * layoutPrototype to some linked layout.
+	 *
+	 * @param layoutPrototype page template that is being inspected
+	 * @return count of failed merge attempts since last success
+	 * @throws SystemException
+	 * @throws PortalException
+	 */
+	public static int getMergeFailCount(LayoutPrototype layoutPrototype)
+		throws SystemException, PortalException {
+
+		Layout layoutPrototypeLayout = layoutPrototype.getLayout();
+
+		UnicodeProperties prototypeTypeSettingsProperties =
+			layoutPrototypeLayout.getTypeSettingsProperties();
+
+		int mergeFailCount = GetterUtil.getInteger(
+			prototypeTypeSettingsProperties.getProperty(MERGE_FAIL_COUNT));
+
+		return mergeFailCount;
+	}
+
 	public static void importLayoutSetPrototype(
 			LayoutSetPrototype layoutSetPrototype, InputStream inputStream,
 			ServiceContext serviceContext)
@@ -1054,6 +1101,57 @@ public class SitesUtil {
 		throws Exception {
 
 		mergeLayoutSetPrototypeLayouts(group, layoutSet);
+	}
+
+	/**
+	 * Updates merge fail count for this site template's layout set. Does not
+	 * invoke any persistence update, this is up to the caller.
+	 *
+	 * @param layoutSetPrototypeLayoutSet layout set of the site template, for
+	 *                                    which you want to set the merge fail
+	 *                                    count
+	 * @param newMergeFailCount new fail count to be set for the site template
+	 */
+	public static void setMergeFailCount(
+			LayoutSet layoutSetPrototypeLayoutSet, int newMergeFailCount) {
+
+		UnicodeProperties settingsProperties =
+			layoutSetPrototypeLayoutSet.getSettingsProperties();
+
+		if(newMergeFailCount == 0) {
+
+			settingsProperties.remove(MERGE_FAIL_COUNT);
+		}
+		else {
+			settingsProperties.setProperty(
+				MERGE_FAIL_COUNT, String.valueOf(newMergeFailCount));
+		}
+	}
+
+	/**
+	 * Updates merge fail count for this page template's layout. Does not
+	 * invoke any persistence update, this is up to the caller.
+	 *
+	 * @param layoutPrototypeLayout layout of the page template, for
+	 *                              which you want to set the merge fail
+	 *                              count
+	 * @param newMergeFailCount new fail count to be set for the page template
+	 */
+	public static void setMergeFailCount(
+			Layout layoutPrototypeLayout, int newMergeFailCount) {
+
+		UnicodeProperties prototypeTypeSettingsProperties =
+			layoutPrototypeLayout.getTypeSettingsProperties();
+
+		if(newMergeFailCount == 0) {
+
+		    prototypeTypeSettingsProperties.remove(MERGE_FAIL_COUNT);
+		}
+		else {
+
+			prototypeTypeSettingsProperties.setProperty(
+				MERGE_FAIL_COUNT, String.valueOf(newMergeFailCount));
+		}
 	}
 
 	public static void resetPrototype(Layout layout)
