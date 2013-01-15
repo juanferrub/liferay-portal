@@ -30,6 +30,7 @@ import com.liferay.portal.service.LayoutLocalServiceUtil;
 import com.liferay.portal.service.LayoutPrototypeServiceUtil;
 import com.liferay.portal.struts.PortletAction;
 import com.liferay.portal.util.PortalUtil;
+import com.liferay.portlet.sites.util.SitesUtil;
 
 import java.util.Locale;
 import java.util.Map;
@@ -156,7 +157,8 @@ public class EditLayoutPrototypeAction extends PortletAction {
 		UnicodeProperties layoutPrototypeLayoutTypeSettingsProperties =
 			layoutPrototypeLayout.getTypeSettingsProperties();
 
-		layoutPrototypeLayoutTypeSettingsProperties.remove("merge-fail-count");
+		layoutPrototypeLayoutTypeSettingsProperties.remove(
+			SitesUtil.MERGE_FAIL_COUNT);
 
 		LayoutLocalServiceUtil.updateLayout(layoutPrototypeLayout);
 	}
