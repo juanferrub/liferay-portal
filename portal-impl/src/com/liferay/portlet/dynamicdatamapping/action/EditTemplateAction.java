@@ -16,10 +16,13 @@ package com.liferay.portlet.dynamicdatamapping.action;
 
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.portlet.LiferayPortletConfig;
 import com.liferay.portal.kernel.servlet.SessionErrors;
+import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.upload.UploadPortletRequest;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.FileUtil;
+import com.liferay.portal.kernel.util.HttpUtil;
 import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StreamUtil;
@@ -78,6 +81,10 @@ public class EditTemplateAction extends PortletAction {
 		DDMTemplate template = null;
 
 		try {
+
+			String closeRedirect = ParamUtil.getString(
+				actionRequest, "closeRedirect");
+
 			if (cmd.equals(Constants.ADD) || cmd.equals(Constants.UPDATE)) {
 				template = updateTemplate(actionRequest);
 			}
@@ -97,6 +104,20 @@ public class EditTemplateAction extends PortletAction {
 						redirect = getSaveAndContinueRedirect(
 							portletConfig, actionRequest, template, redirect);
 					}
+				}
+
+				if (Validator.isNotNull(closeRedirect)) {
+					redirect = HttpUtil.setParameter(
+						redirect, "closeRedirect", closeRedirect);
+
+					LiferayPortletConfig liferayPortletConfig =
+						(LiferayPortletConfig)portletConfig;
+
+					SessionMessages.add(
+						actionRequest,
+						liferayPortletConfig.getPortletId() +
+							SessionMessages.KEY_SUFFIX_CLOSE_REDIRECT,
+						closeRedirect);
 				}
 
 				sendRedirect(actionRequest, actionResponse, redirect);

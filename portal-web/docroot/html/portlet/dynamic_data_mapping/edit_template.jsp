@@ -21,6 +21,7 @@ String redirect = ParamUtil.getString(request, "redirect");
 String backURL = ParamUtil.getString(request, "backURL");
 
 String portletResource = ParamUtil.getString(request, "portletResource");
+String closeRedirect = ParamUtil.getString(request, "closeRedirect");
 
 String portletResourceNamespace = ParamUtil.getString(request, "portletResourceNamespace");
 
@@ -71,13 +72,19 @@ if (Validator.isNotNull(structureAvailableFields)) {
 }
 %>
 
+<portlet:renderURL var="viewTemplatesURL">
+	<portlet:param name="struts_action" value="/dynamic_data_mapping/view_template" />
+	<portlet:param name="classNameId" value="<%= String.valueOf(PortalUtil.getClassNameId(DDMStructure.class)) %>" />
+	<portlet:param name="classPK" value="<%= String.valueOf(structure.getStructureId()) %>" />
+</portlet:renderURL>
+
 <portlet:actionURL var="editTemplateURL">
 	<portlet:param name="struts_action" value="/dynamic_data_mapping/edit_template" />
 </portlet:actionURL>
 
 <aui:form action="<%= editTemplateURL %>" enctype="multipart/form-data" method="post" name="fm" onSubmit='<%= "event.preventDefault(); " + renderResponse.getNamespace() + "saveTemplate();" %>'>
 	<aui:input name="<%= Constants.CMD %>" type="hidden" value="<%= (template != null) ? Constants.UPDATE : Constants.ADD %>" />
-	<aui:input name="redirect" type="hidden" value="<%= redirect %>" />
+	<aui:input name="redirect" type="hidden" value="<%= (Validator.isNotNull(redirect))? redirect:viewTemplatesURL %>" />
 	<aui:input name="portletResource" type="hidden" value="<%= portletResource %>" />
 	<aui:input name="templateId" type="hidden" value="<%= templateId %>" />
 	<aui:input name="groupId" type="hidden" value="<%= groupId %>" />
@@ -87,6 +94,7 @@ if (Validator.isNotNull(structureAvailableFields)) {
 	<aui:input name="structureAvailableFields" type="hidden" value="<%= structureAvailableFields %>" />
 	<aui:input name="saveCallback" type="hidden" value="<%= saveCallback %>" />
 	<aui:input name="saveAndContinue" type="hidden" value="<%= false %>" />
+	<aui:input name="closeRedirect" type="hidden" value="<%= closeRedirect %>" />
 
 	<liferay-ui:error exception="<%= TemplateNameException.class %>" message="please-enter-a-valid-name" />
 	<liferay-ui:error exception="<%= TemplateScriptException.class %>" message="please-enter-a-valid-script" />
@@ -142,7 +150,7 @@ if (Validator.isNotNull(structureAvailableFields)) {
 	</portlet:renderURL>
 
 	<liferay-ui:header
-		backURL="<%= (portletName.equals(PortletKeys.PORTLET_DISPLAY_TEMPLATES) || Validator.isNotNull(portletResource)) ? backURL : viewTemplatesURL %>"
+		backURL="<%= portletName.equals(PortletKeys.PORTLET_DISPLAY_TEMPLATES)? backURL : viewTemplatesURL %>"
 		localizeTitle="<%= false %>"
 		title="<%= title %>"
 	/>
