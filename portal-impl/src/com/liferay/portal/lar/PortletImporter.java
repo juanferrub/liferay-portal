@@ -1816,8 +1816,8 @@ public class PortletImporter {
 				name.equals("classTypeIds")) {
 
 				updatePreferencesClassPKs(
-					portletDataContext, jxPreferences, name,
-					DDMStructure.class, companyGroup.getGroupId());
+					portletDataContext, jxPreferences, name, DDMStructure.class,
+					companyGroup.getGroupId());
 			}
 			else if (name.equals("anyAssetType") ||
 					 name.equals("classNameIds")) {

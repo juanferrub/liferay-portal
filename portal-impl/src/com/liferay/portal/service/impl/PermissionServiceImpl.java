@@ -54,8 +54,6 @@ import com.liferay.portlet.journal.model.JournalArticle;
 import com.liferay.portlet.journal.model.JournalFeed;
 import com.liferay.portlet.journal.service.permission.JournalArticlePermission;
 import com.liferay.portlet.journal.service.permission.JournalFeedPermission;
-import com.liferay.portlet.journal.service.permission.JournalStructurePermission;
-import com.liferay.portlet.journal.service.permission.JournalTemplatePermission;
 import com.liferay.portlet.messageboards.model.MBCategory;
 import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.messageboards.service.permission.MBCategoryPermission;
