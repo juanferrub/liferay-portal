@@ -286,17 +286,17 @@ public class EditGroupAction extends PortletAction {
 	protected void resetMergeFailCountAndMerge(ActionRequest actionRequest)
 		throws Exception {
 
-		long groupId = ParamUtil.getLong(actionRequest, "groupId");
+		long targetGroupId = ParamUtil.getLong(actionRequest, "groupId");
 		boolean privateLayoutSet = ParamUtil.getBoolean(
 			actionRequest, "privateLayoutSet");
 
 		LayoutSet targetGroupLayoutSet =
-			LayoutSetLocalServiceUtil.getLayoutSet(groupId, privateLayoutSet);
+			LayoutSetLocalServiceUtil.getLayoutSet(targetGroupId, privateLayoutSet);
 
 		long layoutSetPrototypeId =
 			targetGroupLayoutSet.getLayoutSetPrototypeId();
 
-		Group group = GroupLocalServiceUtil.getGroup(groupId);
+		Group targetGroup = GroupLocalServiceUtil.getGroup(targetGroupId);
 
 		// reset counter
 		LayoutSetPrototype layoutSetPrototype =
@@ -312,7 +312,7 @@ public class EditGroupAction extends PortletAction {
 
 		// force merge
 		// TODO how to forcibly merge site template?
-
+		SitesUtil.mergeLayoutSetPrototypeLayouts(targetGroup, targetGroupLayoutSet);
 
 		// check whether merge was successful
 		layoutSetPrototype =
