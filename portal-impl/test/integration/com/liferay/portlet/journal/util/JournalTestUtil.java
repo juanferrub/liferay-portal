@@ -87,7 +87,8 @@ public class JournalTestUtil {
 
 		Map<Locale, String> descriptionMap = new HashMap<Locale, String>();
 
-		ServiceContext serviceContext = ServiceTestUtil.getServiceContext();
+		ServiceContext serviceContext = ServiceTestUtil.getServiceContext(
+			groupId);
 
 		if (workflowEnabled) {
 			serviceContext.setWorkflowAction(
@@ -182,7 +183,7 @@ public class JournalTestUtil {
 
 		serviceContext.setAddGroupPermissions(true);
 		serviceContext.setAddGuestPermissions(true);
-		serviceContext.setScopeGroupId(TestPropsValues.getGroupId());
+		serviceContext.setScopeGroupId(groupId);
 
 		return JournalArticleLocalServiceUtil.addArticle(
 			TestPropsValues.getUserId(), groupId, 0, 0, 0, StringPool.BLANK,
@@ -226,6 +227,7 @@ public class JournalTestUtil {
 
 		serviceContext.setAddGroupPermissions(true);
 		serviceContext.setAddGuestPermissions(true);
+		serviceContext.setScopeGroupId(groupId);
 
 		return DDMStructureLocalServiceUtil.addStructure(
 			TestPropsValues.getUserId(), groupId,
@@ -299,6 +301,7 @@ public class JournalTestUtil {
 
 		serviceContext.setAddGroupPermissions(true);
 		serviceContext.setAddGuestPermissions(true);
+		serviceContext.setScopeGroupId(groupId);
 
 		return DDMTemplateLocalServiceUtil.addTemplate(
 			TestPropsValues.getUserId(), groupId,
@@ -349,7 +352,8 @@ public class JournalTestUtil {
 			return folder;
 		}
 
-		ServiceContext serviceContext = ServiceTestUtil.getServiceContext();
+		ServiceContext serviceContext = ServiceTestUtil.getServiceContext(
+			groupId);
 
 		return JournalFolderLocalServiceUtil.addFolder(
 			TestPropsValues.getUserId(), groupId, parentFolderId, name,
@@ -451,7 +455,7 @@ public class JournalTestUtil {
 			journalArticle.getVersion(), titleMap,
 			journalArticle.getDescriptionMap(), content,
 			journalArticle.getLayoutUuid(),
-			ServiceTestUtil.getServiceContext());
+			ServiceTestUtil.getServiceContext(journalArticle.getGroupId()));
 	}
 
 	private static Locale[] _locales = {
