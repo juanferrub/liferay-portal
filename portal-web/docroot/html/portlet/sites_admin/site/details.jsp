@@ -203,7 +203,9 @@ boolean hasUnlinkLayoutSetPrototypePermission = PortalPermissionUtil.contains(pe
 											request.setAttribute("details.jsp-privateLayoutSet", false);
 											%>
 
-											<liferay-util:include page="/html/portlet/sites_admin/site/template_propagation_fail_reset.jsp" />
+											<div id="<portlet:namespace/>publicLayoutSetPrototypeLinkEnabledPropagationBox" class='<%= publicLayoutSetPrototypeLinkEnabled ? "" : "aui-helper-hidden" %>'>
+												<liferay-util:include page="/html/portlet/sites_admin/site/template_propagation_fail_reset.jsp" />
+											</div>
 										</c:when>
 										<c:when test="<%= publicLayoutSetPrototype != null %>">
 											<liferay-ui:message arguments="<%= new Object[] {HtmlUtil.escape(publicLayoutSetPrototype.getName(locale))} %>" key="these-pages-are-linked-to-site-template-x" />
@@ -283,7 +285,9 @@ boolean hasUnlinkLayoutSetPrototypePermission = PortalPermissionUtil.contains(pe
 											request.setAttribute("details.jsp-privateLayoutSet", true);
 											%>
 
-											<liferay-util:include page="/html/portlet/sites_admin/site/template_propagation_fail_reset.jsp" />
+											<div id="<portlet:namespace/>privateLayoutSetPrototypeLinkEnabledPropagationBox" class='<%= privateLayoutSetPrototypeLinkEnabled ? "" : "aui-helper-hidden" %>'>
+												<liferay-util:include page="/html/portlet/sites_admin/site/template_propagation_fail_reset.jsp" />
+											</div>
 										</c:when>
 										<c:when test="<%= privateLayoutSetPrototype != null %>">
 											<liferay-ui:message arguments="<%= new Object[] {HtmlUtil.escape(privateLayoutSetPrototype.getName(locale))} %>" key="these-pages-are-linked-to-site-template-x" />
@@ -498,6 +502,30 @@ if (parentGroup != null) {
 		['liferay-search-container']
 	);
 
+	Liferay.provide(
+		window,
+		'<portlet:namespace />togglePropagationBox',
+		function(layoutSetPrototypeType) {
+	         var A = AUI();
+
+			var checkbox = A.one("#<portlet:namespace />" + layoutSetPrototypeType + "LayoutSetPrototypeLinkEnabledCheckbox");
+			var propagationBox = A.one("#<portlet:namespace/>" + layoutSetPrototypeType + "LayoutSetPrototypeLinkEnabledPropagationBox");
+
+			if (propagationBox) {
+
+				var checked = checkbox.get('checked');
+
+				if(checked) {
+					propagationBox.show();
+				}
+				else {
+					propagationBox.hide();
+				}
+			}
+		},
+		['aui-base']
+	);
+
 	Liferay.Util.toggleSelectBox('<portlet:namespace />publicLayoutSetPrototypeId', <portlet:namespace />isVisible, '<portlet:namespace />publicLayoutSetPrototypeIdOptions');
 	Liferay.Util.toggleSelectBox('<portlet:namespace />privateLayoutSetPrototypeId', <portlet:namespace />isVisible, '<portlet:namespace />privateLayoutSetPrototypeIdOptions');
 </aui:script>
@@ -516,4 +544,18 @@ if (parentGroup != null) {
 		},
 		'.modify-link'
 	);
+
+	var A = AUI();
+
+	<c:forTokens var="type" items="private,public" delims=",">
+
+		var ${type}PrototypeCheckBox = A.one("#<portlet:namespace />${type}LayoutSetPrototypeLinkEnabledCheckbox");
+
+		${type}PrototypeCheckBox.on(
+			'change',
+			function(event){
+		        <portlet:namespace />togglePropagationBox('${type}');
+			}
+		);
+	</c:forTokens>
 </aui:script>
