@@ -311,7 +311,6 @@ public class EditGroupAction extends PortletAction {
 		LayoutSetLocalServiceUtil.updateLayoutSet(layoutSetPrototypeLayoutSet);
 
 		// force merge
-		// TODO how to forcibly merge site template?
 		SitesUtil.mergeLayoutSetPrototypeLayouts(targetGroup, targetGroupLayoutSet);
 
 		// check whether merge was successful
