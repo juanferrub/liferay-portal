@@ -67,11 +67,14 @@ import com.liferay.portal.security.auth.PrincipalException;
 import com.liferay.portal.security.permission.ActionKeys;
 import com.liferay.portal.security.permission.PermissionChecker;
 import com.liferay.portal.service.LayoutLocalServiceUtil;
+import com.liferay.portal.service.LayoutPrototypeLocalServiceUtil;
 import com.liferay.portal.service.LayoutPrototypeServiceUtil;
 import com.liferay.portal.service.LayoutRevisionLocalServiceUtil;
 import com.liferay.portal.service.LayoutServiceUtil;
 import com.liferay.portal.service.LayoutSetBranchLocalServiceUtil;
 import com.liferay.portal.service.LayoutSetLocalServiceUtil;
+import com.liferay.portal.service.LayoutSetPrototypeLocalServiceUtil;
+import com.liferay.portal.service.LayoutSetPrototypeServiceUtil;
 import com.liferay.portal.service.PortletLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
@@ -212,6 +215,62 @@ public class EditLayoutsAction extends PortletAction {
 					layoutTypePortlet.isCustomizedView()) {
 
 					layoutTypePortlet.resetUserPreferences();
+				}
+			}
+			else if (cmd.equals(Constants.RESET_MERGE_FAIL_COUNT)) {
+				
+				long targetLayoutPlid = ParamUtil.getLong(actionRequest, "layoutPlid");
+				long layoutSetPrototypeId = ParamUtil.getLong(actionRequest, "layoutSetPrototypeId");
+
+				// reset counter
+				Layout targetLayout = LayoutLocalServiceUtil.getLayout(
+					targetLayoutPlid);
+
+				LayoutPrototype layoutPrototype = LayoutPrototypeLocalServiceUtil.
+					getLayoutPrototypeByUuidAndCompanyId(
+						targetLayout.getLayoutPrototypeUuid(),
+						themeDisplay.getCompanyId());
+
+				long layoutPrototypeId = layoutPrototype.getLayoutPrototypeId();
+
+				Layout layoutPrototypeLayout = layoutPrototype.getLayout();
+
+				SitesUtil.setMergeFailCount(layoutPrototypeLayout, 0);
+
+				LayoutLocalServiceUtil.updateLayout(layoutPrototypeLayout);
+
+
+				// enable link, if disabled
+				if(!targetLayout.isLayoutPrototypeLinkEnabled()) {
+
+					targetLayout.setLayoutPrototypeLinkEnabled(true);
+					targetLayout.setLayoutPrototypeUuid(
+						layoutPrototype.getUuid());
+
+					LayoutLocalServiceUtil.updateLayout(targetLayout);
+
+					targetLayout = LayoutLocalServiceUtil.getLayout(
+						targetLayoutPlid);
+				}
+
+				// reset merge timestamps
+				SitesUtil.resetPrototype(targetLayout);
+
+				// force merge from template
+				SitesUtil.mergeLayoutPrototypeLayout(
+					targetLayout.getGroup(), targetLayout);
+
+				// check whether reset (and possible merge) was successful
+				layoutPrototype = LayoutPrototypeServiceUtil.getLayoutPrototype(
+						layoutPrototypeId);
+
+				int mergeFailCountAfterMerge = SitesUtil.getMergeFailCount(
+					layoutPrototype);
+
+				if(mergeFailCountAfterMerge > 0) {
+
+					SessionErrors.add(actionRequest,
+						"template-merge-failed-see-logs-for-details");
 				}
 			}
 			else if (cmd.equals("reset_prototype")) {

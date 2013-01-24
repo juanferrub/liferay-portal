@@ -1,3 +1,4 @@
+<%@ page import="com.liferay.portlet.sites.util.SitesUtil" %>
 <%--
 /**
  * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
@@ -136,11 +137,24 @@ StringBuilder friendlyURLBase = new StringBuilder();
 
 		<%
 		LayoutPrototype layoutPrototype = LayoutPrototypeLocalServiceUtil.getLayoutPrototypeByUuidAndCompanyId(selLayout.getLayoutPrototypeUuid(), company.getCompanyId());
+
+		boolean layoutPrototypeLinkEnabled = selLayout.isLayoutPrototypeLinkEnabled();
 		%>
 
 		<aui:input name="layoutPrototypeUuid" type="hidden" value="<%= selLayout.getLayoutPrototypeUuid() %>" />
 
-		<aui:input label='<%= LanguageUtil.format(pageContext, "automatically-apply-changes-done-to-the-page-template-x", HtmlUtil.escape(layoutPrototype.getName(user.getLocale()))) %>' name="layoutPrototypeLinkEnabled" type="checkbox" value="<%= selLayout.isLayoutPrototypeLinkEnabled() %>" />
+		<aui:input label='<%= LanguageUtil.format(pageContext, "automatically-apply-changes-done-to-the-page-template-x", HtmlUtil.escape(layoutPrototype.getName(user.getLocale()))) %>' name="layoutPrototypeLinkEnabled" type="checkbox" value="<%= layoutPrototypeLinkEnabled %>" onChange='toggleLayoutPrototypePropagationBox()' />
+
+		<div id="<portlet:namespace/>layoutPrototypeLinkEnabledPropagationBox" class='<%= layoutPrototypeLinkEnabled ? "" : "aui-helper-hidden" %>'>
+
+			<%
+			request.setAttribute("details.jsp-layoutPrototype", layoutPrototype);
+			request.setAttribute("details.jsp-layout", selLayout);
+			request.setAttribute("details.jsp-forceMergeNow", true);
+			%>
+
+			<liferay-util:include page="/html/portlet/layouts_admin/layout/template_propagation_fail_reset.jsp" />
+		</div>
 	</c:if>
 
 	<aui:select name="type">
@@ -183,6 +197,29 @@ StringBuilder friendlyURLBase = new StringBuilder();
 	%>
 
 </aui:fieldset>
+
+<aui:script>
+
+	Liferay.provide(
+		window,
+		'toggleLayoutPrototypePropagationBox',
+		function() {
+
+			var A = AUI();
+
+			var checkbox = A.one("#<portlet:namespace />layoutPrototypeLinkEnabledCheckbox");
+			var propagationBox = A.one("#<portlet:namespace/>layoutPrototypeLinkEnabledPropagationBox");
+
+			if (checkbox && propagationBox) {
+
+				propagationBox.toggle();
+			}
+		},
+		['aui-base']
+	);
+
+</aui:script>
+
 
 <aui:script use="aui-base">
 	var templateLink = A.one('#templateLink');
