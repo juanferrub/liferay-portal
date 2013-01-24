@@ -59,7 +59,6 @@ import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.service.GroupServiceUtil;
 import com.liferay.portal.service.LayoutLocalServiceUtil;
 import com.liferay.portal.service.LayoutSetLocalServiceUtil;
-import com.liferay.portal.service.LayoutSetPrototypeLocalServiceUtil;
 import com.liferay.portal.service.LayoutSetPrototypeServiceUtil;
 import com.liferay.portal.service.LayoutSetServiceUtil;
 import com.liferay.portal.service.MembershipRequestLocalServiceUtil;
@@ -138,7 +137,7 @@ public class EditGroupAction extends PortletAction {
 			else if (cmd.equals(Constants.DELETE)) {
 				deleteGroups(actionRequest);
 			}
-			else if(cmd.equals(Constants.RESET_MERGE_FAIL_COUNT)){
+			else if (cmd.equals(Constants.RESET_MERGE_FAIL_COUNT)) {
 				resetMergeFailCountAndMerge(actionRequest);
 			}
 
@@ -297,8 +296,8 @@ public class EditGroupAction extends PortletAction {
 		boolean forceMergeNow = ParamUtil.getBoolean(
 			actionRequest, "forceMergeNow");
 
-
 		// reset counter
+
 		LayoutSetPrototype layoutSetPrototype =
 			LayoutSetPrototypeServiceUtil.getLayoutSetPrototype(
 				layoutSetPrototypeId);
@@ -310,13 +309,14 @@ public class EditGroupAction extends PortletAction {
 
 		LayoutSetLocalServiceUtil.updateLayoutSet(layoutSetPrototypeLayoutSet);
 
-		if(_log.isDebugEnabled()) {
+		if (_log.isDebugEnabled()) {
 			_log.debug("'merge-fail-count' was reset for layoutSetPrototype " +
 				layoutSetPrototypeId);
 		}
 
 		// force merge from template
-		if(forceMergeNow) {
+
+		if (forceMergeNow) {
 
 			LayoutSet targetGroupLayoutSet =
 				LayoutSetLocalServiceUtil.getLayoutSet(
@@ -325,7 +325,8 @@ public class EditGroupAction extends PortletAction {
 			Group targetGroup = GroupLocalServiceUtil.getGroup(targetGroupId);
 
 			// enable link, if disabled
-			if(!targetGroupLayoutSet.isLayoutSetPrototypeLinkEnabled()) {
+
+			if (!targetGroupLayoutSet.isLayoutSetPrototypeLinkEnabled()) {
 
 				LayoutSetLocalServiceUtil.updateLayoutSetPrototypeLinkEnabled(
 					targetGroupId, privateLayoutSet, true,
@@ -337,19 +338,22 @@ public class EditGroupAction extends PortletAction {
 			}
 
 			// reset merge timestamps
+
 			SitesUtil.resetPrototype(targetGroupLayoutSet);
 
 			// do the merge
+
 			SitesUtil.mergeLayoutSetPrototypeLayouts(
 				targetGroup, targetGroupLayoutSet);
 
-			if(_log.isDebugEnabled()) {
+			if (_log.isDebugEnabled()) {
 				_log.debug("Site template " + layoutSetPrototypeId +
 					" was merged to group " + targetGroupId );
 			}
 		}
 
 		// check whether reset (and possible merge) was successful
+
 		layoutSetPrototype =
 			LayoutSetPrototypeServiceUtil.getLayoutSetPrototype(
 				layoutSetPrototypeId);
@@ -357,13 +361,12 @@ public class EditGroupAction extends PortletAction {
 		int mergeFailCountAfterMerge = SitesUtil.getMergeFailCount(
 			layoutSetPrototype);
 
-		if(mergeFailCountAfterMerge > 0) {
+		if (mergeFailCountAfterMerge > 0) {
 
-			SessionErrors.add(actionRequest,
-				"template-merge-failed-see-logs-for-details");
+			SessionErrors.add(
+				actionRequest, "templateMergeFailedSeeLogsForDetails");
 		}
 	}
-
 
 	protected void updateActive(ActionRequest actionRequest, String cmd)
 		throws Exception {
@@ -782,7 +785,6 @@ public class EditGroupAction extends PortletAction {
 
 	private static final int _LAYOUT_SET_VISIBILITY_PRIVATE = 1;
 
-	private static final Log _log = LogFactoryUtil.getLog(
-		EditGroupAction.class);
+	private static Log _log = LogFactoryUtil.getLog(EditGroupAction.class);
 
 }

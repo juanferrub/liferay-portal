@@ -81,32 +81,28 @@ int mergeFailCount = layoutPrototypeId > 0 ? SitesUtil.getMergeFailCount(layoutP
 				/>
 			</aui:field-wrapper>
 
-			<aui:field-wrapper label="" inlineField="true">
+			<aui:field-wrapper inlineField="true" label="">
 
 				<c:if test="<%= mergeFailCount > PropsValues.LAYOUT_PROTOTYPE_MERGE_FAIL_THRESHOLD %>">
 
-					<span class="portlet-msg-alert" >
+					<span class="portlet-msg-alert">
 
-						<aui:a cssClass="merge-fail-popup-button" href="javascript:;" >
+						<aui:a cssClass="merge-fail-popup-button" href="javascript:;">
 							<liferay-ui:message key="propagation-disabled-temporarily" />
 						</aui:a>
 
 					</span>
 
-					<div id="<portlet:namespace />mergeFailCountDialogContentWrapper" class="aui-helper-hidden">
+					<div class="aui-helper-hidden" id="<portlet:namespace />mergeFailCountDialogContentWrapper">
 
 						<div class="content">
 							<p>
-								<liferay-ui:message key="the-propagation-has-been-disabled-temporarily-after-x-errors"
-								                    arguments="<%= new Object[]{mergeFailCount} %>" />
+								<liferay-ui:message arguments="<%= new Object[]{mergeFailCount} %>" key="the-propagation-has-been-disabled-temporarily-after-x-errors" />
 							</p>
 
-							<aui:button onClick='<%= renderResponse.getNamespace() + "resetMergeFailCount()" %>'
-							            value="reset-merge-fail-count" />
+							<aui:button onClick='<%= renderResponse.getNamespace() + "resetMergeFailCount()" %>' value="reset-merge-fail-count" />
 						</div>
-
 					</div>
-
 				</c:if>
 			</aui:field-wrapper>
 		</c:if>
@@ -143,7 +139,7 @@ int mergeFailCount = layoutPrototypeId > 0 ? SitesUtil.getMergeFailCount(layoutP
 	</c:if>
 </aui:script>
 
-  <aui:script use="aui-base,aui-dialog">
+<aui:script use="aui-base,aui-dialog">
 	var warningElem = A.one(".merge-fail-popup-button");
 
 	if(warningElem) {

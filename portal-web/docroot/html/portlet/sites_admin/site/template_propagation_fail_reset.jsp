@@ -30,26 +30,24 @@ String randomNamespace = PortalUtil.generateRandomKey(request, "portlet_sites_ad
 
 <c:if test="<%= mergeFailCount > PropsValues.LAYOUT_SET_PROTOTYPE_MERGE_FAIL_THRESHOLD %>">
 
-	<aui:field-wrapper label="" inlineField="true">
-		<span class="portlet-msg-alert" >
+	<aui:field-wrapper inlineField="true" label="">
+		<span class="portlet-msg-alert">
 
-			<aui:a id='<%= randomNamespace + "mergeFailPopupButton" %>' href="javascript:;" >
+			<aui:a href="javascript:;" id='<%= randomNamespace + "mergeFailPopupButton" %>' >
 				<liferay-ui:message key="disabled-temporarily" />
 			</aui:a>
 
 		</span>
 	</aui:field-wrapper>
 
-	<div id='<%= randomNamespace + "mergeFailCountDialogContentWrapper" %>' class="aui-helper-hidden">
+	<div class="aui-helper-hidden" id='<%= randomNamespace + "mergeFailCountDialogContentWrapper" %>'>
 
 		<div class="content">
 			<p>
-				<liferay-ui:message key="the-propagation-has-been-disabled-temporarily-after-x-errors"
-				                    arguments="<%= new Object[]{mergeFailCount} %>" />
+				<liferay-ui:message arguments="<%= new Object[]{mergeFailCount} %>" key="the-propagation-has-been-disabled-temporarily-after-x-errors" />
 			</p>
 
-			<aui:button onClick='<%= randomNamespace + "resetMergeFailCount()" %>'
-			            value='<%= forceMergeNow ? "reset-merge-fail-count-and-merge-template" : "reset-merge-fail-count" %>' />
+			<aui:button onClick='<%= randomNamespace + "resetMergeFailCount()" %>' value='<%= forceMergeNow ? "reset-merge-fail-count-and-merge-template" : "reset-merge-fail-count" %>' />
 		</div>
 
 	</div>

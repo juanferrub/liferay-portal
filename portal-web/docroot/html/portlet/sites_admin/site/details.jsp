@@ -93,7 +93,7 @@ if (showPrototypes && (group != null)) {
 	</c:if>
 </liferay-ui:error>
 
-<liferay-ui:error key="template-merge-failed-see-logs-for-details" message="template-merge-failed-see-logs-for-details" />
+<liferay-ui:error key="templateMergeFailedSeeLogsForDetails" message="template-merge-failed-see-logs-for-details" />
 
 
 <aui:fieldset>
@@ -197,7 +197,7 @@ boolean hasUnlinkLayoutSetPrototypePermission = PortalPermissionUtil.contains(pe
 										<c:when test="<%= (publicLayoutSetPrototype != null) && !liveGroup.isStaged() && hasUnlinkLayoutSetPrototypePermission %>">
 											<aui:input label='<%= LanguageUtil.format(pageContext, "enable-propagation-of-changes-from-the-site-template-x", HtmlUtil.escape(publicLayoutSetPrototype.getName(user.getLanguageId()))) %>' name="publicLayoutSetPrototypeLinkEnabled" type="checkbox" value="<%= publicLayoutSetPrototypeLinkEnabled %>" />
 
-											<div id="<portlet:namespace/>publicLayoutSetPrototypeLinkEnabledPropagationBox" class='<%= publicLayoutSetPrototypeLinkEnabled ? "" : "aui-helper-hidden" %>'>
+											<div class='<%= publicLayoutSetPrototypeLinkEnabled ? "" : "aui-helper-hidden" %>' id="<portlet:namespace/>publicLayoutSetPrototypeLinkEnabledPropagationBox">
 
 												<%
 												request.setAttribute("details.jsp-layoutSetPrototype", publicLayoutSetPrototype);
@@ -281,7 +281,7 @@ boolean hasUnlinkLayoutSetPrototypePermission = PortalPermissionUtil.contains(pe
 										<c:when test="<%= (privateLayoutSetPrototype != null) && !liveGroup.isStaged() && hasUnlinkLayoutSetPrototypePermission %>">
 											<aui:input label='<%= LanguageUtil.format(pageContext, "enable-propagation-of-changes-from-the-site-template-x", HtmlUtil.escape(privateLayoutSetPrototype.getName(user.getLanguageId()))) %>' name="privateLayoutSetPrototypeLinkEnabled" type="checkbox" value="<%= privateLayoutSetPrototypeLinkEnabled %>" />
 
-											<div id="<portlet:namespace/>privateLayoutSetPrototypeLinkEnabledPropagationBox" class='<%= privateLayoutSetPrototypeLinkEnabled ? "" : "aui-helper-hidden" %>'>
+											<div class='<%= privateLayoutSetPrototypeLinkEnabled ? "" : "aui-helper-hidden" %>' id="<portlet:namespace/>privateLayoutSetPrototypeLinkEnabledPropagationBox">
 
 												<%
 												request.setAttribute("details.jsp-layoutSetPrototype", privateLayoutSetPrototype);
@@ -510,7 +510,7 @@ if (parentGroup != null) {
 		window,
 		'<portlet:namespace />toggleLayoutSetPrototypePropagationBox',
 		function(layoutSetPrototypeType) {
-	         var A = AUI();
+			var A = AUI();
 
 			var checkbox = A.one("#<portlet:namespace />" + layoutSetPrototypeType + "LinkEnabledCheckbox");
 			var propagationBox = A.one("#<portlet:namespace/>" + layoutSetPrototypeType + "LinkEnabledPropagationBox");
@@ -551,7 +551,7 @@ if (parentGroup != null) {
 
 	var A = AUI();
 
-	<c:forTokens var="type" items="privateLayoutSetPrototype,publicLayoutSetPrototype,layoutSetPrototype" delims=",">
+	<c:forTokens delims="," items="privateLayoutSetPrototype,publicLayoutSetPrototype,layoutSetPrototype" var="type">
 
 		var ${type}PrototypeCheckbox = A.one("#<portlet:namespace />${type}LinkEnabledCheckbox");
 
@@ -560,7 +560,7 @@ if (parentGroup != null) {
 			${type}PrototypeCheckbox.on(
 				'change',
 				function(event){
-			        <portlet:namespace />toggleLayoutSetPrototypePropagationBox('${type}');
+					<portlet:namespace />toggleLayoutSetPrototypePropagationBox('${type}');
 				}
 			);
 		}

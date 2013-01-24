@@ -1,4 +1,3 @@
-<%@ page import="com.liferay.portlet.sites.util.SitesUtil" %>
 <%--
 /**
  * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
@@ -143,9 +142,9 @@ StringBuilder friendlyURLBase = new StringBuilder();
 
 		<aui:input name="layoutPrototypeUuid" type="hidden" value="<%= selLayout.getLayoutPrototypeUuid() %>" />
 
-		<aui:input label='<%= LanguageUtil.format(pageContext, "automatically-apply-changes-done-to-the-page-template-x", HtmlUtil.escape(layoutPrototype.getName(user.getLocale()))) %>' name="layoutPrototypeLinkEnabled" type="checkbox" value="<%= layoutPrototypeLinkEnabled %>" onChange='toggleLayoutPrototypePropagationBox()' />
+		<aui:input label='<%= LanguageUtil.format(pageContext, "automatically-apply-changes-done-to-the-page-template-x", HtmlUtil.escape(layoutPrototype.getName(user.getLocale()))) %>' name="layoutPrototypeLinkEnabled" onChange="toggleLayoutPrototypePropagationBox()" type="checkbox" value="<%= layoutPrototypeLinkEnabled %>" />
 
-		<div id="<portlet:namespace/>layoutPrototypeLinkEnabledPropagationBox" class='<%= layoutPrototypeLinkEnabled ? "" : "aui-helper-hidden" %>'>
+		<div class='<%= layoutPrototypeLinkEnabled ? "" : "aui-helper-hidden" %>' id="<portlet:namespace/>layoutPrototypeLinkEnabledPropagationBox">
 
 			<%
 			request.setAttribute("details.jsp-layoutPrototype", layoutPrototype);
