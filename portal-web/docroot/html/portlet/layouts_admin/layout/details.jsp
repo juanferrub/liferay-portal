@@ -96,6 +96,8 @@ StringBuilder friendlyURLBase = new StringBuilder();
 	</liferay-ui:error>
 </c:if>
 
+<liferay-ui:error key="templateMergeFailedSeeLogsForDetails" message="template-merge-failed-see-logs-for-details" />
+
 <aui:fieldset>
 	<c:choose>
 		<c:when test="<%= !group.isLayoutPrototype() %>">
