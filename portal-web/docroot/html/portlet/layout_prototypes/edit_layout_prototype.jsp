@@ -35,6 +35,8 @@ Locale defaultLocale = LocaleUtil.getDefault();
 String defaultLanguageId = LocaleUtil.toLanguageId(defaultLocale);
 
 Locale[] locales = LanguageUtil.getAvailableLocales();
+
+int mergeFailCount = layoutPrototypeId > 0 ? SitesUtil.getMergeFailCount(layoutPrototype) : 0;
 %>
 
 <liferay-util:include page="/html/portlet/layout_prototypes/toolbar.jsp">
@@ -79,28 +81,29 @@ Locale[] locales = LanguageUtil.getAvailableLocales();
 				/>
 			</aui:field-wrapper>
 
-			<aui:field-wrapper label="merge-fail-count[page-template]">
-
-				<%
-					Layout layoutPrototypeLayout = layoutPrototype.getLayout();
-
-					UnicodeProperties layoutPrototypeLayoutTypeSettingsProperties =
-							layoutPrototypeLayout.getTypeSettingsProperties();
-
-					int mergeFailCount = GetterUtil.getInteger(
-							layoutPrototypeLayoutTypeSettingsProperties.getProperty("merge-fail-count"), 0);
-				%>
-
-				<%= mergeFailCount %>
+			<aui:field-wrapper label="" inlineField="true">
 
 				<c:if test="<%= mergeFailCount > PropsValues.LAYOUT_PROTOTYPE_MERGE_FAIL_THRESHOLD %>">
 
-					<div class="portlet-msg-alert">
-						<liferay-ui:message key="merge-fail-count-exceeds-threshold-x-no-further-merges-will-be-done"
-											arguments="<%= new Object[]{PropsValues.LAYOUT_PROTOTYPE_MERGE_FAIL_THRESHOLD} %>" />
+					<span class="portlet-msg-alert" >
 
-						<aui:button onClick='<%= renderResponse.getNamespace() + "resetMergeFailCount()" %>'
-									value="reset-merge-fail-count" />
+						<aui:a cssClass="merge-fail-popup-button" href="javascript:;" >
+							<liferay-ui:message key="propagation-disabled-temporarily" />
+						</aui:a>
+
+					</span>
+
+					<div id="<portlet:namespace />mergeFailCountDialogContentWrapper" class="aui-helper-hidden">
+
+						<div class="content">
+							<p>
+								<liferay-ui:message key="the-propagation-has-been-disabled-temporarily-after-x-errors"
+								                    arguments="<%= new Object[]{mergeFailCount} %>" />
+							</p>
+
+							<aui:button onClick='<%= renderResponse.getNamespace() + "resetMergeFailCount()" %>'
+							            value="reset-merge-fail-count" />
+						</div>
 
 					</div>
 
@@ -138,6 +141,30 @@ Locale[] locales = LanguageUtil.getAvailableLocales();
 	<c:if test="<%= windowState.equals(WindowState.MAXIMIZED) %>">
 		Liferay.Util.focusFormField(document.<portlet:namespace />fm.<portlet:namespace />name);
 	</c:if>
+</aui:script>
+
+  <aui:script use="aui-base,aui-dialog">
+	var warningElem = A.one(".merge-fail-popup-button");
+
+	if(warningElem) {
+		warningElem.on('click', function(){
+
+			var dialogContent = A.one("#<portlet:namespace />mergeFailCountDialogContentWrapper .content");
+
+			var options = {
+				title: '<liferay-ui:message key="propagation-of-changes" />',
+				bodyContent: dialogContent.html(),
+				centered: true,
+				width: 400,
+				height: 150,
+				modal: true
+			};
+
+			var popup = new A.Dialog(options).render();
+
+			dialogContent.show();
+		});
+	}
 </aui:script>
 
 <%
