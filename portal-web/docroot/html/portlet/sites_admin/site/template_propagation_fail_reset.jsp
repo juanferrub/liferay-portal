@@ -19,6 +19,7 @@
 <%
 long groupId = (Long)request.getAttribute("details.jsp-groupId");
 boolean privateLayoutSet = (Boolean)request.getAttribute("details.jsp-privateLayoutSet");
+boolean forceMergeNow = (Boolean)request.getAttribute("details.jsp-forceMergeNow");
 
 LayoutSetPrototype layoutSetPrototype = (LayoutSetPrototype)request.getAttribute("details.jsp-layoutSetPrototype");
 
@@ -48,7 +49,7 @@ String randomNamespace = PortalUtil.generateRandomKey(request, "portlet_sites_ad
 			</p>
 
 			<aui:button onClick='<%= randomNamespace + "resetMergeFailCount()" %>'
-			            value="reset-merge-fail-count-and-merge-template" />
+			            value='<%= forceMergeNow ? "reset-merge-fail-count-and-merge-template" : "reset-merge-fail-count" %>' />
 		</div>
 
 	</div>
@@ -80,20 +81,18 @@ String randomNamespace = PortalUtil.generateRandomKey(request, "portlet_sites_ad
 	<aui:script>
 		function <%= randomNamespace %>resetMergeFailCount() {
 
-			<liferay-portlet:renderURL doAsGroupId="<%= groupId %>" portletName="<%= PortletKeys.SITE_SETTINGS %>" var="currentEditURL">
-				<portlet:param name="redirect" value="<%= currentURL %>" />
-			</liferay-portlet:renderURL>
-
 			<portlet:actionURL var="resetAndMergeURL">
 				<portlet:param name="struts_action" value="/sites_admin/edit_site" />
-				<portlet:param name="redirect" value="<%= currentEditURL %>" />
+				<portlet:param name="redirect" value="<%= currentURL %>" />
 				<portlet:param name="groupId" value="<%= String.valueOf(groupId) %>" />
 				<portlet:param name="privateLayoutSet" value="<%= String.valueOf(privateLayoutSet) %>" />
+				<portlet:param name="layoutSetPrototypeId" value="<%= String.valueOf(layoutSetPrototype.getLayoutSetPrototypeId()) %>" />
+				<portlet:param name="forceMergeNow" value="<%= String.valueOf(forceMergeNow) %>" />
 			</portlet:actionURL>
 
 			document.<portlet:namespace />fm.method = "post";
 			document.<portlet:namespace />fm.<portlet:namespace /><%= Constants.CMD %>.value = "<%= Constants.RESET_MERGE_FAIL_COUNT %>";
-			document.<portlet:namespace />fm.<portlet:namespace />redirect.value = "<%= currentEditURL %>";
+			document.<portlet:namespace />fm.<portlet:namespace />redirect.value = "<%= currentURL %>";
 			submitForm(document.<portlet:namespace />fm, "<%= resetAndMergeURL %>");
 		}
 	</aui:script>

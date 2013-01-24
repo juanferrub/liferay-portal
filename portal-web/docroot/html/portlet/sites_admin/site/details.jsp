@@ -201,6 +201,7 @@ boolean hasUnlinkLayoutSetPrototypePermission = PortalPermissionUtil.contains(pe
 											request.setAttribute("details.jsp-layoutSetPrototype", publicLayoutSetPrototype);
 											request.setAttribute("details.jsp-groupId", group.getGroupId());
 											request.setAttribute("details.jsp-privateLayoutSet", false);
+											request.setAttribute("details.jsp-forceMergeNow", true);
 											%>
 
 											<div id="<portlet:namespace/>publicLayoutSetPrototypeLinkEnabledPropagationBox" class='<%= publicLayoutSetPrototypeLinkEnabled ? "" : "aui-helper-hidden" %>'>
@@ -283,6 +284,7 @@ boolean hasUnlinkLayoutSetPrototypePermission = PortalPermissionUtil.contains(pe
 											request.setAttribute("details.jsp-layoutSetPrototype", privateLayoutSetPrototype);
 											request.setAttribute("details.jsp-groupId", group.getGroupId());
 											request.setAttribute("details.jsp-privateLayoutSet", true);
+											request.setAttribute("details.jsp-forceMergeNow", true);
 											%>
 
 											<div id="<portlet:namespace/>privateLayoutSetPrototypeLinkEnabledPropagationBox" class='<%= privateLayoutSetPrototypeLinkEnabled ? "" : "aui-helper-hidden" %>'>
@@ -504,14 +506,14 @@ if (parentGroup != null) {
 
 	Liferay.provide(
 		window,
-		'<portlet:namespace />togglePropagationBox',
+		'<portlet:namespace />toggleLayoutSetPrototypePropagationBox',
 		function(layoutSetPrototypeType) {
 	         var A = AUI();
 
-			var checkbox = A.one("#<portlet:namespace />" + layoutSetPrototypeType + "LayoutSetPrototypeLinkEnabledCheckbox");
-			var propagationBox = A.one("#<portlet:namespace/>" + layoutSetPrototypeType + "LayoutSetPrototypeLinkEnabledPropagationBox");
+			var checkbox = A.one("#<portlet:namespace />" + layoutSetPrototypeType + "LinkEnabledCheckbox");
+			var propagationBox = A.one("#<portlet:namespace/>" + layoutSetPrototypeType + "LinkEnabledPropagationBox");
 
-			if (propagationBox) {
+			if (checkbox && propagationBox) {
 
 				var checked = checkbox.get('checked');
 
@@ -547,15 +549,18 @@ if (parentGroup != null) {
 
 	var A = AUI();
 
-	<c:forTokens var="type" items="private,public" delims=",">
+	<c:forTokens var="type" items="privateLayoutSetPrototype,publicLayoutSetPrototype,layoutSetPrototype" delims=",">
 
-		var ${type}PrototypeCheckBox = A.one("#<portlet:namespace />${type}LayoutSetPrototypeLinkEnabledCheckbox");
+		var ${type}PrototypeCheckBox = A.one("#<portlet:namespace />${type}LinkEnabledCheckbox");
 
-		${type}PrototypeCheckBox.on(
-			'change',
-			function(event){
-		        <portlet:namespace />togglePropagationBox('${type}');
-			}
-		);
+		if(${type}PrototypeCheckBox) {
+
+			${type}PrototypeCheckBox.on(
+				'change',
+				function(event){
+			        <portlet:namespace />toggleLayoutSetPrototypePropagationBox('${type}');
+				}
+			);
+		}
 	</c:forTokens>
 </aui:script>

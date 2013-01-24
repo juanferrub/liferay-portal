@@ -654,6 +654,18 @@ public class SitesUtil {
 	public static int getMergeFailCount(LayoutSetPrototype layoutSetPrototype)
 		throws SystemException, PortalException {
 
+		if(layoutSetPrototype == null){
+			throw new IllegalArgumentException("LayoutSetPrototype has to be " +
+				"not null");
+		}
+
+		if(layoutSetPrototype.getLayoutSetPrototypeId() == 0) {
+			throw new IllegalArgumentException("LayoutSetPrototype has to " +
+				"have non-zero layoutSetPrototypeId: " +
+				layoutSetPrototype.getLayoutSetPrototypeId());
+		}
+
+
 		LayoutSet layoutSetPrototypeLayoutSet =
 			layoutSetPrototype.getLayoutSet();
 
@@ -677,6 +689,18 @@ public class SitesUtil {
 	 */
 	public static int getMergeFailCount(LayoutPrototype layoutPrototype)
 		throws SystemException, PortalException {
+
+		if(layoutPrototype == null){
+			throw new IllegalArgumentException("LayoutPrototype has to be " +
+				"not null");
+		}
+
+		if(layoutPrototype.getLayoutPrototypeId() == 0) {
+			throw new IllegalArgumentException("layoutSetPrototype has to " +
+				"have non-zero layoutPrototypeId: " +
+				layoutPrototype.getLayoutPrototypeId());
+		}
+
 
 		Layout layoutPrototypeLayout = layoutPrototype.getLayout();
 
@@ -1162,6 +1186,21 @@ public class SitesUtil {
 		LayoutLocalServiceUtil.updateLayout(layout);
 
 		LayoutSet layoutSet = layout.getLayoutSet();
+
+		resetPrototype(layoutSet);
+	}
+
+	/**
+	 * This method resets the state of linked site template to given layout set.
+	 *
+	 * @param layoutSet the target layout set, which needs to be linked to
+	 *                     a site template and link needs to be enabled.
+	 * @throws PortalException
+	 * @throws SystemException
+	 */
+	public static void resetPrototype(LayoutSet layoutSet)
+		throws PortalException, SystemException {
+
 		UnicodeProperties settingsProperties =
 			layoutSet.getSettingsProperties();
 

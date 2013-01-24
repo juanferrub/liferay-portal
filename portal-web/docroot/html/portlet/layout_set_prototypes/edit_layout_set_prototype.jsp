@@ -38,7 +38,7 @@ String defaultLanguageId = LocaleUtil.toLanguageId(defaultLocale);
 
 Locale[] locales = LanguageUtil.getAvailableLocales();
 
-int mergeFailCount = SitesUtil.getMergeFailCount(layoutSetPrototype);
+int mergeFailCount = layoutSetPrototypeId > 0 ? SitesUtil.getMergeFailCount(layoutSetPrototype) : 0;
 %>
 
 <liferay-util:include page="/html/portlet/layout_set_prototypes/toolbar.jsp">
