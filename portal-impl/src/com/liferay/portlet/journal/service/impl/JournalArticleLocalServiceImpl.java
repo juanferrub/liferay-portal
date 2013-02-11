@@ -2454,6 +2454,7 @@ public class JournalArticleLocalServiceImpl
 
 		if (PortalUtil.getClassNameId(DDMStructure.class) ==
 				article.getClassNameId()) {
+
 			updateStructureDefaultValues(
 				article.getClassPK(), content, serviceContext);
 		}
