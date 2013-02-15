@@ -123,27 +123,26 @@ public class WikiUtil {
 	}
 
 	public static String escapeContent(String content) {
-		content = content.replaceAll("\t", StringPool.THREE_SPACES);
+		StringBundler sb = new StringBundler(content.length());
 
-		StringBundler sb = new StringBundler();
+		boolean insideTag = false;
 
-		char[] chars = content.toCharArray();
-
-		boolean inTag = false;
-
-		for (int i = 0; i < chars.length; i++) {
-			if (Validator.equals(chars[i], CharPool.LESS_THAN)) {
-				inTag = true;
+		for (char c : content.toCharArray()) {
+			if (c == CharPool.GREATER_THAN) {
+				insideTag = false;
 			}
-			else if (Validator.equals(chars[i], CharPool.GREATER_THAN)) {
-				inTag = false;
+			else if (c == CharPool.LESS_THAN) {
+				insideTag = true;
 			}
 
-			if (!inTag && Character.isWhitespace(chars[i])) {
+			if (!insideTag && (c == CharPool.SPACE)) {
 				sb.append(StringPool.NBSP);
 			}
+			else if (!insideTag && (c == CharPool.TAB)) {
+				sb.append("&nbsp;&nbsp;&nbsp;");
+			}
 			else {
-				sb.append(chars[i]);
+				sb.append(c);
 			}
 		}
 
