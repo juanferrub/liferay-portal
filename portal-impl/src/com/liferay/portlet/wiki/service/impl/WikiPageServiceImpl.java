@@ -685,7 +685,8 @@ public class WikiPageServiceImpl extends WikiPageServiceBaseImpl {
 					}
 					else {
 						value = getPageDiff(
-							companyId, attachmentURLPrefix, latestPage, page, locale);
+							companyId, latestPage, page, attachmentURLPrefix,
+							locale);
 					}
 
 					syndContent.setValue(value);
@@ -764,8 +765,8 @@ public class WikiPageServiceImpl extends WikiPageServiceBaseImpl {
 	}
 
 	protected String getPageDiff(
-			long companyId, String attachmentURLPrefix, WikiPage latestPage,
-			WikiPage page, Locale locale)
+			long companyId, WikiPage latestPage, WikiPage page,
+			String attachmentURLPrefix, Locale locale)
 		throws SystemException {
 
 		try {

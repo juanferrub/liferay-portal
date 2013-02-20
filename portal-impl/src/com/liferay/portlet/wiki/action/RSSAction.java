@@ -73,7 +73,6 @@ public class RSSAction extends com.liferay.portal.struts.RSSAction {
 		String rss = StringPool.BLANK;
 
 		if (nodeId > 0) {
-
 			String attachmentURLPrefix = WikiUtil.getAttachmentPrefix(
 				themeDisplay.getPathMain(), themeDisplay.getPlid(), nodeId,
 				title);
