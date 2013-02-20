@@ -114,6 +114,26 @@ public class JournalArticleIndexer extends BaseIndexer {
 			contextQuery.addRequiredTerm(Field.STATUS, status);
 		}
 
+		String articleType = (String)searchContext.getAttribute("articleType");
+
+		if (Validator.isNotNull(articleType)) {
+			contextQuery.addRequiredTerm(Field.TYPE, articleType);
+		}
+
+		String ddmStructureKey = (String)searchContext.getAttribute(
+			"ddmStructureKey");
+
+		if (Validator.isNotNull(ddmStructureKey)) {
+			contextQuery.addRequiredTerm("ddmStructureKey", ddmStructureKey);
+		}
+
+		String ddmTemplateKey = (String)searchContext.getAttribute(
+			"ddmTemplateKey");
+
+		if (Validator.isNotNull(ddmTemplateKey)) {
+			contextQuery.addRequiredTerm("ddmTemplateKey", ddmTemplateKey);
+		}
+
 		long[] folderIds = searchContext.getFolderIds();
 
 		if ((folderIds != null) && (folderIds.length > 0)) {
@@ -138,26 +158,6 @@ public class JournalArticleIndexer extends BaseIndexer {
 			}
 
 			contextQuery.add(folderIdsQuery, BooleanClauseOccur.MUST);
-		}
-
-		String articleType = (String)searchContext.getAttribute("articleType");
-
-		if (Validator.isNotNull(articleType)) {
-			contextQuery.addRequiredTerm(Field.TYPE, articleType);
-		}
-
-		String ddmStructureKey = (String)searchContext.getAttribute(
-			"ddmStructureKey");
-
-		if (Validator.isNotNull(ddmStructureKey)) {
-			contextQuery.addRequiredTerm("ddmStructureKey", ddmStructureKey);
-		}
-
-		String ddmTemplateKey = (String)searchContext.getAttribute(
-			"ddmTemplateKey");
-
-		if (Validator.isNotNull(ddmTemplateKey)) {
-			contextQuery.addRequiredTerm("ddmTemplateKey", ddmTemplateKey);
 		}
 	}
 
