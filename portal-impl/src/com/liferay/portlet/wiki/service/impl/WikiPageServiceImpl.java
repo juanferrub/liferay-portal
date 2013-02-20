@@ -43,8 +43,6 @@ import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PortletKeys;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portlet.wiki.NoSuchPageException;
-import com.liferay.portlet.wiki.PageContentException;
-import com.liferay.portlet.wiki.WikiFormatException;
 import com.liferay.portlet.wiki.model.WikiNode;
 import com.liferay.portlet.wiki.model.WikiPage;
 import com.liferay.portlet.wiki.model.WikiPageConstants;
@@ -652,6 +650,7 @@ public class WikiPageServiceImpl extends WikiPageServiceBaseImpl {
 
 					if (latestPage == null) {
 						value = WikiUtil.convert(page, null, null, null);
+
 						value = WikiUtil.escapeContent(value);
 					}
 					else {
