@@ -606,7 +606,7 @@ public class WikiPageServiceImpl extends WikiPageServiceBaseImpl {
 			long companyId, String name, String description, String type,
 			double version, String displayStyle, String feedURL,
 			String entryURL, List<WikiPage> pages, boolean diff, Locale locale)
-		throws SystemException {
+		throws PortalException, SystemException {
 
 		SyndFeed syndFeed = new SyndFeedImpl();
 
@@ -649,7 +649,9 @@ public class WikiPageServiceImpl extends WikiPageServiceBaseImpl {
 					String value = null;
 
 					if (latestPage == null) {
-						value = page.getContent();
+						value = WikiUtil.convert(page, null, null, null);
+
+						value = WikiUtil.escapeContent(value);
 					}
 					else {
 						value = getPageDiff(
