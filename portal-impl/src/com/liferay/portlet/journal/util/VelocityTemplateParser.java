@@ -68,10 +68,10 @@ public class VelocityTemplateParser extends BaseTemplateParser {
 		return null;
 	}
 
-	protected String getJournalTemplatesPath() {
+	protected String getTemplatesPath() {
 		StringBundler sb = new StringBundler(5);
 
-		sb.append(TemplateConstants.JOURNAL_SEPARATOR);
+		sb.append(TemplateConstants.TEMPLATES_SEPARATOR);
 		sb.append(StringPool.SLASH);
 		sb.append(getCompanyId());
 		sb.append(StringPool.SLASH);
@@ -183,7 +183,7 @@ public class VelocityTemplateParser extends BaseTemplateParser {
 
 		super.populateTemplateContext(templateContext);
 
-		templateContext.put("journalTemplatesPath", getJournalTemplatesPath());
+		templateContext.put("journalTemplatesPath", getTemplatesPath());
 
 		String randomNamespace =
 			PwdGenerator.getPassword(PwdGenerator.KEY3, 4) +

@@ -40,6 +40,8 @@ public interface TemplateConstants {
 	public static final String TEMPLATE_RESOURCE_UUID_PREFIX =
 		"TEMPLATE_RESOURCE_UUID";
 
+	public static final String TEMPLATES_SEPARATOR = "_TEMPLATES_CONTEXT_";
+
 	public static final String THEME_LOADER_SEPARATOR =
 		"_THEME_LOADER_CONTEXT_";
 

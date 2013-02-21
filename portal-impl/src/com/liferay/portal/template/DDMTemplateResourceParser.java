@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -16,19 +16,23 @@ package com.liferay.portal.template;
 
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.template.JournalTemplateResource;
+import com.liferay.portal.kernel.template.DDMTemplateResource;
 import com.liferay.portal.kernel.template.TemplateConstants;
 import com.liferay.portal.kernel.template.TemplateException;
 import com.liferay.portal.kernel.template.TemplateResource;
 import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.dynamicdatamapping.NoSuchTemplateException;
-import com.liferay.portlet.journal.model.JournalTemplate;
-import com.liferay.portlet.journal.service.JournalTemplateLocalServiceUtil;
+import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
+import com.liferay.portlet.dynamicdatamapping.model.DDMTemplate;
+import com.liferay.portlet.dynamicdatamapping.service.DDMTemplateServiceUtil;
 
 /**
  * @author Tina Tian
+ * @author Juan Fernández
+ *
  */
 public class DDMTemplateResourceParser implements TemplateResourceParser {
 
@@ -36,10 +40,18 @@ public class DDMTemplateResourceParser implements TemplateResourceParser {
 		throws TemplateException {
 
 		int pos = templateId.indexOf(
-			TemplateConstants.JOURNAL_SEPARATOR + StringPool.SLASH);
+			TemplateConstants.TEMPLATES_SEPARATOR + StringPool.SLASH);
 
 		if (pos == -1) {
-			return null;
+
+			// Backwards compatibility
+
+			pos = templateId.indexOf(
+				TemplateConstants.JOURNAL_SEPARATOR + StringPool.SLASH);
+
+			if (pos == -1) {
+				return null;
+			}
 		}
 
 		try {
@@ -49,20 +61,44 @@ public class DDMTemplateResourceParser implements TemplateResourceParser {
 
 			long companyId = GetterUtil.getLong(templateId.substring(x + 1, y));
 			long groupId = GetterUtil.getLong(templateId.substring(y + 1, z));
-			String journalTemplateId = templateId.substring(z + 1);
+			String ddmTemplateKey = templateId.substring(z + 1);
 
 			if (_log.isDebugEnabled()) {
 				_log.debug(
 					"Loading {companyId=" + companyId + ", groupId=" +
-						groupId + ", templateId=" + journalTemplateId + "}");
+						groupId + ", ddmTemplateKey=" + ddmTemplateKey + "}");
 			}
 
-			JournalTemplate journalTemplate =
-				JournalTemplateLocalServiceUtil.getTemplate(
-					groupId, journalTemplateId);
+			long classNameId = 0;
+			DDMTemplate ddmTemplate = null;
 
-			return new JournalTemplateResource(
-				journalTemplateId, journalTemplate);
+			try {
+
+				// Look for a generic template
+
+				ddmTemplate =
+					DDMTemplateServiceUtil.getTemplate(
+						groupId, classNameId, ddmTemplateKey);
+			}
+			catch (NoSuchTemplateException nste) {
+
+				// Look for a structure template
+
+				classNameId = PortalUtil.getClassNameId(DDMStructure.class);
+
+				ddmTemplate =
+					DDMTemplateServiceUtil.getTemplate(
+						groupId, classNameId, ddmTemplateKey);
+			}
+
+			if (ddmTemplate == null) {
+				return null;
+			}
+			else {
+				return new DDMTemplateResource(
+					ddmTemplate.getTemplateKey(), ddmTemplate);
+			}
+
 		}
 		catch (NoSuchTemplateException nste) {
 			return null;
