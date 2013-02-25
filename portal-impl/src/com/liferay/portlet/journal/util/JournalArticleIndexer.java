@@ -129,6 +129,17 @@ public class JournalArticleIndexer extends BaseIndexer {
 			contextQuery.addRequiredTerm("ddmTemplateKey", ddmTemplateKey);
 		}
 
+		String structureField = (String)searchContext.getAttribute(
+			"structureField");
+		String structureValue = (String)searchContext.getAttribute(
+			"structureValue");
+
+		if (Validator.isNotNull(structureField) &&
+				Validator.isNotNull(structureValue)) {
+
+			contextQuery.addRequiredTerm(structureField, structureValue);
+		}
+
 		long[] folderIds = searchContext.getFolderIds();
 
 		if ((folderIds != null) && (folderIds.length > 0)) {
