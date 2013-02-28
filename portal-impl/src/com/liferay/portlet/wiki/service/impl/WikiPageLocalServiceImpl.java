@@ -2039,7 +2039,6 @@ public class WikiPageLocalServiceImpl extends WikiPageLocalServiceBaseImpl {
 			WikiPage.class.getName(), page.getResourcePrimKey());
 
 		serviceContext.setAssetTagNames(assetTagNames);
-
 	}
 
 	protected String replaceStyles(String html) {
