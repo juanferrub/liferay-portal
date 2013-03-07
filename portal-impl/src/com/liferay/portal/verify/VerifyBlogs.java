@@ -25,14 +25,11 @@ import com.liferay.portal.model.Company;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.service.CompanyLocalServiceUtil;
 import com.liferay.portal.service.GroupLocalServiceUtil;
-import com.liferay.portal.service.ServiceContext;
-import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.blogs.model.BlogsEntry;
 import com.liferay.portlet.blogs.service.BlogsEntryLocalServiceUtil;
 import com.liferay.portlet.blogs.template.BlogsPortletDisplayTemplateHandler;
 import com.liferay.portlet.dynamicdatamapping.model.DDMTemplate;
-import com.liferay.portlet.dynamicdatamapping.model.DDMTemplateConstants;
 import com.liferay.portlet.dynamicdatamapping.service.DDMTemplateLocalServiceUtil;
 import com.liferay.util.ContentUtil;
 
@@ -46,8 +43,7 @@ import java.util.Map;
  */
 public class VerifyBlogs extends VerifyProcess {
 
-	protected void checkDefaultkDisplayTemplates() throws Exception {
-
+	protected void checkDefaultDisplayTemplates() throws Exception {
 		long classNameId = PortalUtil.getClassNameId(
 			BlogsEntry.class.getName());
 
@@ -61,18 +57,21 @@ public class VerifyBlogs extends VerifyProcess {
 
 		for (Company company : companies) {
 			long companyId = company.getCompanyId();
+
 			Group group = GroupLocalServiceUtil.getCompanyGroup(companyId);
-			long groupId = group.getGroupId();
-			long userId = UserLocalServiceUtil.getDefaultUserId(companyId);
-
-			ServiceContext serviceContext = new ServiceContext();
-
-			serviceContext.setScopeGroupId(groupId);
-			serviceContext.setUserId(userId);
 
 			for (Element templateElement : templateElements) {
 				String templateKey = templateElement.elementText(
 					"template-key");
+
+				DDMTemplate ddmTemplate =
+					DDMTemplateLocalServiceUtil.fetchTemplate(
+						group.getGroupId(), classNameId, templateKey);
+
+				if (ddmTemplate == null) {
+					continue;
+				}
+
 				String name = templateElement.elementText("name");
 				String description = templateElement.elementText("description");
 				String language = templateElement.elementText("language");
@@ -95,27 +94,13 @@ public class VerifyBlogs extends VerifyProcess {
 
 				String script = ContentUtil.get(scriptFileName);
 
-				DDMTemplate ddmTemplate =
-					DDMTemplateLocalServiceUtil.fetchTemplate(
-						group.getGroupId(), classNameId, templateKey);
+				ddmTemplate.setNameMap(nameMap);
+				ddmTemplate.setDescriptionMap(descriptionMap);
+				ddmTemplate.setLanguage(language);
+				ddmTemplate.setScript(script);
+				ddmTemplate.setCacheable(cacheable);
 
-				if (ddmTemplate == null) {
-					DDMTemplateLocalServiceUtil.addTemplate(
-						userId, groupId, classNameId, 0, templateKey, nameMap,
-						descriptionMap,
-						DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY, null,
-						language, script, cacheable, false, null, null,
-						serviceContext);
-				}
-				else {
-					ddmTemplate.setNameMap(nameMap);
-					ddmTemplate.setDescriptionMap(descriptionMap);
-					ddmTemplate.setLanguage(language);
-					ddmTemplate.setScript(script);
-					ddmTemplate.setCacheable(cacheable);
-
-					DDMTemplateLocalServiceUtil.updateDDMTemplate(ddmTemplate);
-				}
+				DDMTemplateLocalServiceUtil.updateDDMTemplate(ddmTemplate);
 			}
 		}
 	}
@@ -144,7 +129,7 @@ public class VerifyBlogs extends VerifyProcess {
 			}
 		}
 
-		checkDefaultkDisplayTemplates();
+		checkDefaultDisplayTemplates();
 
 		if (_log.isDebugEnabled()) {
 			_log.debug("Assets verified for entries");
