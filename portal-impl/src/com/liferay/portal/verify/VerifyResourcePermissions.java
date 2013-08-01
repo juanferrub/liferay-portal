@@ -116,10 +116,32 @@ public class VerifyResourcePermissions extends VerifyProcess {
 	}
 
 	protected void verifyLayout(Role role) throws Exception {
+		if (_log.isInfoEnabled()) {
+			_log.info(
+				"Verify layouts for role " + role.getRoleId() +
+				":" + role.getName() + " on company " + role.getCompanyId());
+		}
+
 		List<Layout> layouts = LayoutLocalServiceUtil.getNoPermissionLayouts(
 			role.getRoleId());
 
+		int total = layouts.size();
+		int delta = 0;
+		int index = 0;
+
+		if (total > 5000) {
+			delta = total / 20;
+		}
+		else if (total > 100) {
+			delta = total / 10;
+		}
+		delta = Math.max(delta,  10);
+
 		for (Layout layout : layouts) {
+			if ((index++ % delta == 0) && _log.isInfoEnabled()) {
+				_log.info("Processed " + index + "/" + total);
+			}
+
 			verifyModel(
 				role.getCompanyId(), Layout.class.getName(), layout.getPlid(),
 				role, 0);
@@ -179,23 +201,56 @@ public class VerifyResourcePermissions extends VerifyProcess {
 				resourcePermission);
 		}
 
+		/*
 		if (_log.isInfoEnabled() &&
 			((resourcePermission.getResourcePermissionId() % 100) == 0)) {
 
 			_log.info("Processed 100 resource permissions for " + name);
 		}
+		*/
 	}
 
 	protected void verifyModel(
 			Role role, String name, String modelName, String pkColumnName)
 		throws Exception {
 
+		if (_log.isInfoEnabled()) {
+			_log.info(
+				"Verify model " + modelName + " for role " + role.getRoleId() +
+				":" + role.getName() + " on company " + role.getCompanyId());
+		}
+
 		Connection con = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 
+		int total = 0;
+		int delta = 0;
+		int index = 0;
+
 		try {
 			con = DataAccess.getUpgradeOptimizedConnection();
+
+			ps = con.prepareStatement(
+				"select count(*) AS COUNT_VALUE " +
+					"from " + modelName + " where companyId = " +
+						role.getCompanyId());
+
+			rs = ps.executeQuery();
+
+			if (rs.next()) {
+				total = rs.getInt("COUNT_VALUE");
+			}
+
+			if (total > 5000) {
+				delta = total / 20;
+			}
+			else if (total > 100) {
+				delta = total / 10;
+			}
+			delta = Math.max(delta, 10);
+
+			DataAccess.cleanUp(null, ps, rs);
 
 			ps = con.prepareStatement(
 				"select " + pkColumnName + ", userId AS ownerId " +
@@ -205,6 +260,10 @@ public class VerifyResourcePermissions extends VerifyProcess {
 			rs = ps.executeQuery();
 
 			while (rs.next()) {
+				if ((index++ % delta == 0) && _log.isInfoEnabled()) {
+					_log.info("Processed " + index + "/" + total);
+				}
+
 				long primKey = rs.getLong(pkColumnName);
 				long ownerId = rs.getLong("ownerId");
 
