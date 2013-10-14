@@ -3522,8 +3522,10 @@
 		</comments>
 	</library>
 	<library>
-		<file-name>lib/portal/vaadin.jar</file-name>
-		<version>6.8.12</version>
+		<file-name>lib/portal/vaadin-server.jar</file-name>
+		<file-name>lib/portal/vaadin-shared.jar</file-name>
+		<file-name>lib/portal/vaadin-shared-deps.jar</file-name>
+		<version>7.1.7</version>
 		<project-name>Vaadin</project-name>
 		<project-url>http://vaadin.com</project-url>
 		<licenses>
@@ -3534,6 +3536,19 @@
 			</license>
 		</licenses>
 	</library>
+	<library>
+		<file-name>lib/portal/jsoup.jar</file-name>
+		<version>1.6.3</version>
+		<project-name>jsoup</project-name>
+		<project-url>http://http://jsoup.org</project-url>
+		<licenses>
+			<license>
+				<license-name>MIT License</license-name>
+				<license-url>http://opensource.org/licenses/MIT</license-url>
+			</license>
+		</licenses>
+	</library>
+
 	<library>
 		<file-name>lib/portal/velocity.jar</file-name>
 		<version>1.6.4</version>
