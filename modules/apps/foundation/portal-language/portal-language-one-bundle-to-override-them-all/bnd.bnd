@@ -1,0 +1,8 @@
+Bundle-Name: Liferay Portal Onebundle Language Override
+Bundle-SymbolicName: com.liferay.portal.language.onebundle
+Bundle-Version: 1.0.0
+Liferay-Releng-Module-Group-Description:
+Liferay-Releng-Module-Group-Title:
+-includeresource:\
+	content=src/main/resources/content,\
+	@com.liferay.osgi.service.tracker.collections-*.jar
