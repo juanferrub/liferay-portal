@@ -1,9 +1,0 @@
-<definition>
-	<command name="uploadTempFile">
-		<execute selenium="waitForVisible" />
-
-		<execute selenium="mouseOver" />
-
-		<execute selenium="uploadTempFile" />
-	</command>
-</definition>

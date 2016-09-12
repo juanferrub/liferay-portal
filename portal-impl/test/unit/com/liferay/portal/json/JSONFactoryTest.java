@@ -14,12 +14,10 @@
 
 package com.liferay.portal.json;
 
-import com.liferay.portal.dao.orm.common.EntityCacheImpl;
-import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
-import com.liferay.portal.kernel.json.JSONIncludesManagerUtil;
 import com.liferay.portal.kernel.json.JSONSerializer;
 import com.liferay.portal.kernel.test.AssertUtils;
+import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 
@@ -42,12 +40,6 @@ public class JSONFactoryTest {
 		JSONFactoryUtil jsonFactoryUtil = new JSONFactoryUtil();
 
 		jsonFactoryUtil.setJSONFactory(new JSONFactoryImpl());
-
-		JSONIncludesManagerUtil jsonIncludesManagerUtil =
-			new JSONIncludesManagerUtil();
-
-		jsonIncludesManagerUtil.setJSONIncludesManager(
-			new JSONIncludesManagerImpl());
 	}
 
 	@Test
@@ -56,9 +48,7 @@ public class JSONFactoryTest {
 
 		String json = removeQuotes(JSONFactoryUtil.looseSerialize(fooBean));
 
-		Assert.assertEquals(
-			"{class:com.liferay.portal.json.FooBean,name:bar,value:173}",
-			json);
+		Assert.assertEquals("{name:bar,value:173}", json);
 	}
 
 	@Test
@@ -67,10 +57,26 @@ public class JSONFactoryTest {
 
 		String json = removeQuotes(JSONFactoryUtil.looseSerialize(fooBean1));
 
-		Assert.assertEquals(
-			"{class:com.liferay.portal.json.FooBean1,collection:[element]," +
-				"value:173}",
-			json);
+		Assert.assertEquals("{collection:[element],value:173}", json);
+	}
+
+	@Test
+	public void testDeserializeLongArrayToIntegerArray() {
+		Map<String, long[]> map = new HashMap<>();
+
+		map.put("key", new long[] {1L, 2L, 3L, 4L, 5L});
+
+		String json = JSONFactoryUtil.serialize(map);
+
+		Object object = JSONFactoryUtil.deserialize(json);
+
+		Assert.assertTrue(object instanceof Map);
+
+		Map<String, long[]> deserializedMap = (Map<String, long[]>)object;
+
+		Object values = deserializedMap.get("key");
+
+		Assert.assertTrue(values instanceof Integer[]);
 	}
 
 	@Test
@@ -132,73 +138,58 @@ public class JSONFactoryTest {
 
 	@Test
 	public void testLooseDeserialize() {
-		try {
-			JSONFactoryUtil.looseDeserialize(
-				"{\"class\":\"" + EntityCacheUtil.class.getName() + "\"}}");
+		Object object = JSONFactoryUtil.looseDeserialize(
+			"{\"class\":\"" + JSONFactoryUtil.class.getName() + "\"}");
 
-			Assert.fail();
-		}
-		catch (Exception e) {
-		}
+		Assert.assertTrue(object instanceof Map);
 
-		try {
-			Object object = JSONFactoryUtil.looseDeserialize(
-				"{\"class\":\"java.lang.Thread\"}}");
+		object = JSONFactoryUtil.looseDeserialize(
+			"{\"class\":\"java.lang.Thread\"}");
 
-			Assert.assertEquals(Thread.class, object.getClass());
-		}
-		catch (Exception e) {
-			Assert.fail(e.toString());
-		}
+		Assert.assertTrue(object instanceof Map);
 	}
 
 	@Test
 	public void testLooseDeserializeSafe() {
-		Object object = JSONFactoryUtil.looseDeserializeSafe(
-			"{\"class\":\"java.lang.Thread\"}}");
+		Object object = JSONFactoryUtil.looseDeserialize(
+			"{\"class\":\"java.lang.Thread\"}");
 
 		Assert.assertEquals(HashMap.class, object.getClass());
 
-		object = JSONFactoryUtil.looseDeserializeSafe(
-			"{\"\u0063lass\":\"java.lang.Thread\"}}");
+		object = JSONFactoryUtil.looseDeserialize(
+			"{\"\u0063lass\":\"java.lang.Thread\"}");
 
 		Assert.assertEquals(HashMap.class, object.getClass());
 		Assert.assertTrue(((Map<?, ?>)object).containsKey("class"));
 
-		try {
-			JSONFactoryUtil.looseDeserializeSafe(
-				"{\"class\":\"" + EntityCacheUtil.class.getName() + "\"}}");
-		}
-		catch (Exception e) {
-			Assert.fail(e.toString());
-		}
+		JSONFactoryUtil.looseDeserialize(
+			"{\"class\":\"" + JSONFactoryUtil.class.getName() + "\"}");
 
-		Map<?, ?> map = (Map<?, ?>)JSONFactoryUtil.looseDeserializeSafe(
-			"{\"class\":\"" + EntityCacheUtil.class.getName() +
+		Map<?, ?> map = (Map<?, ?>)JSONFactoryUtil.looseDeserialize(
+			"{\"class\":\"" + JSONFactoryUtil.class.getName() +
 				"\",\"foo\": \"boo\"}");
 
 		Assert.assertNotNull(map);
 		Assert.assertEquals(2, map.size());
 		Assert.assertEquals(
-			"com.liferay.portal.kernel.dao.orm.EntityCacheUtil",
-			map.get("class"));
+			"com.liferay.portal.kernel.json.JSONFactoryUtil", map.get("class"));
 		Assert.assertEquals("boo", map.get("foo"));
 
-		map = (Map<?, ?>)JSONFactoryUtil.looseDeserializeSafe(
-			"{\"class\":\"" + EntityCacheUtil.class.getName() +
-				"\",\"foo\": \"boo\",\"entityCache\":{\"class\":\"" +
-					EntityCacheImpl.class.getName() + "\"}}");
+		map = (Map<?, ?>)JSONFactoryUtil.looseDeserialize(
+			"{\"class\":\"" + JSONFactoryUtil.class.getName() +
+				"\",\"foo\": \"boo\",\"jsonFactory\":{\"class\":\"" +
+					JSONFactoryImpl.class.getName() + "\"}}");
 
 		Assert.assertNotNull(map);
 		Assert.assertEquals(3, map.size());
-		Assert.assertEquals( EntityCacheUtil.class.getName(), map.get("class"));
+		Assert.assertEquals(JSONFactoryUtil.class.getName(), map.get("class"));
 		Assert.assertEquals("boo", map.get("foo"));
 
-		map = (Map<?, ?>)map.get("entityCache");
+		map = (Map<?, ?>)map.get("jsonFactory");
 
 		Assert.assertNotNull(map);
 		Assert.assertEquals(1, map.size());
-		Assert.assertEquals(EntityCacheImpl.class.getName(), map.get("class"));
+		Assert.assertEquals(JSONFactoryImpl.class.getName(), map.get("class"));
 	}
 
 	@Test
@@ -253,16 +244,7 @@ public class JSONFactoryTest {
 
 		initializePrimitiveArrays(fooBean3);
 
-		String json = null;
-
-		try {
-			json = JSONFactoryUtil.serialize(fooBean3);
-		}
-		catch (IllegalArgumentException iae) {
-			Assert.fail("Unable to serialize " + fooBean3);
-		}
-
-		return json;
+		return JSONFactoryUtil.serialize(fooBean3);
 	}
 
 	protected String buildPrimitiveArraysSerializableJSON() {
@@ -270,16 +252,7 @@ public class JSONFactoryTest {
 
 		initializePrimitiveArrays(fooBean4);
 
-		String json = null;
-
-		try {
-			json = JSONFactoryUtil.serialize(fooBean4);
-		}
-		catch (IllegalArgumentException iae) {
-			Assert.fail("Unable to serialize " + fooBean4);
-		}
-
-		return json;
+		return JSONFactoryUtil.serialize(fooBean4);
 	}
 
 	protected String buildPrimitivesJSON() {
@@ -287,16 +260,7 @@ public class JSONFactoryTest {
 
 		initializePrimitives(fooBean5);
 
-		String json = null;
-
-		try {
-			json = JSONFactoryUtil.serialize(fooBean5);
-		}
-		catch (IllegalArgumentException iae) {
-			Assert.fail("Unable to serialize " + fooBean5);
-		}
-
-		return json;
+		return JSONFactoryUtil.serialize(fooBean5);
 	}
 
 	protected String buildPrimitivesSerializableJSON() {
@@ -304,16 +268,7 @@ public class JSONFactoryTest {
 
 		initializePrimitives(fooBean6);
 
-		String json = null;
-
-		try {
-			json = JSONFactoryUtil.serialize(fooBean6);
-		}
-		catch (IllegalArgumentException iae) {
-			Assert.fail("Unable to serialize " + fooBean6);
-		}
-
-		return json;
+		return JSONFactoryUtil.serialize(fooBean6);
 	}
 
 	protected void checkJSONPrimitiveArrays(String json) {
@@ -359,7 +314,7 @@ public class JSONFactoryTest {
 	}
 
 	protected String removeQuotes(String string) {
-		return StringUtil.replace(string, StringPool.QUOTE, StringPool.BLANK);
+		return StringUtil.replace(string, CharPool.QUOTE, StringPool.BLANK);
 	}
 
 	private static final double[] _DOUBLE_ARRAY = {1.2345, 2.3456, 5.6789};

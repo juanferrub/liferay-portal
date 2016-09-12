@@ -14,83 +14,27 @@
 
 package com.liferay.portal.convert;
 
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.util.MaintenanceUtil;
-
-import org.apache.commons.lang.time.StopWatch;
-
 /**
- * @author Alexander Chow
+ * @author Iván Zaera
  */
-public abstract class ConvertProcess {
+public interface ConvertProcess {
 
-	public void convert() throws ConvertException {
-		try {
-			if (getPath() != null) {
-				return;
-			}
+	public void convert() throws ConvertException;
 
-			StopWatch stopWatch = new StopWatch();
+	public String getConfigurationErrorMessage();
 
-			stopWatch.start();
+	public String getDescription();
 
-			if (_log.isInfoEnabled()) {
-				_log.info("Starting conversion for " + getClass().getName());
-			}
+	public String getParameterDescription();
 
-			doConvert();
+	public String[] getParameterNames();
 
-			if (_log.isInfoEnabled()) {
-				_log.info(
-					"Finished conversion for " + getClass().getName() + " in " +
-						stopWatch.getTime() + " ms");
-			}
-		}
-		catch (Exception e) {
-			throw new ConvertException(e);
-		}
-		finally {
-			setParameterValues(null);
+	public String getPath();
 
-			MaintenanceUtil.cancel();
-		}
-	}
+	public boolean isEnabled();
 
-	public abstract String getDescription();
+	public void setParameterValues(String[] values);
 
-	public String getParameterDescription() {
-		return null;
-	}
-
-	public String[] getParameterNames() {
-		return null;
-	}
-
-	public String[] getParameterValues() {
-		return _paramValues;
-	}
-
-	public String getPath() {
-		return null;
-	}
-
-	public abstract boolean isEnabled();
-
-	public void setParameterValues(String[] values) {
-		_paramValues = values;
-	}
-
-	/**
-	 * @throws ConvertException
-	 */
-	public void validate() throws ConvertException {
-	}
-
-	protected abstract void doConvert() throws Exception;
-
-	private static Log _log = LogFactoryUtil.getLog(ConvertProcess.class);
-
-	private String[] _paramValues = null;
+	public void validate() throws ConvertException;
 
 }

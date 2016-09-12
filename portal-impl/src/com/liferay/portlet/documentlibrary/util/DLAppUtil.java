@@ -20,7 +20,6 @@ import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.MimeTypesUtil;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 
 import java.io.File;
@@ -54,17 +53,22 @@ public class DLAppUtil {
 		return mimeType;
 	}
 
-	public static String getSanitizedFileName(String title, String extension) {
-		String fileName = StringUtil.replace(
-			title, StringPool.SLASH, StringPool.UNDERLINE);
+	public static String getSourceFileName(FileVersion fileVersion) {
+		String extension = fileVersion.getExtension();
 
-		if (Validator.isNotNull(extension) &&
-			!fileName.endsWith(StringPool.PERIOD + extension)) {
-
-			fileName += StringPool.PERIOD + extension;
+		if (Validator.isNull(extension)) {
+			return fileVersion.getTitle();
 		}
 
-		return fileName;
+		String suffix = StringPool.PERIOD + extension;
+
+		String title = fileVersion.getTitle();
+
+		if (title.endsWith(suffix)) {
+			return title;
+		}
+
+		return title + suffix;
 	}
 
 	public static boolean isMajorVersion(
@@ -75,7 +79,11 @@ public class DLAppUtil {
 		long previousVersion = GetterUtil.getLong(
 			previousFileVersion.getVersion());
 
-		return (currentVersion - previousVersion) >= 1;
+		if ((currentVersion - previousVersion) >= 1) {
+			return true;
+		}
+
+		return false;
 	}
 
 }

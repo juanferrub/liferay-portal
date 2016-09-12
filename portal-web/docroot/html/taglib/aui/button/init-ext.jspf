@@ -15,6 +15,20 @@
 --%>
 
 <%
+if (!useNamespace) {
+	namespace = StringPool.BLANK;
+}
+
+Object bodyContent = request.getAttribute("aui:button:bodyContent");
+
+String bodyContentString = StringPool.BLANK;
+
+if (bodyContent != null) {
+	bodyContentString = bodyContent.toString();
+}
+
+boolean dropdown = Validator.isNotNull(bodyContentString.trim());
+
 String escapedHREF = StringPool.BLANK;
 
 if (Validator.isNotNull(href)) {
@@ -37,7 +51,7 @@ if (useDialog && Validator.isNotNull(escapedHREF)) {
 	}
 
 	data.put("href", href);
-	data.put("title", LanguageUtil.get(request, value));
+	data.put("title", LanguageUtil.get(resourceBundle, value));
 
 	onClick = StringPool.BLANK;
 
@@ -45,6 +59,17 @@ if (useDialog && Validator.isNotNull(escapedHREF)) {
 		name = StringUtil.randomId();
 	}
 }
+
+if (Validator.isNull(id)) {
+	if (Validator.isNotNull(name)) {
+		id = name;
+	}
+	else {
+		id = StringUtil.randomId();
+	}
+}
+
+id = namespace + id;
 
 if (primary == null) {
 	if (type.equals("submit")) {
@@ -64,5 +89,9 @@ if (primary == Boolean.TRUE) {
 
 if (type.equals("cancel")) {
 	cssClass += " btn-cancel btn-default";
+}
+
+if (dropdown) {
+	cssClass += " dropdown-toggle direction-down";
 }
 %>

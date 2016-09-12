@@ -1,9 +1,0 @@
-<definition>
-	<command name="mouseMove">
-		<execute selenium="mouseMove" />
-	</command>
-
-	<command name="mouseMoveAt">
-		<execute selenium="mouseMoveAt" />
-	</command>
-</definition>

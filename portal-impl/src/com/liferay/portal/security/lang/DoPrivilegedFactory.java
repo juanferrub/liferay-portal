@@ -17,10 +17,11 @@ package com.liferay.portal.security.lang;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.security.pacl.DoPrivileged;
+import com.liferay.portal.kernel.util.AggregateClassLoader;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.ReflectionUtil;
-import com.liferay.portal.util.ClassLoaderUtil;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -30,12 +31,15 @@ import java.util.Set;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessorAdapter;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 /**
  * @author Raymond Augé
  */
 public class DoPrivilegedFactory
-	extends InstantiationAwareBeanPostProcessorAdapter {
+	extends InstantiationAwareBeanPostProcessorAdapter
+	implements ApplicationContextAware {
 
 	public static boolean isEarlyBeanReference(String beanName) {
 		return _earlyBeanReferenceNames.contains(beanName);
@@ -66,9 +70,6 @@ public class DoPrivilegedFactory
 
 		return AccessController.doPrivileged(
 			new BeanPrivilegedAction<T>(bean, interfaces));
-	}
-
-	public DoPrivilegedFactory() {
 	}
 
 	@Override
@@ -106,8 +107,8 @@ public class DoPrivilegedFactory
 			Class<?> clazz = bean.getClass();
 
 			_log.debug(
-				"Wrapping calls to bean " + beanName + " of type " +
-					clazz + " with access controller checking");
+				"Wrapping calls to bean " + beanName + " of type " + clazz +
+					" with access controller checking");
 		}
 
 		return wrap(bean);
@@ -118,6 +119,15 @@ public class DoPrivilegedFactory
 		throws BeansException {
 
 		return bean;
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext)
+		throws BeansException {
+
+		_classLoader = AggregateClassLoader.getAggregateClassLoader(
+			PortalClassLoaderUtil.getClassLoader(),
+			applicationContext.getClassLoader());
 	}
 
 	private boolean _isDoPrivileged(Class<?> beanClass) {
@@ -160,11 +170,14 @@ public class DoPrivilegedFactory
 
 	private static final String _BEAN_NAME_SUFFIX_PERSISTENCE = "Persistence";
 
-	private static Log _log = LogFactoryUtil.getLog(DoPrivilegedFactory.class);
+	private static final Log _log = LogFactoryUtil.getLog(
+		DoPrivilegedFactory.class);
 
-	private static Set<String> _earlyBeanReferenceNames = new HashSet<String>();
+	private static ClassLoader _classLoader =
+		DoPrivilegedFactory.class.getClassLoader();
+	private static final Set<String> _earlyBeanReferenceNames = new HashSet<>();
 
-	private static class BeanPrivilegedAction <T>
+	private static class BeanPrivilegedAction<T>
 		implements PrivilegedAction<T> {
 
 		public BeanPrivilegedAction(T bean, Class<?>[] interfaces) {
@@ -176,8 +189,7 @@ public class DoPrivilegedFactory
 		public T run() {
 			try {
 				return (T)ProxyUtil.newProxyInstance(
-					ClassLoaderUtil.getPortalClassLoader(), _interfaces,
-					new DoPrivilegedHandler(_bean));
+					_classLoader, _interfaces, new DoPrivilegedHandler(_bean));
 			}
 			catch (Exception e) {
 				if (_log.isWarnEnabled()) {
@@ -188,8 +200,8 @@ public class DoPrivilegedFactory
 			return _bean;
 		}
 
-		private T _bean;
-		private Class<?>[] _interfaces;
+		private final T _bean;
+		private final Class<?>[] _interfaces;
 
 	}
 

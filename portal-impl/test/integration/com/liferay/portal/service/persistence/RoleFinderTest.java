@@ -14,47 +14,49 @@
 
 package com.liferay.portal.service.persistence;
 
-import com.liferay.portal.kernel.test.ExecutionTestListeners;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.ResourceAction;
+import com.liferay.portal.kernel.model.ResourceBlock;
+import com.liferay.portal.kernel.model.ResourceBlockPermission;
+import com.liferay.portal.kernel.model.ResourcePermission;
+import com.liferay.portal.kernel.model.Role;
+import com.liferay.portal.kernel.model.RoleConstants;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.service.ResourceActionLocalServiceUtil;
+import com.liferay.portal.kernel.service.ResourceBlockLocalServiceUtil;
+import com.liferay.portal.kernel.service.ResourceBlockPermissionLocalServiceUtil;
+import com.liferay.portal.kernel.service.ResourcePermissionLocalServiceUtil;
+import com.liferay.portal.kernel.service.RoleLocalServiceUtil;
+import com.liferay.portal.kernel.service.persistence.RoleFinderUtil;
+import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.test.rule.TransactionalTestRule;
+import com.liferay.portal.kernel.test.util.RandomTestUtil;
+import com.liferay.portal.kernel.test.util.ResourceBlockPermissionTestUtil;
+import com.liferay.portal.kernel.test.util.ResourceBlockTestUtil;
+import com.liferay.portal.kernel.test.util.ResourcePermissionTestUtil;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.model.ResourceAction;
-import com.liferay.portal.model.ResourceBlock;
-import com.liferay.portal.model.ResourceBlockPermission;
-import com.liferay.portal.model.ResourcePermission;
-import com.liferay.portal.model.Role;
-import com.liferay.portal.model.RoleConstants;
-import com.liferay.portal.security.permission.ActionKeys;
-import com.liferay.portal.service.ResourceActionLocalServiceUtil;
-import com.liferay.portal.service.ResourceBlockLocalServiceUtil;
-import com.liferay.portal.service.ResourceBlockPermissionLocalServiceUtil;
-import com.liferay.portal.service.ResourcePermissionLocalServiceUtil;
-import com.liferay.portal.service.RoleLocalServiceUtil;
-import com.liferay.portal.test.TransactionalTestRule;
-import com.liferay.portal.test.listeners.MainServletExecutionTestListener;
-import com.liferay.portal.test.runners.LiferayIntegrationJUnitTestRunner;
-import com.liferay.portal.util.test.ResourceBlockPermissionTestUtil;
-import com.liferay.portal.util.test.ResourceBlockTestUtil;
-import com.liferay.portal.util.test.ResourcePermissionTestUtil;
-import com.liferay.portlet.bookmarks.model.BookmarksFolder;
+import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 /**
  * @author Alberto Chaparro
  */
-@ExecutionTestListeners(listeners = {MainServletExecutionTestListener.class})
-@RunWith(LiferayIntegrationJUnitTestRunner.class)
 public class RoleFinderTest {
 
 	@ClassRule
-	public static TransactionalTestRule transactionalTestRule =
-		new TransactionalTestRule();
+	@Rule
+	public static final AggregateTestRule aggregateTestRule =
+		new AggregateTestRule(
+			new LiferayIntegrationTestRule(), TransactionalTestRule.INSTANCE);
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {
@@ -72,17 +74,15 @@ public class RoleFinderTest {
 			_arbitraryResourceAction.getBitwiseValue(),
 			_arbitraryResourceAction.getName(), _arbitraryRole.getRoleId());
 
-		_bookmarkFolderResourceAction =
-			ResourceActionLocalServiceUtil.getResourceAction(
-				BookmarksFolder.class.getName(), ActionKeys.VIEW);
+		_modelResourceAction = getModelResourceAction();
 
 		_resourceBlock = ResourceBlockTestUtil.addResourceBlock(
-			_bookmarkFolderResourceAction.getName());
+			_modelResourceAction.getName());
 
 		_resourceBlockPermission =
 			ResourceBlockPermissionTestUtil.addResourceBlockPermission(
 				_resourceBlock.getResourceBlockId(), _arbitraryRole.getRoleId(),
-				_bookmarkFolderResourceAction.getBitwiseValue());
+				_modelResourceAction.getBitwiseValue());
 	}
 
 	@AfterClass
@@ -98,6 +98,8 @@ public class RoleFinderTest {
 
 	@Test
 	public void testFindByC_N_S_P_A() throws Exception {
+		boolean exists = false;
+
 		List<Role> roles = RoleFinderUtil.findByC_N_S_P_A(
 			_resourcePermission.getCompanyId(), _resourcePermission.getName(),
 			_resourcePermission.getScope(), _resourcePermission.getPrimKey(),
@@ -105,35 +107,60 @@ public class RoleFinderTest {
 
 		for (Role role : roles) {
 			if (role.getRoleId() == _arbitraryRole.getRoleId()) {
-				return;
+				exists = true;
+
+				break;
 			}
 		}
 
-		Assert.fail(
+		Assert.assertTrue(
 			"The method findByC_N_S_P_A should have returned the role " +
-				_arbitraryRole.getRoleId());
+				_arbitraryRole.getRoleId(),
+			exists);
 	}
 
 	@Test
 	public void testFindByR_N_A() throws Exception {
+		boolean exists = false;
+
 		List<Role> roles = RoleFinderUtil.findByR_N_A(
 			_resourceBlock.getResourceBlockId(), _resourceBlock.getName(),
-			_bookmarkFolderResourceAction.getActionId());
+			_modelResourceAction.getActionId());
 
 		for (Role role : roles) {
 			if (role.getRoleId() == _arbitraryRole.getRoleId()) {
-				return;
+				exists = true;
+
+				break;
 			}
 		}
 
-		Assert.fail(
+		Assert.assertTrue(
 			"The method findByR_N_A should have returned the role " +
-				_arbitraryRole.getRoleId());
+				_arbitraryRole.getRoleId(),
+			exists);
+	}
+
+	protected static ResourceAction getModelResourceAction()
+		throws PortalException {
+
+		String name = RandomTestUtil.randomString() + "Model";
+
+		List<String> actionIds = new ArrayList<>();
+
+		actionIds.add(ActionKeys.UPDATE);
+		actionIds.add(ActionKeys.VIEW);
+
+		ResourceActionLocalServiceUtil.checkResourceActions(
+			name, actionIds, true);
+
+		return ResourceActionLocalServiceUtil.getResourceAction(
+			name, ActionKeys.VIEW);
 	}
 
 	private static ResourceAction _arbitraryResourceAction;
 	private static Role _arbitraryRole;
-	private static ResourceAction _bookmarkFolderResourceAction;
+	private static ResourceAction _modelResourceAction;
 	private static ResourceBlock _resourceBlock;
 	private static ResourceBlockPermission _resourceBlockPermission;
 	private static ResourcePermission _resourcePermission;

@@ -58,9 +58,10 @@ public class BaseBodyTagSupport extends TagSupport {
 
 	public StringBundler getBodyContentAsStringBundler() {
 		if (!(this instanceof BodyTag)) {
+			Class<?> clazz = getClass();
+
 			throw new RuntimeException(
-				getClass().getName() + " must implement " +
-					BodyTag.class.getName());
+				clazz.getName() + " must implement " + BodyTag.class.getName());
 		}
 
 		BodyContent bodyContent = getBodyContent();
@@ -114,6 +115,7 @@ public class BaseBodyTagSupport extends TagSupport {
 
 	protected BodyContent bodyContent;
 
-	private static Log _log = LogFactoryUtil.getLog(BaseBodyTagSupport.class);
+	private static final Log _log = LogFactoryUtil.getLog(
+		BaseBodyTagSupport.class);
 
 }

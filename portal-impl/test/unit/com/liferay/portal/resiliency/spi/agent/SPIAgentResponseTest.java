@@ -14,24 +14,24 @@
 
 package com.liferay.portal.resiliency.spi.agent;
 
+import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.resiliency.PortalResiliencyException;
 import com.liferay.portal.kernel.servlet.BufferCacheServletResponse;
 import com.liferay.portal.kernel.servlet.MetaInfoCacheServletResponse;
 import com.liferay.portal.kernel.servlet.StubHttpServletResponse;
-import com.liferay.portal.kernel.test.CodeCoverageAssertor;
+import com.liferay.portal.kernel.test.rule.CodeCoverageAssertor;
 import com.liferay.portal.kernel.util.KeyValuePair;
 import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.ThreadLocalDistributor;
-import com.liferay.portal.model.Layout;
-import com.liferay.portal.model.Portlet;
+import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.model.impl.LayoutImpl;
 import com.liferay.portal.model.impl.PortletImpl;
 import com.liferay.portal.util.PortalImpl;
-import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PropsImpl;
-import com.liferay.portal.util.WebKeys;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -63,8 +63,8 @@ import org.springframework.mock.web.MockHttpServletResponse;
 public class SPIAgentResponseTest {
 
 	@ClassRule
-	public static CodeCoverageAssertor codeCoverageAssertor =
-		new CodeCoverageAssertor();
+	public static final CodeCoverageAssertor codeCoverageAssertor =
+		CodeCoverageAssertor.INSTANCE;
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {
@@ -205,9 +205,8 @@ public class SPIAgentResponseTest {
 
 		// Portal resiliency action, byte model output, native buffer
 
-		byte[] byteArray = new byte[] {
-			(byte)0, (byte)1, (byte)2, (byte)3, (byte)4, (byte)5
-		};
+		byte[] byteArray =
+			new byte[] {(byte)0, (byte)1, (byte)2, (byte)3, (byte)4, (byte)5};
 
 		ByteBuffer byteBuffer = ByteBuffer.allocateDirect(byteArray.length);
 
@@ -356,7 +355,7 @@ public class SPIAgentResponseTest {
 		spiAgentResponse.portalResiliencyResponse = true;
 
 		Map<String, Serializable> distributedRequestAttributes =
-			new HashMap<String, Serializable>();
+			new HashMap<>();
 
 		distributedRequestAttributes.put(
 			RequestAttributes.ATTRIBUTE_1, RequestAttributes.ATTRIBUTE_1);
@@ -366,8 +365,7 @@ public class SPIAgentResponseTest {
 		spiAgentResponse.distributedRequestAttributes =
 			distributedRequestAttributes;
 
-		Map<String, Serializable> deltaSessionAttributes =
-			new HashMap<String, Serializable>();
+		Map<String, Serializable> deltaSessionAttributes = new HashMap<>();
 
 		deltaSessionAttributes.put(_SESSION_ATTRIBUTE_1, _SESSION_ATTRIBUTE_1);
 		deltaSessionAttributes.put(_SESSION_ATTRIBUTE_2, _SESSION_ATTRIBUTE_2);
@@ -449,13 +447,17 @@ public class SPIAgentResponseTest {
 			new StubHttpServletResponse() {
 
 				@Override
+				public void flushBuffer() throws IOException {
+					throw ioException;
+				}
+
+				@Override
 				public boolean isCommitted() {
 					return false;
 				}
 
 				@Override
-				public void flushBuffer() throws IOException {
-					throw ioException;
+				public void reset() {
 				}
 
 				@Override
@@ -511,7 +513,7 @@ public class SPIAgentResponseTest {
 
 	private static final String _SESSION_ATTRIBUTE_3 = "SESSION_ATTRIBUTE_3";
 
-	private static ThreadLocal<String> _threadLocal = new ThreadLocal<String>();
+	private static final ThreadLocal<String> _threadLocal = new ThreadLocal<>();
 
 	private MockHttpServletRequest _mockHttpServletRequest;
 

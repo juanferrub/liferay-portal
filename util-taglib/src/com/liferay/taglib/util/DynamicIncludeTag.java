@@ -14,23 +14,13 @@
 
 package com.liferay.taglib.util;
 
-import com.liferay.kernel.servlet.taglib.DynamicInclude;
-import com.liferay.kernel.servlet.taglib.DynamicIncludeUtil;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.servlet.taglib.DynamicIncludeUtil;
 import com.liferay.taglib.TagSupport;
+import com.liferay.taglib.servlet.PipingServletResponse;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-
-import java.util.List;
-
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspWriter;
 
 /**
  * @author Carlos Sierra Andrés
@@ -39,37 +29,31 @@ public class DynamicIncludeTag extends TagSupport {
 
 	@Override
 	public int doEndTag() throws JspException {
-		List<DynamicInclude> dynamicIncludes =
-			DynamicIncludeUtil.getDynamicIncludes(getKey());
-
-		if ((dynamicIncludes != null) && !dynamicIncludes.isEmpty()) {
-			for (DynamicInclude dynamicInclude : dynamicIncludes) {
-				try {
-					dynamicInclude.include(getRequest(), getResponse());
-				}
-				catch (Exception e) {
-					_log.error(e, e);
-				}
-			}
-		}
+		DynamicIncludeUtil.include(
+			getRequest(), getResponse(), getKey(), _ascendingPriority);
 
 		return super.doEndTag();
 	}
 
 	@Override
 	public int doStartTag() {
-		List<DynamicInclude> dynamicIncludes =
-			DynamicIncludeUtil.getDynamicIncludes(getKey());
-
-		if ((dynamicIncludes == null) || dynamicIncludes.isEmpty()) {
+		if (!DynamicIncludeUtil.hasDynamicInclude(getKey())) {
 			return SKIP_BODY;
 		}
 
 		return EVAL_BODY_INCLUDE;
 	}
 
+	public boolean getAscendingPriority() {
+		return _ascendingPriority;
+	}
+
 	public String getKey() {
 		return _key;
+	}
+
+	public void setAscendingPriority(boolean ascendingPriority) {
+		_ascendingPriority = ascendingPriority;
 	}
 
 	public void setKey(String key) {
@@ -81,35 +65,12 @@ public class DynamicIncludeTag extends TagSupport {
 	}
 
 	protected HttpServletResponse getResponse() {
-		HttpServletResponse httpServletResponse =
-			(HttpServletResponse)pageContext.getResponse();
-
-		return new HttpServletResponseWrapper(httpServletResponse) {
-
-			@Override
-			public ServletOutputStream getOutputStream() {
-				return new ServletOutputStream() {
-
-					@Override
-					public void write(int b) throws IOException {
-						JspWriter jspWriter = pageContext.getOut();
-
-						jspWriter.write(b);
-					}
-
-				};
-			}
-
-			@Override
-			public PrintWriter getWriter() {
-				return new PrintWriter(pageContext.getOut(), true);
-			}
-
-		};
+		return new PipingServletResponse(
+			(HttpServletResponse)pageContext.getResponse(),
+			pageContext.getOut());
 	}
 
-	private static Log _log = LogFactoryUtil.getLog(DynamicIncludeTag.class);
-
+	private boolean _ascendingPriority = true;
 	private String _key;
 
 }

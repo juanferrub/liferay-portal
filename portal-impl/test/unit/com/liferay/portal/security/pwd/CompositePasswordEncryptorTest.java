@@ -14,6 +14,8 @@
 
 package com.liferay.portal.security.pwd;
 
+import com.liferay.portal.kernel.security.pwd.PasswordEncryptor;
+import com.liferay.portal.kernel.security.pwd.PasswordEncryptorUtil;
 import com.liferay.portal.kernel.util.DigesterUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.util.DigesterImpl;
@@ -35,7 +37,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 /**
  * @author Tomas Polesovsky
  */
-@PowerMockIgnore({"javax.crypto.*" })
+@PowerMockIgnore("javax.crypto.*")
 @PrepareForTest(PropsUtil.class)
 @RunWith(PowerMockRunner.class)
 public class CompositePasswordEncryptorTest extends PowerMockito {
@@ -55,8 +57,7 @@ public class CompositePasswordEncryptorTest extends PowerMockito {
 		compositePasswordEncryptor.setDefaultPasswordEncryptor(
 			new DefaultPasswordEncryptor());
 
-		List<PasswordEncryptor> passwordEncryptors =
-			new ArrayList<PasswordEncryptor>();
+		List<PasswordEncryptor> passwordEncryptors = new ArrayList<>();
 
 		passwordEncryptors.add(new BCryptPasswordEncryptor());
 		passwordEncryptors.add(new CryptPasswordEncryptor());
@@ -98,10 +99,9 @@ public class CompositePasswordEncryptorTest extends PowerMockito {
 			"$2a$12$2dD/NrqCEBlVgFEkkFCbzOll2a9vrdl8tTTqGosm26wJK1eCtsjnO");
 	}
 
-	@SuppressWarnings("deprecation")
 	@Test
 	public void testEncryptCRYPT() throws Exception {
-		String algorithm = PasswordEncryptorUtil.TYPE_CRYPT;
+		String algorithm = PasswordEncryptorUtil.TYPE_UFC_CRYPT;
 
 		testEncrypt(algorithm);
 

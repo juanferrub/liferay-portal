@@ -15,15 +15,15 @@
 package com.liferay.portal.verify;
 
 import com.liferay.portal.kernel.dao.db.DB;
-import com.liferay.portal.kernel.dao.db.DBFactoryUtil;
-import com.liferay.portal.kernel.dao.jdbc.DataAccess;
+import com.liferay.portal.kernel.dao.db.DBManagerUtil;
+import com.liferay.portal.kernel.dao.db.DBType;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.LoggingTimer;
 import com.liferay.portal.kernel.util.ReleaseInfo;
 import com.liferay.portal.kernel.util.StringBundler;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -35,21 +35,14 @@ import java.sql.SQLException;
 public class VerifyOracle extends VerifyProcess {
 
 	protected void alterVarchar2Columns() throws Exception {
-		int buildNumber = getBuildNumber();
-
-		Connection con = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-
-		try {
-			con = DataAccess.getUpgradeOptimizedConnection();
-
-			ps = con.prepareStatement(
+		try (LoggingTimer loggingTimer = new LoggingTimer();
+			PreparedStatement ps = connection.prepareStatement(
 				"select table_name, column_name, data_length from " +
 					"user_tab_columns where data_type = 'VARCHAR2' and " +
 						"char_used = 'B'");
+			ResultSet rs = ps.executeQuery()) {
 
-			rs = ps.executeQuery();
+			int buildNumber = getBuildNumber();
 
 			while (rs.next()) {
 				String tableName = rs.getString(1);
@@ -103,18 +96,13 @@ public class VerifyOracle extends VerifyProcess {
 				}
 			}
 		}
-		finally {
-			DataAccess.cleanUp(con, ps, rs);
-		}
 	}
 
 	@Override
 	protected void doVerify() throws Exception {
-		DB db = DBFactoryUtil.getDB();
+		DB db = DBManagerUtil.getDB();
 
-		String dbType = db.getType();
-
-		if (!dbType.equals(DB.TYPE_ORACLE)) {
+		if (db.getDBType() != DBType.ORACLE) {
 			return;
 		}
 
@@ -137,6 +125,6 @@ public class VerifyOracle extends VerifyProcess {
 		75, 100, 150, 200, 255, 500, 1000, 1024, 2000, 4000
 	};
 
-	private static Log _log = LogFactoryUtil.getLog(VerifyOracle.class);
+	private static final Log _log = LogFactoryUtil.getLog(VerifyOracle.class);
 
 }

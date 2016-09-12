@@ -15,7 +15,9 @@
 package com.liferay.portal.deploy.auto;
 
 import com.liferay.portal.deploy.DeployUtil;
+import com.liferay.portal.kernel.deploy.auto.AutoDeployException;
 import com.liferay.portal.kernel.deploy.auto.AutoDeployer;
+import com.liferay.portal.kernel.deploy.auto.context.AutoDeploymentContext;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
@@ -24,6 +26,8 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.tools.deploy.ThemeDeployer;
 import com.liferay.portal.util.PrefsPropsUtil;
 import com.liferay.portal.util.PropsValues;
+
+import java.io.File;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,8 +57,11 @@ public class ThemeAutoDeployer extends ThemeDeployer implements AutoDeployer {
 			tomcatLibDir = PrefsPropsUtil.getString(
 				PropsKeys.AUTO_DEPLOY_TOMCAT_LIB_DIR,
 				PropsValues.AUTO_DEPLOY_TOMCAT_LIB_DIR);
+			wildflyPrefix = PrefsPropsUtil.getString(
+				PropsKeys.AUTO_DEPLOY_WILDFLY_PREFIX,
+				PropsValues.AUTO_DEPLOY_WILDFLY_PREFIX);
 
-			List<String> jars = new ArrayList<String>();
+			List<String> jars = new ArrayList<>();
 
 			addExtJar(jars, "ext-util-bridges.jar");
 			addExtJar(jars, "ext-util-java.jar");
@@ -72,6 +79,40 @@ public class ThemeAutoDeployer extends ThemeDeployer implements AutoDeployer {
 		}
 	}
 
-	private static Log _log = LogFactoryUtil.getLog(ThemeAutoDeployer.class);
+	@Override
+	public int autoDeploy(AutoDeploymentContext autoDeploymentContext)
+		throws AutoDeployException {
+
+		File file = autoDeploymentContext.getFile();
+
+		if (file.isDirectory()) {
+			try {
+				if (_log.isInfoEnabled()) {
+					_log.info("Modifying themes for " + file.getPath());
+				}
+
+				deployDirectory(
+					file, autoDeploymentContext.getContext(), false,
+					autoDeploymentContext.getPluginPackage());
+
+				if (_log.isInfoEnabled()) {
+					_log.info(
+						"Themes for " + file.getPath() +
+							" modified successfully");
+				}
+
+				return AutoDeployer.CODE_DEFAULT;
+			}
+			catch (Exception e) {
+				throw new AutoDeployException(e);
+			}
+		}
+		else {
+			return super.autoDeploy(autoDeploymentContext);
+		}
+	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		ThemeAutoDeployer.class);
 
 }

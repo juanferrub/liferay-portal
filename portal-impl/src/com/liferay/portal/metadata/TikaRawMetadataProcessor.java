@@ -14,6 +14,7 @@
 
 package com.liferay.portal.metadata;
 
+import com.liferay.portal.fabric.InputResource;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.io.DummyWriter;
 import com.liferay.portal.kernel.log.Log;
@@ -25,7 +26,6 @@ import com.liferay.portal.kernel.process.ProcessException;
 import com.liferay.portal.kernel.process.ProcessExecutorUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.FileUtil;
-import com.liferay.portal.kernel.util.StreamUtil;
 import com.liferay.portal.util.PropsValues;
 
 import java.io.File;
@@ -41,6 +41,7 @@ import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
+import org.apache.tika.metadata.XMPDM;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.apache.tika.sax.WriteOutContentHandler;
@@ -59,7 +60,7 @@ public class TikaRawMetadataProcessor extends XugglerRawMetadataProcessor {
 	}
 
 	protected static Metadata extractMetadata(
-			InputStream inputStream, Metadata metadata, Parser parser)
+			File file, Metadata metadata, Parser parser)
 		throws IOException {
 
 		if (metadata == null) {
@@ -73,7 +74,7 @@ public class TikaRawMetadataProcessor extends XugglerRawMetadataProcessor {
 		ContentHandler contentHandler = new WriteOutContentHandler(
 			new DummyWriter());
 
-		try {
+		try (InputStream inputStream = new FileInputStream(file)) {
 			parser.parse(inputStream, contentHandler, metadata, parserContext);
 		}
 		catch (Exception e) {
@@ -145,18 +146,11 @@ public class TikaRawMetadataProcessor extends XugglerRawMetadataProcessor {
 			}
 		}
 
-		InputStream inputStream = null;
-
 		try {
-			inputStream = new FileInputStream(file);
-
-			return extractMetadata(inputStream, metadata, _parser);
+			return extractMetadata(file, metadata, _parser);
 		}
 		catch (IOException ioe) {
 			throw new SystemException(ioe);
-		}
-		finally {
-			StreamUtil.cleanUp(inputStream);
 		}
 	}
 
@@ -164,56 +158,22 @@ public class TikaRawMetadataProcessor extends XugglerRawMetadataProcessor {
 	protected Metadata extractMetadata(
 		String extension, String mimeType, InputStream inputStream) {
 
-		Metadata metadata = super.extractMetadata(
-			extension, mimeType, inputStream);
-
-		boolean forkProcess = false;
-
-		if (PropsValues.TEXT_EXTRACTION_FORK_PROCESS_ENABLED) {
-			if (ArrayUtil.contains(
-					PropsValues.TEXT_EXTRACTION_FORK_PROCESS_MIME_TYPES,
-					mimeType)) {
-
-				forkProcess = true;
-			}
-		}
-
-		if (forkProcess) {
-			File file = FileUtil.createTempFile();
-
-			try {
-				FileUtil.write(file, inputStream);
-
-				ExtractMetadataProcessCallable extractMetadataProcessCallable =
-					new ExtractMetadataProcessCallable(file, metadata, _parser);
-
-				ProcessChannel<Metadata> processChannel =
-					ProcessExecutorUtil.execute(
-						ClassPathUtil.getPortalProcessConfig(),
-						extractMetadataProcessCallable);
-
-				Future<Metadata> future =
-					processChannel.getProcessNoticeableFuture();
-
-				return future.get();
-			}
-			catch (Exception e) {
-				throw new SystemException(e);
-			}
-			finally {
-				file.delete();
-			}
-		}
+		File file = FileUtil.createTempFile();
 
 		try {
-			return extractMetadata(inputStream, metadata, _parser);
+			FileUtil.write(file, inputStream);
+
+			return extractMetadata(extension, mimeType, file);
 		}
-		catch (IOException ioe) {
-			throw new SystemException(ioe);
+		catch (Exception e) {
+			throw new SystemException(e);
+		}
+		finally {
+			file.delete();
 		}
 	}
 
-	private static Log _log = LogFactoryUtil.getLog(
+	private static final Log _log = LogFactoryUtil.getLog(
 		TikaRawMetadataProcessor.class);
 
 	private Parser _parser;
@@ -231,33 +191,21 @@ public class TikaRawMetadataProcessor extends XugglerRawMetadataProcessor {
 
 		@Override
 		public Metadata call() throws ProcessException {
-			InputStream inputStream = null;
-
 			try {
-				inputStream = new FileInputStream(_file);
-
-				return extractMetadata(inputStream, _metadata, _parser);
+				return extractMetadata(_file, _metadata, _parser);
 			}
 			catch (IOException ioe) {
 				throw new ProcessException(ioe);
-			}
-			finally {
-				if (inputStream != null) {
-					try {
-						inputStream.close();
-					}
-					catch (IOException ioe) {
-						throw new ProcessException(ioe);
-					}
-				}
 			}
 		}
 
 		private static final long serialVersionUID = 1L;
 
-		private File _file;
-		private Metadata _metadata;
-		private Parser _parser;
+		@InputResource
+		private final File _file;
+
+		private final Metadata _metadata;
+		private final Parser _parser;
 
 	}
 

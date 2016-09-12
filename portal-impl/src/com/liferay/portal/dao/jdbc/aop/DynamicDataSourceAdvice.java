@@ -14,7 +14,9 @@
 
 package com.liferay.portal.dao.jdbc.aop;
 
+import com.liferay.portal.kernel.dao.jdbc.aop.DynamicDataSourceTargetSource;
 import com.liferay.portal.kernel.dao.jdbc.aop.MasterDataSource;
+import com.liferay.portal.kernel.dao.jdbc.aop.Operation;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.spring.aop.ChainableMethodAdvice;
 import com.liferay.portal.spring.aop.ServiceBeanAopCacheManager;
@@ -101,7 +103,7 @@ public class DynamicDataSourceAdvice extends ChainableMethodAdvice {
 			MasterDataSource.class, null);
 	}
 
-	private static MasterDataSource _nullMasterDataSource =
+	private static final MasterDataSource _nullMasterDataSource =
 		new MasterDataSource() {
 
 			@Override

@@ -77,28 +77,27 @@ public class MulticastDatagramHandler implements DatagramHandler {
 	}
 
 	protected byte[] getUnzippedBytes(byte[] bytes) throws Exception {
-		InputStream is = new GZIPInputStream(
-			new UnsyncByteArrayInputStream(bytes));
 		UnsyncByteArrayOutputStream ubaos = new UnsyncByteArrayOutputStream(
 			bytes.length);
 
-		byte[] buffer = new byte[1500];
+		try (InputStream is = new GZIPInputStream(
+				new UnsyncByteArrayInputStream(bytes))) {
 
-		int c = 0;
+			byte[] buffer = new byte[1500];
+			int c = 0;
 
-		while (true) {
-			if (c == -1) {
-				break;
-			}
+			while (true) {
+				if (c == -1) {
+					break;
+				}
 
-			c = is.read(buffer, 0, 1500);
+				c = is.read(buffer, 0, 1500);
 
-			if (c != -1) {
-				ubaos.write(buffer, 0, c);
+				if (c != -1) {
+					ubaos.write(buffer, 0, c);
+				}
 			}
 		}
-
-		is.close();
 
 		ubaos.flush();
 		ubaos.close();
@@ -106,9 +105,10 @@ public class MulticastDatagramHandler implements DatagramHandler {
 		return ubaos.toByteArray();
 	}
 
-	private static Log _log = LogFactory.getLog(MulticastDatagramHandler.class);
+	private static final Log _log = LogFactory.getLog(
+		MulticastDatagramHandler.class);
 
-	private boolean _gzipData;
-	private boolean _shortData;
+	private final boolean _gzipData;
+	private final boolean _shortData;
 
 }

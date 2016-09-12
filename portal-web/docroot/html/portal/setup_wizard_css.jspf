@@ -109,12 +109,8 @@
 	margin-right: 0;
 }
 
-.ie6 #wrapper {
-	width: 600px;
-}
-
 @media (max-width: 767px) {
-	.aui #wrapper {
+	#wrapper {
 		padding: 1em 1.1em 0;
 	}
 

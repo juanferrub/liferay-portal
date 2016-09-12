@@ -17,43 +17,35 @@ package com.liferay.taglib.util;
 import com.liferay.portal.kernel.io.unsync.UnsyncStringWriter;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.servlet.JSPSupportServlet;
+import com.liferay.portal.kernel.model.PortletConstants;
+import com.liferay.portal.kernel.model.Theme;
 import com.liferay.portal.kernel.servlet.PluginContextListener;
 import com.liferay.portal.kernel.servlet.ServletContextPool;
+import com.liferay.portal.kernel.servlet.taglib.DynamicIncludeUtil;
 import com.liferay.portal.kernel.template.Template;
 import com.liferay.portal.kernel.template.TemplateConstants;
+import com.liferay.portal.kernel.template.TemplateContextContributor;
+import com.liferay.portal.kernel.template.TemplateManager;
 import com.liferay.portal.kernel.template.TemplateManagerUtil;
 import com.liferay.portal.kernel.template.TemplateResource;
 import com.liferay.portal.kernel.template.TemplateResourceLoaderUtil;
+import com.liferay.portal.kernel.theme.PortletDisplay;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.ThemeHelper;
-import com.liferay.portal.kernel.util.UnsyncPrintWriterPool;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.model.PortletConstants;
-import com.liferay.portal.model.Theme;
-import com.liferay.portal.theme.PortletDisplay;
-import com.liferay.portal.theme.ThemeDisplay;
+import com.liferay.registry.collections.ServiceTrackerCollections;
+import com.liferay.registry.collections.ServiceTrackerList;
 import com.liferay.taglib.servlet.PipingServletResponse;
-import com.liferay.util.freemarker.FreeMarkerTaglibFactoryUtil;
-
-import freemarker.ext.servlet.HttpRequestHashModel;
-import freemarker.ext.servlet.ServletContextHashModel;
-
-import freemarker.template.ObjectWrapper;
-import freemarker.template.TemplateHashModel;
 
 import java.io.Writer;
 
-import javax.servlet.GenericServlet;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.struts.taglib.tiles.ComponentConstants;
-import org.apache.struts.tiles.ComponentContext;
 
 /**
  * @author Brian Wing Shun Chan
@@ -251,6 +243,14 @@ public class ThemeUtil {
 
 		template.prepare(request);
 
+		// Custom theme variables
+
+		for (TemplateContextContributor templateContextContributor :
+				_templateContextContributors) {
+
+			templateContextContributor.prepare(template, request);
+		}
+
 		// Theme servlet context
 
 		ServletContext themeServletContext = ServletContextPool.get(
@@ -258,57 +258,25 @@ public class ThemeUtil {
 
 		template.put("themeServletContext", themeServletContext);
 
-		// Tag libraries
-
 		Writer writer = null;
 
 		if (write) {
-
-			// Wrapping is needed because of a bug in FreeMarker
-
-			writer = UnsyncPrintWriterPool.borrow(response.getWriter());
+			writer = response.getWriter();
 		}
 		else {
 			writer = new UnsyncStringWriter();
 		}
 
-		VelocityTaglib velocityTaglib = new VelocityTaglibImpl(
-			servletContext, request,
-			new PipingServletResponse(response, writer), template);
+		TemplateManager templateManager =
+			TemplateManagerUtil.getTemplateManager(
+				TemplateConstants.LANG_TYPE_FTL);
+
+		templateManager.addTaglibSupport(template, request, response);
+		templateManager.addTaglibTheme(
+			template, "taglibLiferay", request,
+			new PipingServletResponse(response, writer));
 
 		template.put(TemplateConstants.WRITER, writer);
-		template.put("taglibLiferay", velocityTaglib);
-		template.put("theme", velocityTaglib);
-
-		// Portal JSP tag library factory
-
-		TemplateHashModel portalTaglib =
-			FreeMarkerTaglibFactoryUtil.createTaglibFactory(servletContext);
-
-		template.put("PortalJspTagLibs", portalTaglib);
-
-		// Theme JSP tag library factory
-
-		TemplateHashModel themeTaglib =
-			FreeMarkerTaglibFactoryUtil.createTaglibFactory(
-				themeServletContext);
-
-		template.put("ThemeJspTaglibs", themeTaglib);
-
-		// FreeMarker JSP tag library support
-
-		GenericServlet genericServlet = new JSPSupportServlet(servletContext);
-
-		ServletContextHashModel servletContextHashModel =
-			new ServletContextHashModel(
-				genericServlet, ObjectWrapper.DEFAULT_WRAPPER);
-
-		template.put("Application", servletContextHashModel);
-
-		HttpRequestHashModel httpRequestHashModel = new HttpRequestHashModel(
-			request, response, ObjectWrapper.DEFAULT_WRAPPER);
-
-		template.put("Request", httpRequestHashModel);
 
 		// Merge templates
 
@@ -327,7 +295,9 @@ public class ThemeUtil {
 			HttpServletResponse response, String path, Theme theme)
 		throws Exception {
 
-		insertTilesVariables(request);
+		DynamicIncludeUtil.include(
+			request, response, ThemeUtil.class.getName() + "#doIncludeJSP",
+			true);
 
 		if (theme.isWARFile()) {
 			ServletContext themeServletContext = servletContext.getContext(
@@ -398,9 +368,9 @@ public class ThemeUtil {
 
 		if (Validator.isNotNull(portletId)) {
 			if (PortletConstants.hasInstanceId(portletId) &&
-				(checkResourceExists = !
-				TemplateResourceLoaderUtil.hasTemplateResource(
-					TemplateConstants.LANG_TYPE_VM, resourcePath))) {
+				(checkResourceExists !=
+					TemplateResourceLoaderUtil.hasTemplateResource(
+						TemplateConstants.LANG_TYPE_VM, resourcePath))) {
 
 				String rootPortletId = PortletConstants.getRootPortletId(
 					portletId);
@@ -410,9 +380,9 @@ public class ThemeUtil {
 			}
 
 			if (checkResourceExists &&
-				(checkResourceExists = !
-				TemplateResourceLoaderUtil.hasTemplateResource(
-					TemplateConstants.LANG_TYPE_VM, resourcePath))) {
+				(checkResourceExists !=
+					TemplateResourceLoaderUtil.hasTemplateResource(
+						TemplateConstants.LANG_TYPE_VM, resourcePath))) {
 
 				resourcePath = theme.getResourcePath(
 					servletContext, null, page);
@@ -437,12 +407,24 @@ public class ThemeUtil {
 				"Unable to load template resource " + resourcePath);
 		}
 
+		TemplateManager templateManager =
+			TemplateManagerUtil.getTemplateManager(
+				TemplateConstants.LANG_TYPE_VM);
+
 		Template template = TemplateManagerUtil.getTemplate(
 			TemplateConstants.LANG_TYPE_VM, templateResource, restricted);
 
 		// Velocity variables
 
 		template.prepare(request);
+
+		// Custom theme variables
+
+		for (TemplateContextContributor templateContextContributor :
+				_templateContextContributors) {
+
+			templateContextContributor.prepare(template, request);
+		}
 
 		// Theme servlet context
 
@@ -462,14 +444,11 @@ public class ThemeUtil {
 			writer = new UnsyncStringWriter();
 		}
 
-		VelocityTaglib velocityTaglib = new VelocityTaglibImpl(
-			servletContext, request,
-			new PipingServletResponse(response, writer), template);
+		templateManager.addTaglibTheme(
+			template, "taglibLiferay", request,
+			new PipingServletResponse(response, writer));
 
 		template.put(TemplateConstants.WRITER, writer);
-		template.put("pageContext", velocityTaglib.getPageContext());
-		template.put("taglibLiferay", velocityTaglib);
-		template.put("theme", velocityTaglib);
 
 		// Merge templates
 
@@ -483,28 +462,11 @@ public class ThemeUtil {
 		}
 	}
 
-	protected static void insertTilesVariables(HttpServletRequest request) {
-		ComponentContext componentContext =
-			(ComponentContext)request.getAttribute(
-				ComponentConstants.COMPONENT_CONTEXT);
+	private static final Log _log = LogFactoryUtil.getLog(ThemeUtil.class);
 
-		if (componentContext == null) {
-			return;
-		}
-
-		ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
-		String tilesTitle = (String)componentContext.getAttribute("title");
-		String tilesContent = (String)componentContext.getAttribute("content");
-		boolean tilesSelectable = GetterUtil.getBoolean(
-			(String)componentContext.getAttribute("selectable"));
-
-		themeDisplay.setTilesTitle(tilesTitle);
-		themeDisplay.setTilesContent(tilesContent);
-		themeDisplay.setTilesSelectable(tilesSelectable);
-	}
-
-	private static Log _log = LogFactoryUtil.getLog(ThemeUtil.class);
+	private static final ServiceTrackerList<TemplateContextContributor>
+		_templateContextContributors = ServiceTrackerCollections.openList(
+			TemplateContextContributor.class,
+			"(type=" + TemplateContextContributor.TYPE_THEME + ")");
 
 }

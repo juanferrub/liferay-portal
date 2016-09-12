@@ -29,7 +29,7 @@ import com.liferay.portal.kernel.xml.Namespace;
 import com.liferay.portal.kernel.xml.QName;
 import com.liferay.portal.kernel.xml.SAXReaderUtil;
 import com.liferay.portal.webdav.InvalidRequestException;
-import com.liferay.util.xml.XMLFormatter;
+import com.liferay.util.xml.Dom4jUtil;
 
 import java.util.HashSet;
 import java.util.List;
@@ -80,7 +80,7 @@ public class PropfindMethodImpl extends BasePropMethodImpl implements Method {
 		throws InvalidRequestException {
 
 		try {
-			Set<QName> props = new HashSet<QName>();
+			Set<QName> props = new HashSet<>();
 
 			HttpServletRequest request = webDAVRequest.getHttpServletRequest();
 
@@ -98,7 +98,7 @@ public class PropfindMethodImpl extends BasePropMethodImpl implements Method {
 			if (_log.isDebugEnabled()) {
 				_log.debug(
 					"Request XML: \n" +
-						XMLFormatter.toString(xml, StringPool.FOUR_SPACES));
+						Dom4jUtil.toString(xml, StringPool.FOUR_SPACES));
 			}
 
 			Document document = SAXReaderUtil.read(xml);
@@ -133,6 +133,7 @@ public class PropfindMethodImpl extends BasePropMethodImpl implements Method {
 		}
 	}
 
-	private static Log _log = LogFactoryUtil.getLog(PropfindMethodImpl.class);
+	private static final Log _log = LogFactoryUtil.getLog(
+		PropfindMethodImpl.class);
 
 }

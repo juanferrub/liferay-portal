@@ -17,7 +17,11 @@ package com.liferay.portal.kernel.spring.osgi;
 import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.util.PropsImpl;
 
+import java.io.Serializable;
+
+import java.util.EventListener;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -35,27 +39,247 @@ public class OSGiBeanPropertiesTest {
 
 	@Test
 	public void testAnnotatedClass() {
-		@OSGiBeanProperties()
-		class C {}
+		@OSGiBeanProperties
+		class C {
+		}
 
 		Assert.assertNotNull(OSGiBeanProperties.Convert.fromObject(new C()));
 	}
 
 	@Test
 	public void testNotAnnotatedClass() {
-		class C {}
+		class C {
+		}
 
 		Assert.assertNull(OSGiBeanProperties.Convert.fromObject(new C()));
+	}
+
+	@Test
+	public void testServicesAnnotated() {
+		@OSGiBeanProperties(service = Serializable.class)
+		class C implements Serializable {
+		}
+
+		Set<Class<?>> interfaceClasses = OSGiBeanProperties.Service.interfaces(
+			new C());
+
+		Assert.assertEquals(1, interfaceClasses.size());
+	}
+
+	@Test
+	public void testServicesAnnotatedButExtends() {
+		class B implements Serializable {
+		}
+
+		@OSGiBeanProperties(service = Serializable.class)
+		class C extends B {
+		}
+
+		Set<Class<?>> interfaceClasses = OSGiBeanProperties.Service.interfaces(
+			new C());
+
+		Assert.assertEquals(1, interfaceClasses.size());
+	}
+
+	@Test
+	public void testServicesAnnotatedButExtendsMutliple() {
+		class B implements EventListener, Serializable {
+		}
+
+		@OSGiBeanProperties(service = Serializable.class)
+		class C extends B {
+		}
+
+		Set<Class<?>> interfaceClasses = OSGiBeanProperties.Service.interfaces(
+			new C());
+
+		Assert.assertEquals(1, interfaceClasses.size());
+	}
+
+	@Test
+	public void testServicesAnnotatedButImplements() {
+		@OSGiBeanProperties(service = Serializable.class)
+		class C implements Serializable {
+		}
+
+		Set<Class<?>> interfaceClasses = OSGiBeanProperties.Service.interfaces(
+			new C());
+
+		Assert.assertEquals(1, interfaceClasses.size());
+	}
+
+	@Test
+	public void testServicesAnnotatedButImplementsMultiple() {
+		@OSGiBeanProperties(service = Serializable.class)
+		class C implements EventListener, Serializable {
+		}
+
+		Set<Class<?>> interfaceClasses = OSGiBeanProperties.Service.interfaces(
+			new C());
+
+		Assert.assertEquals(1, interfaceClasses.size());
+	}
+
+	@Test(expected = ClassCastException.class)
+	public void testServicesAnnotatedButNotImplements() {
+		@OSGiBeanProperties(service = Serializable.class)
+		class C {
+		}
+
+		Set<Class<?>> interfaceClasses = OSGiBeanProperties.Service.interfaces(
+			new C());
+
+		Assert.assertEquals(1, interfaceClasses.size());
+	}
+
+	@Test(expected = ClassCastException.class)
+	public void testServicesAnnotatedButNotImplementsMultiple() {
+		@OSGiBeanProperties(service = {EventListener.class, Serializable.class})
+		class C implements Serializable {
+		}
+
+		Set<Class<?>> interfaceClasses = OSGiBeanProperties.Service.interfaces(
+			new C());
+
+		Assert.assertEquals(1, interfaceClasses.size());
+	}
+
+	@Test
+	public void testServicesAnnotatedNoneSet() {
+		@OSGiBeanProperties
+		class C {
+		}
+
+		Set<Class<?>> interfaceClasses = OSGiBeanProperties.Service.interfaces(
+			new C());
+
+		Assert.assertEquals(0, interfaceClasses.size());
+	}
+
+	@Test
+	public void testServicesAnnotatedNoneSetButExtends() {
+		class B implements Serializable {
+		}
+
+		@OSGiBeanProperties
+		class C extends B {
+		}
+
+		Set<Class<?>> interfaceClasses = OSGiBeanProperties.Service.interfaces(
+			new C());
+
+		Assert.assertEquals(1, interfaceClasses.size());
+	}
+
+	@Test
+	public void testServicesAnnotatedNoneSetButExtendsMultiple() {
+		class B implements EventListener, Serializable {
+		}
+
+		@OSGiBeanProperties
+		class C extends B {
+		}
+
+		Set<Class<?>> interfaceClasses = OSGiBeanProperties.Service.interfaces(
+			new C());
+
+		Assert.assertEquals(2, interfaceClasses.size());
+	}
+
+	@Test
+	public void testServicesAnnotatedNoneSetButImplements() {
+		@OSGiBeanProperties
+		class C implements Serializable {
+		}
+
+		Set<Class<?>> interfaceClasses = OSGiBeanProperties.Service.interfaces(
+			new C());
+
+		Assert.assertEquals(1, interfaceClasses.size());
+	}
+
+	@Test
+	public void testServicesAnnotatedNoneSetButImplementsMultiple() {
+		@OSGiBeanProperties
+		class C implements EventListener, Serializable {
+		}
+
+		Set<Class<?>> interfaceClasses = OSGiBeanProperties.Service.interfaces(
+			new C());
+
+		Assert.assertEquals(2, interfaceClasses.size());
+	}
+
+	@Test
+	public void testServicesNotAnnotated() {
+		class C {
+		}
+
+		Set<Class<?>> interfaceClasses = OSGiBeanProperties.Service.interfaces(
+			new C());
+
+		Assert.assertEquals(0, interfaceClasses.size());
+	}
+
+	@Test
+	public void testServicesNotAnnotatedButExtends() {
+		class B implements Serializable {
+		}
+
+		class C extends B {
+		}
+
+		Set<Class<?>> interfaceClasses = OSGiBeanProperties.Service.interfaces(
+			new C());
+
+		Assert.assertEquals(1, interfaceClasses.size());
+	}
+
+	@Test
+	public void testServicesNotAnnotatedButExtendsMultiple() {
+		class B implements EventListener, Serializable {
+		}
+
+		class C extends B {
+		}
+
+		Set<Class<?>> interfaceClasses = OSGiBeanProperties.Service.interfaces(
+			new C());
+
+		Assert.assertEquals(2, interfaceClasses.size());
+	}
+
+	@Test
+	public void testServicesNotAnnotatedButImplements() {
+		class C implements Serializable {
+		}
+
+		Set<Class<?>> interfaceClasses = OSGiBeanProperties.Service.interfaces(
+			new C());
+
+		Assert.assertEquals(1, interfaceClasses.size());
+	}
+
+	@Test
+	public void testServicesNotAnnotatedButImplementsMultiple() {
+		class C implements EventListener, Serializable {
+		}
+
+		Set<Class<?>> interfaceClasses = OSGiBeanProperties.Service.interfaces(
+			new C());
+
+		Assert.assertEquals(2, interfaceClasses.size());
 	}
 
 	@Test
 	public void testWithArrayOfBooleanProperties() {
 		@OSGiBeanProperties(
 			property = {
-				"key:Boolean=true", "key:Boolean=false", "key:Boolean=true",
+				"key:Boolean=true", "key:Boolean=false", "key:Boolean=true"
 			}
 		)
-		class C {}
+		class C {
+		}
 
 		Map<String, Object> properties = OSGiBeanProperties.Convert.fromObject(
 			new C());
@@ -78,11 +302,10 @@ public class OSGiBeanPropertiesTest {
 	@Test
 	public void testWithArrayOfByteProperties() {
 		@OSGiBeanProperties(
-			property = {
-				"key:Byte=127", "key:Byte=95", "key:Byte=13",
-			}
+			property = {"key:Byte=127", "key:Byte=95", "key:Byte=13"}
 		)
-		class C {}
+		class C {
+		}
 
 		Map<String, Object> properties = OSGiBeanProperties.Convert.fromObject(
 			new C());
@@ -106,10 +329,11 @@ public class OSGiBeanPropertiesTest {
 	public void testWithArrayOfCharacterProperties() {
 		@OSGiBeanProperties(
 			property = {
-				"key:Character=@", "key:Character=#", "key:Character=\u0069",
+				"key:Character=@", "key:Character=#", "key:Character=\u0069"
 			}
 		)
-		class C {}
+		class C {
+		}
 
 		Map<String, Object> properties = OSGiBeanProperties.Convert.fromObject(
 			new C());
@@ -134,10 +358,11 @@ public class OSGiBeanPropertiesTest {
 		@OSGiBeanProperties(
 			property = {
 				"key:Double=1.7976931348623157E308", "key:Double=4.9E-324",
-				"key:Double=2.2250738585072014E-308",
+				"key:Double=2.2250738585072014E-308"
 			}
 		)
-		class C {}
+		class C {
+		}
 
 		Map<String, Object> properties = OSGiBeanProperties.Convert.fromObject(
 			new C());
@@ -163,10 +388,11 @@ public class OSGiBeanPropertiesTest {
 			property = {
 				"key:Float=3.4028234663852886E38",
 				"key:Float=1.401298464324817E-45",
-				"key:Float=1.1754943508222875E-38",
+				"key:Float=1.1754943508222875E-38"
 			}
 		)
-		class C {}
+		class C {
+		}
 
 		Map<String, Object> properties = OSGiBeanProperties.Convert.fromObject(
 			new C());
@@ -191,10 +417,11 @@ public class OSGiBeanPropertiesTest {
 		@OSGiBeanProperties(
 			property = {
 				"key:Integer=2147483647", "key:Integer=-2147483648",
-				"key:Integer=12",
+				"key:Integer=12"
 			}
 		)
-		class C {}
+		class C {
+		}
 
 		Map<String, Object> properties = OSGiBeanProperties.Convert.fromObject(
 			new C());
@@ -219,10 +446,11 @@ public class OSGiBeanPropertiesTest {
 		@OSGiBeanProperties(
 			property = {
 				"key:Long=9223372036854775807", "key:Long=-9223372036854775808",
-				"key:Long=12",
+				"key:Long=12"
 			}
 		)
-		class C {}
+		class C {
+		}
 
 		Map<String, Object> properties = OSGiBeanProperties.Convert.fromObject(
 			new C());
@@ -238,7 +466,7 @@ public class OSGiBeanPropertiesTest {
 		Long[] values = (Long[])value;
 		Assert.assertEquals(Long.MAX_VALUE, (long)values[0]);
 		Assert.assertEquals(Long.MIN_VALUE, (long)values[1]);
-		Assert.assertEquals(12l, (long)values[2]);
+		Assert.assertEquals(12L, (long)values[2]);
 		Assert.assertEquals(3, values.length);
 	}
 
@@ -246,10 +474,11 @@ public class OSGiBeanPropertiesTest {
 	public void testWithArrayOfMixedProperties() {
 		@OSGiBeanProperties(
 			property = {
-				"key:String=32767", "key:Integer=-32768", "key:Short=12",
+				"key:String=32767", "key:Integer=-32768", "key:Short=12"
 			}
 		)
-		class C {}
+		class C {
+		}
 
 		OSGiBeanProperties.Convert.fromObject(new C());
 	}
@@ -257,11 +486,10 @@ public class OSGiBeanPropertiesTest {
 	@Test
 	public void testWithArrayOfProperties() {
 		@OSGiBeanProperties(
-			property = {
-				"key=valueA", "key=valueB", "key=valueC",
-			}
+			property = {"key=valueA", "key=valueB", "key=valueC"}
 		)
-		class C {}
+		class C {
+		}
 
 		Map<String, Object> properties = OSGiBeanProperties.Convert.fromObject(
 			new C());
@@ -284,11 +512,10 @@ public class OSGiBeanPropertiesTest {
 	@Test
 	public void testWithArrayOfShortProperties() {
 		@OSGiBeanProperties(
-			property = {
-				"key:Short=32767", "key:Short=-32768", "key:Short=12",
-			}
+			property = {"key:Short=32767", "key:Short=-32768", "key:Short=12"}
 		)
-		class C {}
+		class C {
+		}
 
 		Map<String, Object> properties = OSGiBeanProperties.Convert.fromObject(
 			new C());
@@ -311,7 +538,8 @@ public class OSGiBeanPropertiesTest {
 	@Test
 	public void testWithMultipleProperties() {
 		@OSGiBeanProperties(property = {"key1=value1", "key2=value2"})
-		class C {}
+		class C {
+		}
 
 		Map<String, Object> properties = OSGiBeanProperties.Convert.fromObject(
 			new C());
@@ -324,10 +552,9 @@ public class OSGiBeanPropertiesTest {
 
 	@Test
 	public void testWithPortalProperties() {
-		@OSGiBeanProperties(
-			portalPropertyPrefix = "portlet."
-		)
-		class C {}
+		@OSGiBeanProperties(portalPropertyPrefix = "portlet.")
+		class C {
+		}
 
 		Map<String, Object> properties = OSGiBeanProperties.Convert.fromObject(
 			new C());
@@ -343,7 +570,8 @@ public class OSGiBeanPropertiesTest {
 	@Test
 	public void testWithSingleProperty() {
 		@OSGiBeanProperties(property = "key=value")
-		class C {}
+		class C {
+		}
 
 		Map<String, Object> properties = OSGiBeanProperties.Convert.fromObject(
 			new C());
@@ -365,7 +593,8 @@ public class OSGiBeanPropertiesTest {
 				"key10:String=value10"
 			}
 		)
-		class C {}
+		class C {
+		}
 
 		Map<String, Object> properties = OSGiBeanProperties.Convert.fromObject(
 			new C());
@@ -373,8 +602,8 @@ public class OSGiBeanPropertiesTest {
 		Assert.assertNotNull(properties);
 		Assert.assertEquals("value1", properties.get("key1"));
 		Assert.assertEquals(Boolean.TRUE, properties.get("key2"));
-		Assert.assertEquals(new Byte("127"), properties.get("key3"));
-		Assert.assertEquals(new Character('@'), properties.get("key4"));
+		Assert.assertEquals(Byte.valueOf("127"), properties.get("key3"));
+		Assert.assertEquals(Character.valueOf('@'), properties.get("key4"));
 		Assert.assertEquals(Double.MAX_VALUE, properties.get("key5"));
 		Assert.assertEquals(Float.MAX_VALUE, properties.get("key6"));
 		Assert.assertEquals(Integer.MAX_VALUE, properties.get("key7"));

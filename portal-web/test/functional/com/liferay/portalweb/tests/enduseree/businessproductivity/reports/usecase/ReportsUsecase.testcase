@@ -1,0 +1,312 @@
+<definition component-name="portal-business-productivity-ee">
+	<property name="portal.release" value="true" />
+	<property name="portlet.plugins.includes" value="reports-portlet" />
+	<property name="testray.main.component.name" value="Reports" />
+	<property name="web.plugins.includes" value="jasperreports-web" />
+
+	<set-up>
+		<execute macro="TestCase#setUpPortalInstance" />
+
+		<execute macro="User#firstLoginPG" />
+	</set-up>
+
+	<tear-down>
+		<var method="TestPropsUtil#get('test.portal.instance')" name="testPortalInstance" />
+
+		<if>
+			<equals arg1="${testPortalInstance}" arg2="true" />
+			<then>
+				<execute macro="PortalInstances#tearDownCP" />
+			</then>
+			<else>
+				<execute macro="ReportsAdmin#tearDownReports" />
+				<execute macro="ReportsAdmin#tearDownDefinitions" />
+
+				<execute macro="ServerAdministration#tearDownMailServerSettings" />
+
+				<execute macro="Page#tearDownPG" />
+			</else>
+		</if>
+	</tear-down>
+
+	<command name="AddDefinitionNoTemplate" priority="4">
+		<description message="This is a use case for LPS-51226." />
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="ProductMenu#gotoSitesConfiguration">
+			<var name="portlet" value="Reports Admin" />
+		</execute>
+
+		<execute macro="ReportsAdmin#gotoDefinitions" />
+
+		<execute function="AssertClick" locator1="ReportsAdmin#DEFINITIONS_ADD_REPORT_DEFINITION_BUTTON" value1="Add Report Definition" />
+		<execute function="Type" locator1="TextInput#NAME" value1="Reports Definition Name" />
+		<execute macro="Button#clickSave" />
+
+		<execute macro="Alert#viewRequestFailedToComplete" />
+
+		<execute function="AssertTextEquals" locator1="Message#ERROR_2" value1="Please enter a valid file." />
+	</command>
+
+	<command name="DownloadReportPG" priority="4">
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="ProductMenu#gotoSitesConfiguration">
+			<var name="portlet" value="Reports Admin" />
+		</execute>
+
+		<execute macro="ReportsAdmin#gotoDefinitions" />
+
+		<execute macro="ReportsAdmin#addReportDefinition">
+			<var name="dataSource" value="Portal" />
+			<var name="reportsDefinitionDescription" value="Reports Definition Description" />
+			<var name="reportsDefinitionName" value="Reports Definition Name" />
+			<var name="templateFile" value="reports_admin_template_source_sample_class_name.jrxml" />
+		</execute>
+
+		<execute macro="ReportsAdmin#addReportEntry">
+			<var name="emailNotificationsAddress" value="test@liferay.com" />
+			<var name="emailRecipientAddress" value="test@liferay.com" />
+			<var name="reportFormat" value="pdf" />
+			<var name="reportsDefinitionName" value="Reports Definition Name" />
+		</execute>
+
+		<execute macro="Page#add">
+			<var name="pageName" value="Reports Page" />
+		</execute>
+
+		<execute macro="Portlet#addPG">
+			<var name="portletName" value="Reports Display" />
+		</execute>
+
+		<execute macro="ReportsDisplayPortlet#viewReportEntry">
+			<var name="reportsDefinitionName" value="Reports Definition Name" />
+		</execute>
+
+		<execute macro="ReportsDisplayPortlet#downloadReportEntryFile">
+			<var name="reportFormat" value="pdf" />
+			<var name="reportsFileName" value="reports_admin_template_source_sample_class_name.pdf" />
+		</execute>
+	</command>
+
+	<command name="ViewDefinitionsPagination" priority="4">
+		<description message="This is a use case for LPS-50501." />
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="ProductMenu#gotoSitesConfiguration">
+			<var name="portlet" value="Reports Admin" />
+		</execute>
+
+		<for list="1,2,3,4,5,6" param="number">
+			<execute macro="ReportsAdmin#gotoDefinitions" />
+
+			<execute macro="ReportsAdmin#addReportDefinition">
+				<var name="dataSource" value="Portal" />
+				<var name="reportsDefinitionDescription" value="Reports Definition Description" />
+				<var name="reportsDefinitionName" value="Reports Definition ${number}" />
+				<var name="templateFile" value="reports_admin_template_source_sample_class_name.jrxml" />
+			</execute>
+		</for>
+
+		<execute macro="ReportsAdmin#gotoDefinitions" />
+
+		<execute function="AssertTextEquals" locator1="ReportsAdmin#DEFINITIONS_PAGINATION_ITEMS_PER_PAGE_DROPDOWN_BUTTON" value1="20 Items per Page" />
+		<execute function="Click" locator1="ReportsAdmin#DEFINITIONS_PAGINATION_ITEMS_PER_PAGE_DROPDOWN_BUTTON" />
+
+		<var name="key_itemsPerPage" value="5" />
+
+		<execute function="Click" locator1="ReportsAdmin#DEFINITIONS_PAGINATION_ITEMS_PER_PAGE_DROPDOWN_MENU_ITEM" />
+		<execute function="AssertTextEquals" locator1="ReportsAdmin#DEFINITIONS_PAGINATION_ITEMS_PER_PAGE_DROPDOWN_BUTTON" value1="5 Items per Page" />
+		<execute function="AssertTextEquals" locator1="ReportsAdmin#DEFINITIONS_PAGINATION_PAGE_NUMBER_DROPDOWN_BUTTON" value1="Page 1 of 2" />
+
+		<var name="key_reportsDefinitionName" value="Reports Definition 6" />
+
+		<execute function="AssertElementNotPresent" locator1="ReportsAdmin#DEFINITIONS_DEFINITION_TABLE_DEFINITION_NAME" />
+		<execute function="AssertClick" locator1="Pagination#NEXT_LINK" value1="Next" />
+		<execute function="AssertTextEquals" locator1="ReportsAdmin#DEFINITIONS_DEFINITION_TABLE_DEFINITION_NAME" value1="Reports Definition 6" />
+		<execute function="AssertClick" locator1="Pagination#PREVIOUS_LINK" value1="Previous" />
+		<execute function="AssertElementNotPresent" locator1="ReportsAdmin#DEFINITIONS_DEFINITION_TABLE_DEFINITION_NAME" />
+	</command>
+
+	<command name="ViewReportEmailNewConfiguration" priority="4">
+		<description message="This is a use case for LPS-51009." />
+
+		<var method="TestPropsUtil#get('email.address.1')" name="emailAddress1" />
+		<var method="TestPropsUtil#get('email.address.2')" name="emailAddress2" />
+		<var method="TestPropsUtil#get('email.address.4')" name="emailAddress4" />
+		<var method="TestPropsUtil#get('email.password.1')" name="emailPassword1" />
+		<var method="TestPropsUtil#get('email.password.2')" name="emailPassword2" />
+		<var method="TestPropsUtil#get('email.password.4')" name="emailPassword4" />
+
+		<execute macro="ProductMenu#gotoControlPanelConfiguration">
+			<var name="portlet" value="Server Administration" />
+		</execute>
+
+		<execute macro="ServerAdministration#configureMailServerSettings">
+			<var name="userName" value="${emailAddress1}" />
+			<var name="userPassword" value="${emailPassword1}" />
+		</execute>
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="ProductMenu#gotoSitesConfiguration">
+			<var name="portlet" value="Reports Admin" />
+		</execute>
+
+		<execute macro="ReportsAdmin#gotoConfiguration" />
+
+		<execute macro="ReportsAdmin#configureEmailFrom">
+			<var name="emailFromAddress" value="${emailAddress1}" />
+			<var name="emailFromName" value="Liferay QA" />
+		</execute>
+
+		<execute macro="ReportsAdmin#configureDeliveryEmail">
+			<var name="deliverySubject"><![CDATA[New Report From QA: [$REPORT_NAME$]]]></var>
+			<var name="deliveryBody"><![CDATA[
+Dear [$TO_NAME$],<br/><br/>
+
+Please review the attached report from your friends in QA!<br/><br />
+
+Thank You,<br/>
+[$FROM_NAME$]<br/>
+[$FROM_ADDRESS$]			<br/>]]>			</var>
+		</execute>
+
+		<execute macro="ReportsAdmin#configureNotificationsEmail">
+			<var name="notificationSubject"><![CDATA[New Report From QA: [$REPORT_NAME$]]]></var>
+			<var name="notificationBody"><![CDATA[
+Dear [$TO_NAME$],<br/><br/>
+
+You have a new <a href="[$PAGE_URL$]">report</a> from your friends in QA.<br/><br/>
+
+Thanks,<br/>
+[$FROM_NAME$]<br/>
+[$FROM_ADDRESS$]			<br/>]]>			</var>
+		</execute>
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="ProductMenu#gotoSitesConfiguration">
+			<var name="portlet" value="Reports Admin" />
+		</execute>
+
+		<execute macro="ReportsAdmin#gotoDefinitions" />
+
+		<execute macro="ReportsAdmin#addReportDefinition">
+			<var name="dataSource" value="Portal" />
+			<var name="reportsDefinitionDescription" value="Reports Definition Description" />
+			<var name="reportsDefinitionName" value="Reports Definition Name" />
+			<var name="templateFile" value="reports_admin_template_source_sample_class_name.jrxml" />
+		</execute>
+
+		<execute macro="ReportsAdmin#addReportEntry">
+			<var name="emailNotificationsAddress" value="${emailAddress4}" />
+			<var name="emailRecipientAddress" value="${emailAddress2}" />
+			<var name="reportFormat" value="pdf" />
+			<var name="reportsDefinitionName" value="Reports Definition Name" />
+		</execute>
+
+		<execute function="Pause" locator1="30000" />
+
+		<execute macro="Gmail#login">
+			<var name="userEmailAddress" value="${emailAddress4}" />
+			<var name="userPassword" value="${emailPassword4}" />
+		</execute>
+
+		<execute macro="Gmail#gotoHtmlMode" />
+
+		<execute macro="Gmail#viewMail">
+			<var name="emailFromUserName" value="Liferay QA" />
+			<var name="gmailAssetType" value="New Report From QA: reports_admin_template_source_sample_class_name.pdf" />
+			<var name="gmailMailTableMessageTitle" value="New Report From QA: reports_admin_template_source_sample_class_name.pdf" />
+			<var name="gmailMessageBody" value="You have a new report from your friends in QA." />
+			<var name="gmailMessageBodyClosing" value="Thanks, Liferay QA ${emailAddress1}" />
+			<var name="gmailMessageBodyGreeting" value="Dear ${emailAddress4}," />
+			<var name="gmailMessageTitle" value="New Report From QA: reports_admin_template_source_sample_class_name.pdf" />
+		</execute>
+
+		<execute macro="Gmail#tearDown">
+			<var name="userEmailAddress" value="${emailAddress4}" />
+			<var name="userPassword" value="${emailPassword4}" />
+		</execute>
+
+		<execute macro="Gmail#logoutAndLogin">
+			<var name="userEmailAddress" value="${emailAddress2}" />
+			<var name="userPassword" value="${emailPassword2}" />
+		</execute>
+
+		<execute macro="Gmail#gotoHtmlMode" />
+
+		<execute macro="Gmail#viewMail">
+			<var name="emailFromUserName" value="Liferay QA" />
+			<var name="gmailAssetType" value="New Report From QA: reports_admin_template_source_sample_class_name.pdf" />
+			<var name="gmailMailTableMessageTitle" value="New Report From QA: reports_admin_template_source_sample_class_name.pdf" />
+			<var name="gmailMessageAttachment" value="reports_admin_template_source_sample_class_name.pdf" />
+			<var name="gmailMessageBody" value="Please review the attached report from your friends in QA!" />
+			<var name="gmailMessageBodyClosing" value="Thank You, Liferay QA ${emailAddress1}" />
+			<var name="gmailMessageBodyGreeting" value="Dear ${emailAddress2}," />
+			<var name="gmailMessageTitle" value="New Report From QA: reports_admin_template_source_sample_class_name.pdf" />
+		</execute>
+
+		<execute macro="Gmail#tearDown">
+			<var name="userEmailAddress" value="${emailAddress2}" />
+			<var name="userPassword" value="${emailPassword2}" />
+		</execute>
+
+		<execute function="Open" locator1="http://localhost:8080" />
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="ProductMenu#gotoSitesConfiguration">
+			<var name="portlet" value="Reports Admin" />
+		</execute>
+
+		<execute macro="ReportsAdmin#tearDownConfiguration" />
+	</command>
+
+	<command name="ViewReportPG" priority="4">
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="ProductMenu#gotoSitesConfiguration">
+			<var name="portlet" value="Reports Admin" />
+		</execute>
+
+		<execute macro="ReportsAdmin#gotoDefinitions" />
+
+		<execute macro="ReportsAdmin#addReportDefinition">
+			<var name="dataSource" value="Portal" />
+			<var name="reportsDefinitionDescription" value="Reports Definition Description" />
+			<var name="reportsDefinitionName" value="Reports Definition Name" />
+			<var name="templateFile" value="reports_admin_template_source_sample_class_name.jrxml" />
+		</execute>
+
+		<execute macro="ReportsAdmin#addReportEntry">
+			<var name="emailNotificationsAddress" value="test@liferay.com" />
+			<var name="emailRecipientAddress" value="test@liferay.com" />
+			<var name="reportFormat" value="csv" />
+			<var name="reportsDefinitionName" value="Reports Definition Name" />
+		</execute>
+
+		<execute macro="Page#add">
+			<var name="pageName" value="Reports Page" />
+		</execute>
+
+		<execute macro="Portlet#addPG">
+			<var name="portletName" value="Reports Display" />
+		</execute>
+
+		<execute macro="ReportsDisplayPortlet#viewReportEntry">
+			<var name="reportsDefinitionName" value="Reports Definition Name" />
+		</execute>
+
+		<execute macro="ReportsDisplayPortlet#viewReportEntryFields">
+			<var name="dataSource" value="portal" />
+			<var name="reportsDefinitionDescription" value="Reports Definition Description" />
+			<var name="reportsDefinitionName" value="Reports Definition Name" />
+			<var name="reportsFileName" value="reports_admin_template_source_sample_class_name.csv" />
+			<var name="userName" value="Test Test" />
+		</execute>
+	</command>
+</definition>

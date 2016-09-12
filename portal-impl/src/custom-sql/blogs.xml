@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <custom-sql>
-	<sql id="com.liferay.portlet.blogs.service.persistence.BlogsEntryFinder.countByOrganizationIds">
+	<sql id="com.liferay.blogs.kernel.service.persistence.BlogsEntryFinder.countByOrganizationIds">
 		<![CDATA[
 			SELECT
 				COUNT(*) AS COUNT_VALUE
@@ -18,7 +18,7 @@
 				(BlogsEntry.displayDate < ?)
 		]]>
 	</sql>
-	<sql id="com.liferay.portlet.blogs.service.persistence.BlogsEntryFinder.findByGroupIds">
+	<sql id="com.liferay.blogs.kernel.service.persistence.BlogsEntryFinder.findByGroupIds">
 		<![CDATA[
 			SELECT
 				{BlogsEntry.*}
@@ -64,7 +64,7 @@
 				BlogsEntry.displayDate DESC
 		]]>
 	</sql>
-	<sql id="com.liferay.portlet.blogs.service.persistence.BlogsEntryFinder.findByOrganizationIds">
+	<sql id="com.liferay.blogs.kernel.service.persistence.BlogsEntryFinder.findByOrganizationIds">
 		<![CDATA[
 			SELECT
 				{BlogsEntry.*}
@@ -83,24 +83,20 @@
 				BlogsEntry.displayDate DESC
 		]]>
 	</sql>
-	<sql id="com.liferay.portlet.blogs.service.persistence.BlogsEntryFinder.findByNoAssets">
+	<sql id="com.liferay.blogs.kernel.service.persistence.BlogsEntryFinder.findByNoAssets">
 		<![CDATA[
 			SELECT
 				{BlogsEntry.*}
 			FROM
 				BlogsEntry
+			LEFT JOIN
+				AssetEntry ON
+					(AssetEntry.classPK = BlogsEntry.entryId)
 			WHERE
-				(entryId NOT IN (
-					SELECT
-						classPK
-					FROM
-						AssetEntry
-					WHERE
-						classNameId = [$CLASS_NAME_ID_COM.LIFERAY.PORTLET.BLOGS.MODEL.BLOGSENTRY$]
-				))
+				(AssetEntry.classPK IS NULL)
 		]]>
 	</sql>
-	<sql id="com.liferay.portlet.blogs.service.persistence.BlogsStatsUserFinder.countByOrganizationIds">
+	<sql id="com.liferay.blogs.kernel.service.persistence.BlogsStatsUserFinder.countByOrganizationIds">
 		<![CDATA[
 			SELECT
 				COUNT(*) AS COUNT_VALUE
@@ -117,7 +113,7 @@
 				[$ORGANIZATION_ID$]
 		]]>
 	</sql>
-	<sql id="com.liferay.portlet.blogs.service.persistence.BlogsStatsUserFinder.findByGroupIds">
+	<sql id="com.liferay.blogs.kernel.service.persistence.BlogsStatsUserFinder.findByGroupIds">
 		<![CDATA[
 			SELECT
 				TEMP_TABLE.userId, TEMP_TABLE.lastPostDate
@@ -171,7 +167,7 @@
 				lastPostDate DESC
 		]]>
 	</sql>
-	<sql id="com.liferay.portlet.blogs.service.persistence.BlogsStatsUserFinder.findByOrganizationIds">
+	<sql id="com.liferay.blogs.kernel.service.persistence.BlogsStatsUserFinder.findByOrganizationIds">
 		<![CDATA[
 			SELECT
 				{BlogsStatsUser.*}

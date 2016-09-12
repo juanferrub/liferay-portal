@@ -32,17 +32,15 @@ public class JSONRPCResponse implements JSONSerializable {
 	public JSONRPCResponse(
 		JSONRPCRequest jsonRPCRequest, Object result, Exception exception) {
 
-		_id = jsonRPCRequest.getId();
-
 		_jsonrpc = GetterUtil.getString(jsonRPCRequest.getJsonrpc());
 
+		Error error = null;
+
 		if (!_jsonrpc.equals("2.0")) {
-			_error = new Error(-32700, "Invalid JSON RPC version " + _jsonrpc);
+			error = new Error(-32700, "Invalid JSON RPC version " + _jsonrpc);
+			result = null;
 		}
-		else if (exception == null) {
-			_result = result;
-		}
-		else {
+		else if (exception != null) {
 			int code = -32603;
 
 			String message = null;
@@ -62,13 +60,18 @@ public class JSONRPCResponse implements JSONSerializable {
 				message = exception.toString();
 			}
 
-			_error = new Error(code, message);
+			error = new Error(code, message);
+			result = null;
 		}
+
+		_error = error;
+		_id = jsonRPCRequest.getId();
+		_result = result;
 	}
 
 	@Override
 	public String toJSONString() {
-		Map<String, Object> response = new HashMap<String, Object>();
+		Map<String, Object> response = new HashMap<>();
 
 		if (_error != null) {
 			response.put("error", _error);
@@ -109,14 +112,14 @@ public class JSONRPCResponse implements JSONSerializable {
 			return _message;
 		}
 
-		private int _code;
-		private String _message;
+		private final int _code;
+		private final String _message;
 
 	}
 
-	private Error _error;
-	private Integer _id;
-	private String _jsonrpc;
-	private Object _result;
+	private final Error _error;
+	private final Integer _id;
+	private final String _jsonrpc;
+	private final Object _result;
 
 }

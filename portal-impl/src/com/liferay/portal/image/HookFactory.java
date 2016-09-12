@@ -34,7 +34,9 @@ public class HookFactory {
 		}
 
 		if (_log.isDebugEnabled()) {
-			_log.debug("Return " + _hook.getClass().getName());
+			Class<?> clazz = _hook.getClass();
+
+			_log.debug("Return " + clazz.getName());
 		}
 
 		return _hook;
@@ -42,13 +44,15 @@ public class HookFactory {
 
 	public static void setInstance(Hook hook) {
 		if (_log.isDebugEnabled()) {
-			_log.debug("Set " + hook.getClass().getName());
+			Class<?> clazz = hook.getClass();
+
+			_log.debug("Set " + clazz.getName());
 		}
 
 		_hook = hook;
 	}
 
-	private static Log _log = LogFactoryUtil.getLog(HookFactory.class);
+	private static final Log _log = LogFactoryUtil.getLog(HookFactory.class);
 
 	private static Hook _hook;
 

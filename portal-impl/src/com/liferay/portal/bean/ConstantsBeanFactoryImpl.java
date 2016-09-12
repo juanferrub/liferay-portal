@@ -81,8 +81,8 @@ public class ConstantsBeanFactoryImpl implements ConstantsBeanFactory {
 
 				return constantsBeanClass.newInstance();
 			}
-			catch (Exception e) {
-				throw new RuntimeException(e);
+			catch (Throwable t) {
+				throw new RuntimeException(t);
 			}
 		}
 	}
@@ -116,7 +116,7 @@ public class ConstantsBeanFactoryImpl implements ConstantsBeanFactory {
 
 		Field[] fields = constantsClass.getFields();
 
-		for (Field field :fields) {
+		for (Field field : fields) {
 			if (Modifier.isStatic(field.getModifiers())) {
 				Type fieldType = Type.getType(field.getType());
 

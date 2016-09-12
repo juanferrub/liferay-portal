@@ -1,0 +1,153 @@
+<definition>
+	<command name="configureBreadcrumb">
+		<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
+
+		<if>
+			<isset var="checkSetupName" />
+			<then>
+				<for list="${checkSetupName}" param="checkSetupName">
+					<var name="key_checkSetupName" value="${checkSetupName}" />
+
+					<execute function="Check#checkToggleSwitch" locator1="ToggleSwitch#SHOW_SPECIFIC_TOGGLE_SWITCH" />
+				</for>
+			</then>
+		</if>
+
+		<if>
+			<isset var="uncheckSetupName" />
+			<then>
+				<for list="${uncheckSetupName}" param="uncheckSetupName">
+					<var name="key_checkSetupName" value="${uncheckSetupName}" />
+
+					<execute function="Uncheck#uncheckToggleSwitch" locator1="ToggleSwitch#SHOW_SPECIFIC_TOGGLE_SWITCH" />
+				</for>
+			</then>
+		</if>
+
+		<if>
+			<isset var="selectADTType" />
+			<then>
+				<execute function="Select" locator1="Configuration#SETUP_DISPLAY_SETTINGS_DISPLAY_TEMPLATE_SELECT" value1="${selectADTType}" />
+			</then>
+		</if>
+
+		<if>
+			<equals arg1="${configureWithoutSave}" arg2="true" />
+			<then>
+				<echo message="Configuring Breadcrumb without saving to check bug." />
+			</then>
+			<else>
+				<execute macro="Button#clickSave" />
+				<execute macro="Alert#viewSuccessMessage" />
+			</else>
+		</if>
+
+		<execute function="SelectFrame" value1="relative=top" />
+	</command>
+
+	<command name="displayTemplatePreview">
+		<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
+
+		<execute function="Select" locator1="Select#DISPLAY_TEMPLATE" value1="${displayStyle}" />
+
+		<execute function="SelectFrame" value1="relative=top" />
+	</command>
+
+	<command name="saveDisplayPreview">
+		<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
+
+		<execute macro="PortletEntry#save" />
+
+		<execute function="SelectFrame" value1="relative=top" />
+	</command>
+
+	<command name="viewADTApplied">
+		<var name="key_breadcrumbADTType" value="${breadcrumbADTType}" />
+
+		<execute function="AssertElementPresent" locator1="Breadcrumb#BREADCRUMB_ADT" />
+	</command>
+
+	<command name="viewConfigurationCheckboxes">
+		<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
+
+		<if>
+			<isset var="checkSetupName" />
+			<then>
+				<for list="${checkSetupName}" param="checkSetupName">
+					<var name="key_checkSetupName" value="${checkSetupName}" />
+
+					<execute function="AssertChecked#assertCheckedToggleSwitch" locator1="ToggleSwitch#SHOW_SPECIFIC_TOGGLE_SWITCH" />
+				</for>
+			</then>
+		</if>
+
+		<if>
+			<isset var="uncheckSetupName" />
+			<then>
+				<for list="${uncheckSetupName}" param="uncheckSetupName">
+					<var name="key_checkSetupName" value="${uncheckSetupName}" />
+
+					<execute function="AssertNotChecked#assertNotCheckedToggleSwitch" locator1="ToggleSwitch#SHOW_SPECIFIC_TOGGLE_SWITCH" />
+				</for>
+			</then>
+		</if>
+
+		<execute function="SelectFrame" value1="relative=top" />
+	</command>
+
+	<command name="viewConfigurationPreview">
+		<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
+
+		<if>
+			<isset var="breadcrumbListVisible" />
+			<then>
+				<for list="${breadcrumbListVisible}" param="breadcrumbName">
+					<var name="key_breadcrumbName" value="${breadcrumbName}" />
+
+					<var method="StringUtil#upperCase('${breadcrumbName}')" name="breadcrumbNameUppercase" />
+
+					<execute function="AssertTextEquals#assertPartialText" locator1="BreadcrumbConfiguration#BREADCRUMB_PREVIEW_PAGE" value1="${breadcrumbNameUppercase}" />
+				</for>
+			</then>
+		</if>
+
+		<if>
+			<isset var="breadcrumbListNotVisible" />
+			<then>
+				<for list="${breadcrumbListNotVisible}" param="breadcrumbName">
+					<var name="key_breadcrumbName" value="${breadcrumbName}" />
+
+					<execute function="AssertElementNotPresent" locator1="BreadcrumbConfiguration#BREADCRUMB_PREVIEW_PAGE" />
+				</for>
+			</then>
+		</if>
+
+		<execute function="SelectFrame" value1="relative=top" />
+	</command>
+
+	<command name="viewPG">
+		<if>
+			<isset var="breadcrumbListVisible" />
+			<then>
+				<for list="${breadcrumbListVisible}" param="breadcrumbName">
+					<var name="key_breadcrumbName" value="${breadcrumbName}" />
+
+					<var method="StringUtil#upperCase('${breadcrumbName}')" name="breadcrumbNameUppercase" />
+
+					<execute function="AssertTextEquals#assertPartialText" locator1="Breadcrumb#BREADCRUMB_${pathLocator}" value1="${breadcrumbNameUppercase}" />
+				</for>
+			</then>
+		</if>
+
+		<if>
+			<isset var="breadcrumbListNotVisible" />
+			<then>
+				<for list="${breadcrumbListNotVisible}" param="breadcrumbName">
+					<var name="key_breadcrumbName" value="${breadcrumbName}" />
+
+					<execute function="AssertElementNotPresent" locator1="Breadcrumb#BREADCRUMB_${pathLocator}" />
+				</for>
+			</then>
+		</if>
+	</command>
+</definition>

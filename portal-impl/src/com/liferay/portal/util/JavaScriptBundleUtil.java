@@ -38,7 +38,7 @@ public class JavaScriptBundleUtil {
 		String[] fileNames = _portalCache.get(bundleId);
 
 		if (fileNames == null) {
-			List<String> fileNamesList = new ArrayList<String>();
+			List<String> fileNamesList = new ArrayList<>();
 
 			Set<String> dependencies = _getDependencies(
 				bundleId, new LinkedHashSet<String>());
@@ -89,7 +89,7 @@ public class JavaScriptBundleUtil {
 	private static final String _CACHE_NAME =
 		JavaScriptBundleUtil.class.getName();
 
-	private static PortalCache<String, String[]> _portalCache =
-		SingleVMPoolUtil.getCache(_CACHE_NAME);
+	private static final PortalCache<String, String[]> _portalCache =
+		SingleVMPoolUtil.getPortalCache(_CACHE_NAME);
 
 }

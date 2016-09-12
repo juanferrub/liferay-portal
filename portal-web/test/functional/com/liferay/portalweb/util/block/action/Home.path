@@ -1,0 +1,657 @@
+<html>
+<head>
+<title>Home</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">Home</td></tr>
+</thead>
+<tbody>
+<tr>
+	<td>API_AXIS_URL</td>
+	<td>/api/axis</td>
+	<td></td>
+</tr>
+<tr>
+	<td>API_JSON_URL</td>
+	<td>/api/jsonws/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>GUEST_URL</td>
+	<td>/web/guest/home/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>GUEST_PRIVATE_URL</td>
+	<td>/group/guest/home/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>GUEST_PRIVATE_STAGING_URL</td>
+	<td>/group/guest-staging/home/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>GUEST_STAGING_URL</td>
+	<td>/web/guest-staging/home/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>ORGANIZATION_URL</td>
+	<td>/web/organization-name/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>ORGANIZATION_PRIVATE_URL</td>
+	<td>/group/organization-name/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>ORGANIZATION_PRIVATE_STAGING_URL</td>
+	<td>/group/organization-name-staging/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>ORGANIZATION_STAGING_URL</td>
+	<td>/web/organization-name-staging/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SITE_URL</td>
+	<td>/web/site-name/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SITE_PRIVATE_URL</td>
+	<td>/group/site-name/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SITE_PRIVATE_STAGING_URL</td>
+	<td>/group/site-name-staging/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SITE_STAGING_URL</td>
+	<td>/web/site-name-staging/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>DEFAULT_LOGO</td>
+	<td>//a[contains(@class,'default-logo')]/img</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CUSTOM_LOGO</td>
+	<td>//a[contains(@class,'custom-logo')]/img</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SITE_NAME</td>
+	<td>//div[@id='heading']/span[@class='site-name']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>USER_NAME_HEADER</td>
+	<td>//div[@id='heading']//span[@class='site-name'] | //div[@id='heading']//div[contains(@class,'site-name')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SITE_NAME_LOGO</td>
+	<td>//h1[@class='site-title']/a/img</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SCOPE_SELECTOR</td>
+	<td>//a[@id='_145_controlPanelSiteSelector']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CONTENT_SCOPE_SELECTOR</td>
+	<td>//div[contains(@class,'lfr-title-scope-selector')]/div/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>EMBEDDED_SITE_LIFERAY_BANNER_LOGO</td>
+	<td>//div[@class='banner-content']//img[@alt='Liferay']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>STATUS_MESSAGE</td>
+	<td>//tr[1]/td</td>
+	<td></td>
+</tr>
+<tr>
+	<td>ERROR_MESSAGE_EXPIRED_SESSION</td>
+	<td>//div[contains(@class,'liferayalert')]//div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>ERROR_MESSAGE_ALERT_INFO</td>
+	<td>//tr[contains(.,'This site is inactive. Please contact the administrator.')]/td[@align='center']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>ERROR_MESSAGE_ALERT_ERROR</td>
+	<td>//section[@id='content']/h3[contains(@class, 'alert-danger')] | //div[@class='portlet-content']/h3[contains(@class, 'alert-danger')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>ERROR_MESSAGE_RESOURCE_NOT_FOUND</td>
+	<td>//div[@class='portlet-content']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>URL_ERROR_MESSAGE</td>
+	<td>//code[@class='lfr-url-error']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>NODE_NAME</td>
+	<td>//section[@id='content']/div[contains(.,'${key_nodePort}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>DARK_THEME</td>
+	<td>//body[contains(@class,'dark')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>DEFAULT_THEME</td>
+	<td>//body[contains(@class,'default')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>LIGHT_THEME</td>
+	<td>//body[contains(@class,'light')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>DELETE_PAGE_ICON</td>
+	<td>//li[contains(@class,'lfr-nav-deletable') and contains(@class,'lfr-nav-sortable')]/span[@class='delete-tab']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>LOADING_ANIMATION</td>
+	<td>//div[contains(@class,'loading-animation')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td></td>
+</tr>
+<!--SCOPE_SELECTOR_MENULIST-->
+<tr>
+	<td>SCOPE_SELECTOR_MENULIST_ITEM</td>
+	<td>//ul[contains(@aria-labelledby,'controlPanelSiteSelector')]/li/a[contains(.,'${key_siteScopeName}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SCOPE_SELECTOR_SITE_NAME</td>
+	<td>//div[contains(@class,'control-panel-site-selector')]/a[contains(@id,'_145_controlPanelSiteSelector')]/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td></td>
+</tr>
+<!--CONTENT_SCOPE_SELECTOR_MENULIST-->
+<tr>
+	<td>CONTENT_SCOPE_SELECTOR_MENULIST_ITEM</td>
+	<td>//ul[contains(@class,'lfr-menu-list')]/li/a[contains(.,'${key_contentScopeName}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td></td>
+</tr>
+<!--PAGE-->
+<tr>
+	<td>PAGE</td>
+	<td>//div[contains(@class,'navbar')]/ul/li/a[contains(.,'${key_pageName}')]</td>
+	<td>Page</td>
+</tr>
+<tr>
+	<td>PAGE_ACTIVE</td>
+	<td>//div[contains(@class,'navbar')]/ul/li[contains(@class,'active')]/a[contains(.,'${key_pageName}')]</td>
+	<td>Page</td>
+</tr>
+<tr>
+	<td>PAGE_WITH_QUOTES</td>
+	<td>//li[contains(@class,'add-page')]/a[contains(.,&quot;${key_pageName}&quot;)] | //li[contains(@class,'lfr-nav-item')]/a[contains(.,&quot;${key_pageName}&quot;)]</td>
+	<td>Page</td>
+</tr>
+<tr>
+	<td>PAGE_1</td>
+	<td>//div[contains(@class,'navbar')]/ul/li[1]/a</td>
+	<td>1st Page</td>
+</tr>
+<tr>
+	<td>PAGE_TEMPLATE_1</td>
+	<td>//div[contains(@class,'navbar')]/ul/li/a[contains(.,'${key_pageName}')] | //nav[@id='navigation']/ul/li/a[contains(.,'${key_pageName}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_CHILD_PAGE</td>
+	<td>//ul[contains(@class,'child-menu')]/li[contains(.,'${key_childPageName}')]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_1_CHILD_PAGE_1</td>
+	<td>xpath=(//li[contains(@class,'lfr-nav-deletable')])[1]/ul[contains(@class,'child-menu')]/li[1]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_1_CHILD_PAGE_2</td>
+	<td>xpath=(//li[contains(@class,'lfr-nav-deletable')])[1]/ul[contains(@class,'child-menu')]/li[2]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_1_CHILD_PAGE_3</td>
+	<td>xpath=(//li[contains(@class,'lfr-nav-deletable')])[1]/ul[contains(@class,'child-menu')]/li[3]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_1_STAGING_LIVE</td>
+	<td>//ul/li[@id='layout_1']/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_2</td>
+	<td>//div[contains(@class,'navbar')]/ul/li[2]/a</td>
+	<td>2nd Page</td>
+</tr>
+<tr>
+	<td>PAGE_TEMPLATE_2</td>
+	<td>xpath=((//nav[@id='navigation'] | //div[contains(@class,'navbar')])/ul/li/a)[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_2_GUEST_VIEW</td>
+	<td>xpath=(//li[contains(@class,'lfr-nav-item')])[2]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_2_STAGING_LIVE</td>
+	<td>//ul/li[@id='layout_2']/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_3</td>
+	<td>//div[contains(@class,'navbar')]/ul/li[3]/a</td>
+	<td>3rd Page</td>
+</tr>
+<tr>
+	<td>PAGE_3_STAGING_LIVE</td>
+	<td>//ul/li[@id='layout_3']/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_TEMPLATE_3</td>
+	<td>xpath=((//nav[@id='navigation'] | //div[contains(@class,'navbar')])/ul/li/a)[3]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_TEMPLATE</td>
+	<td>//div[@id='heading']/span[contains(@title,'${key_pageTemplateName}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_TEMPLATE_4</td>
+	<td>xpath=((//nav[@id='navigation'] | //div[contains(@class,'navbar')])/ul/li/a)[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_TEMPLATE_5</td>
+	<td>xpath=((//nav[@id='navigation'] | //div[contains(@class,'navbar')])/ul/li/a)[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_TEMPLATE_6</td>
+	<td>xpath=((//nav[@id='navigation'] | //div[contains(@class,'navbar')])/ul/li/a)[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_TEMPLATE_7</td>
+	<td>xpath=((//nav[@id='navigation'] | //div[contains(@class,'navbar')])/ul/li/a)[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_DELETE</td>
+	<td>//ul[contains(@id,'layoutsNav')]/li[contains(@class,'remove-layout')]/a</td>
+	<td>Delete Page Button</td>
+</tr>
+<tr>
+	<td>PAGE_NAVIGATION_BAR</td>
+	<td>//nav[@id='navigation']</td>
+	<td></td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td></td>
+</tr>
+<!--BREADCRUMB-->
+<tr>
+	<td>BREADCRUMB_1</td>
+	<td>xpath=(//div[contains(@class,'breadcrumb') and contains(@class,'breadcrumb-horizontal')]/ul/li/a)[1]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BREADCRUMB_2</td>
+	<td>xpath=(//div[contains(@class,'breadcrumb') and contains(@class,'breadcrumb-horizontal')]/ul/li/a)[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BREADCRUMB_3</td>
+	<td>xpath=(//div[contains(@class,'breadcrumb') and contains(@class,'breadcrumb-horizontal')]/ul/li/a)[3]</td>
+	<td></td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td></td>
+</tr>
+<!--PAGE_COLUMN-->
+<tr>
+	<td>PAGE_COLUMN_1</td>
+	<td>//div[@id='layout-column_column-1']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_COLUMN_2</td>
+	<td>//div[@id='layout-column_column-2']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_COLUMN_1_LAYOUT_1_COLUMN</td>
+	<td>//div[contains(@class,'portlet-layout')]/div[@id='column-1' and contains(@class,'col-md-12')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_COLUMN_1_LAYOUT_2_COLUMNS_30_SPLIT</td>
+	<td>//div[contains(@class,'portlet-layout')]/div[@id='column-1' and contains(@class,'col-md-4')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_COLUMN_2_LAYOUT_2_COLUMNS_70_SPLIT</td>
+	<td>//div[contains(@class,'portlet-layout')]/div[@id='column-2' and contains(@class,'col-md-8')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_COLUMN_1_LAYOUT_2_COLUMNS_50_SPLIT</td>
+	<td>//div[contains(@class,'portlet-layout')]/div[@id='column-1' and contains(@class,'col-md-6')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_COLUMN_2_LAYOUT_2_COLUMNS_50_SPLIT</td>
+	<td>//div[contains(@class,'portlet-layout')]/div[@id='column-2' and contains(@class,'col-md-6')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td></td>
+</tr>
+<!--PAGE_COLUMN_PORTLET-->
+<tr>
+	<td>PAGE_COLUMN_PORTLET_COLUMN_1_PORTLET_TITLE</td>
+	<td>//div[@id='column-1']//h2[contains(.,'${key_portletTitleName}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_COLUMN_PORTLET_COLUMN_2_PORTLET_TITLE</td>
+	<td>//div[@id='column-2']//h2[contains(.,'${key_portletTitleName}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_COLUMN_PORTLET_COLUMN_1_PORTLET_HEADER</td>
+	<td>//div[@id='column-1']//header[contains(.,'${key_portletTitleName}')]/div/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_COLUMN_PORTLET_COLUMN_2_PORTLET_HEADER</td>
+	<td>//div[@id='column-2']//header[contains(.,'${key_portletTitleName}')]/div/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td></td>
+</tr>
+<!--PAGE_CUSTOMIZATION-->
+<tr>
+	<td>PAGE_CUSTOMIZATION_MESSAGE_INFO</td>
+	<td>//li[contains(@class,'control-menu') and contains(@class,'nav-item')]/p[contains(.,'You can customize this page')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_CUSTOMIZATION_VIEW_DEFAULT_PAGE</td>
+	<td>//li/a[contains(.,'View Page without my customizations')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_CUSTOMIZATION_RESET_MY_CUSTOMIZATIONS</td>
+	<td>//li/a[contains(.,'Reset My Customizations')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_CUSTOMIZATION_VIEW_MY_CUSTOMIZED_PAGE</td>
+	<td>//li/a[contains(.,'View My Customized')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td></td>
+</tr>
+<!--PORTLET_COLUMN-->
+<tr>
+	<td>PORTLET_COLUMN_1</td>
+	<td>//div[contains(@class,'col-md-6 portlet-column portlet-column-first')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PORTLET_COLUMN_2</td>
+	<td>//div[contains(@class,'col-md-6 portlet-column portlet-column-last')]//div[contains(@id,'NestedPortletsPortlet') and contains(@class,'portlet-dropzone empty portlet-column-content portlet-column-content-last')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PORTLET_COLUMN_1_NESTED_PORTLET_TITLE</td>
+	<td>//div[contains(@id,'column-1')]//h2[contains(@class,'portlet-title') and contains(.,'${key_portletTitleName}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PORTLET_COLUMN_2_NESTED_PORTLET_TITLE</td>
+	<td>//div[contains(@id,'column-2')]//h1[@class='portlet-title' and contains(.,'${key_portletTitleName}')]/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td></td>
+</tr>
+<!--NEW_PAGE-->
+<tr>
+	<td>NEW_PAGE_FIELD</td>
+	<td>//input[@type='text']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>NEW_PAGE_SAVE</td>
+	<td>//button[contains(@id,'Save')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>NEW_PAGE_SAVE_BUTTON</td>
+	<td>//button/i[@class='icon-ok']</td>
+	<td></td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td></td>
+</tr>
+<!--PORTLET-->
+<tr>
+	<td>PORTLET_LOADING_ANIMATION</td>
+	<td>//div[contains(@class,'loading-animation') and contains(@class,'portlet-boundary')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PORTLET</td>
+	<td>//section//h2[contains(.,'${key_portletName}')] | //div[contains(@class,'portlet-borderless')]/span[contains(.,'${key_portletName}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PORTLET_1</td>
+	<td>xpath=(//section)[1]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PORTLET_2</td>
+	<td>xpath=(//section)[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PORTLET_3</td>
+	<td>xpath=(//section)[3]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PORTLET_BORDERLESS</td>
+	<td>//div[contains(@class,'portlet-borderless')]/span[contains(.,'${key_portletName}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SIGN_IN_PORTLET</td>
+	<td>/portal/portlets/sign_in_portlet.png</td>
+	<td></td>
+</tr>
+<tr>
+	<td>HELLO_WORLD_PORTLET</td>
+	<td>/portal/portlets/hello_world_portlet.png</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_COLUMN_2_SIGN_IN_PORTLET</td>
+	<td>//div[@id='column-2']//section/header/h1[contains(.,'Sign In')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td></td>
+</tr>
+<!--CONTROL_PANEL-->
+<tr>
+	<td>CONTROL_PANEL_INFO_MESSAGE</td>
+	<td>//div[contains(@class,'alert') and contains(@class,'alert-info')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CONTROL_PANEL_NAVIGATION</td>
+	<td>//a[contains(.,'${key_portletName}') and contains(@id,'_190_controlPanelPortletLink')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CONTROL_PANEL_NAVIGATION_TOOLTIP_ICON</td>
+	<td>//li[@role='presentation' and span/a[contains(.,'${key_portletName}')]]/span[@class='taglib-icon-help']/img</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CONTROL_PANEL_NAVIGATION_TOOLTIP_MESSAGE</td>
+	<td>//div[contains(@class,'tooltip-help-content')]/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CONTROL_PANEL_PORTAL_SETTINGS</td>
+	<td>//a[@id='_190_controlPanelPortletLink_130']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CONTROL_PANEL_MANAGE_BUTTON</td>
+	<td>//a[contains(@id,'controlPanelHomeActionManageSite')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td></td>
+</tr>
+<!--SITE_ADMINISTRATION-->
+<tr>
+	<td>SITE_ADMINISTRATION_CATEGORY_COLLAPSED</td>
+	<td>//div[contains(@class,'toggler-header-collapsed')]/div[contains(.,'${key_portletCategoryName}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SITE_ADMINISTRATION_CATEGORY_EXPANDED</td>
+	<td>//div[contains(@class,'toggler-header-expanded')]/div[contains(.,'${key_portletCategoryName}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SITE_ADMINISTRATION_NAVIGATION</td>
+	<td>//div[contains(@id,'site_administration')]//li/a[contains(.,'${key_portletName}')]</td>
+	<td>Site Administration Navigation</td>
+</tr>
+<tr>
+	<td>SITE_ADMINISTRATION_PORTLET_TITLE</td>
+	<td>//*[@data-qa-id='headerTitle' and contains(.,'${key_portletTitle}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SITE_ADMINISTRATION_MEMBERS</td>
+	<td>//div[@id='panel-manage-site_administration.members']/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SITE_ADMINISTRATION_MEMBERS_SITE_MEMBERSHIPS</td>
+	<td>//ul[contains(@class,'category-portlets')]/li[contains(.,'Site Memberships')]/span/a/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SITE_ADMINISTRATION_CONFIGURATION_SITE_SETTINGS</td>
+	<td>//ul[contains(@class,'category-portlets')]/li[contains(.,'Site Settings')]/span/a/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SITE_ADMINISTRATION_MEMBERS_SITE_TEAMS</td>
+	<td>//ul[contains(@class,'nav-equal-height')]/li[contains(.,'Site Teams')]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td></td>
+</tr>
+<!--SITE_LOCALIZATION-->
+<tr>
+	<td>PORTAL_LOCALIZATION_CONFIRMATION_MESSAGE</td>
+	<td>//div[@id='portalMessageContainer']/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PORTAL_LOCALIZATION_PREFERRED_MESSAGE</td>
+	<td>//div[@id='portalMessageContainer']/a[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PORTAL_LOCALIZATION_MESSAGE_INFO</td>
+	<td>//div[@id='portalMessageContainer']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PORTAL_LOCALIZATION_IGNORE_BUTTON</td>
+	<td>//div[@id='portalMessageContainer']/button[@id='ignoreUserLocaleOptions']</td>
+	<td></td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>

@@ -14,6 +14,8 @@
 
 package com.liferay.portal.security.membershippolicy;
 
+import com.liferay.portal.kernel.security.membershippolicy.OrganizationMembershipPolicy;
+import com.liferay.portal.kernel.security.membershippolicy.OrganizationMembershipPolicyFactory;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceTracker;
@@ -40,9 +42,10 @@ public class OrganizationMembershipPolicyFactoryImpl
 		_serviceTracker.open();
 	}
 
-	private static OrganizationMembershipPolicyFactoryImpl _instance =
+	private static final OrganizationMembershipPolicyFactoryImpl _instance =
 		new OrganizationMembershipPolicyFactoryImpl();
 
-	private ServiceTracker<?, OrganizationMembershipPolicy> _serviceTracker;
+	private final ServiceTracker<?, OrganizationMembershipPolicy>
+		_serviceTracker;
 
 }

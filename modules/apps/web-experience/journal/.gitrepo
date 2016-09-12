@@ -1,0 +1,9 @@
+;
+; Do not manually edit this file.
+;
+[subrepo]
+	cmdver = liferay
+	commit = afcc8377840278d0d67f987f0b19ff88728ece8f
+	mode = pull
+	parent = bfca4c33777da2d6a5a511cad18ea5ede4024782
+	remote = git@github.com:liferay/com-liferay-journal.git

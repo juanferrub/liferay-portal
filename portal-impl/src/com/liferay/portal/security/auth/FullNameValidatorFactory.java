@@ -14,6 +14,7 @@
 
 package com.liferay.portal.security.auth;
 
+import com.liferay.portal.kernel.security.auth.FullNameValidator;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceTracker;
@@ -37,10 +38,10 @@ public class FullNameValidatorFactory {
 		_serviceTracker.open();
 	}
 
-	private static FullNameValidatorFactory _instance =
+	private static final FullNameValidatorFactory _instance =
 		new FullNameValidatorFactory();
 
-	private ServiceTracker<FullNameValidator, FullNameValidator>
+	private final ServiceTracker<FullNameValidator, FullNameValidator>
 		_serviceTracker;
 
 }

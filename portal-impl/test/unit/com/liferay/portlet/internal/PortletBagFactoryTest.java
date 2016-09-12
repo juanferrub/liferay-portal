@@ -15,9 +15,9 @@
 package com.liferay.portlet.internal;
 
 import com.liferay.portal.kernel.bean.BeanLocatorException;
+import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.model.impl.PortletImpl;
 import com.liferay.portlet.PortletBagFactory;
-import com.liferay.util.bridges.mvc.MVCPortlet;
 
 import javax.portlet.Portlet;
 
@@ -51,7 +51,9 @@ public class PortletBagFactoryTest extends TestCase {
 		try {
 			PortletBagFactory portletBagFactory = new PortletBagFactory();
 
-			portletBagFactory.setClassLoader(getClass().getClassLoader());
+			Class<?> clazz = getClass();
+
+			portletBagFactory.setClassLoader(clazz.getClassLoader());
 
 			portletBagFactory.create(new PortletImpl());
 
@@ -66,7 +68,10 @@ public class PortletBagFactoryTest extends TestCase {
 		try {
 			PortletBagFactory portletBagFactory = new PortletBagFactory();
 
-			portletBagFactory.setClassLoader(getClass().getClassLoader());
+			Class<?> clazz = getClass();
+
+			portletBagFactory.setClassLoader(clazz.getClassLoader());
+
 			portletBagFactory.setServletContext(new MockServletContext());
 
 			portletBagFactory.create(new PortletImpl());
@@ -86,7 +91,10 @@ public class PortletBagFactoryTest extends TestCase {
 
 			PortletBagFactory portletBagFactory = new PortletBagFactory();
 
-			portletBagFactory.setClassLoader(getClass().getClassLoader());
+			Class<?> clazz = getClass();
+
+			portletBagFactory.setClassLoader(clazz.getClassLoader());
+
 			portletBagFactory.setServletContext(new MockServletContext());
 			portletBagFactory.setWARFile(false);
 
@@ -111,14 +119,16 @@ public class PortletBagFactoryTest extends TestCase {
 
 				@Override
 				protected Portlet getPortletInstance(
-					com.liferay.portal.model.Portlet portlet) {
+					com.liferay.portal.kernel.model.Portlet portlet) {
 
 					return mvcPortlet;
 				}
 
 			};
 
-			portletBagFactory.setClassLoader(getClass().getClassLoader());
+			Class<?> clazz = getClass();
+
+			portletBagFactory.setClassLoader(clazz.getClassLoader());
 			portletBagFactory.setServletContext(new MockServletContext());
 			portletBagFactory.setWARFile(false);
 

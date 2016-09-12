@@ -51,8 +51,7 @@ public class PortalSessionActivationListener
 
 	public static void setInstance(HttpSession session) {
 		TransientValue<PortalSessionActivationListener> transientValue =
-			new TransientValue<PortalSessionActivationListener>(
-				PortalSessionActivationListener.getInstance());
+			new TransientValue<>(PortalSessionActivationListener.getInstance());
 
 		session.setAttribute(
 			PortalSessionActivationListener.class.getName(), transientValue);
@@ -67,7 +66,7 @@ public class PortalSessionActivationListener
 	public void sessionWillPassivate(HttpSessionEvent httpSessionEvent) {
 	}
 
-	private static PortalSessionActivationListener _instance =
+	private static final PortalSessionActivationListener _instance =
 		new PortalSessionActivationListener();
 
 }

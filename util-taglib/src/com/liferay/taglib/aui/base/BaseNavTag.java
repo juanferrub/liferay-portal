@@ -24,7 +24,7 @@ import javax.servlet.jsp.JspException;
  * @author Julio Camarero
  * @generated
  */
-public class BaseNavTag extends com.liferay.taglib.util.IncludeTag {
+public abstract class BaseNavTag extends com.liferay.taglib.util.IncludeTag {
 
 	@Override
 	public int doStartTag() throws JspException {
@@ -115,6 +115,8 @@ public class BaseNavTag extends com.liferay.taglib.util.IncludeTag {
 
 	@Override
 	protected void cleanUp() {
+		super.cleanUp();
+
 		_ariaLabel = null;
 		_ariaRole = null;
 		_collapsible = false;

@@ -14,32 +14,43 @@
 
 package com.liferay.portal.service.configuration.configurator.impl;
 
-import com.liferay.portal.cache.configurator.PortalCacheConfigurator;
+import com.liferay.portal.kernel.cache.PortalCacheManagerNames;
+import com.liferay.portal.kernel.cache.configurator.PortalCacheConfiguratorSettings;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.configuration.ConfigurationFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.security.permission.ResourceActionsUtil;
+import com.liferay.portal.kernel.service.ResourceActionLocalServiceUtil;
+import com.liferay.portal.kernel.service.ServiceComponentLocalService;
+import com.liferay.portal.kernel.service.configuration.ServiceComponentConfiguration;
+import com.liferay.portal.kernel.service.configuration.configurator.ServiceConfigurator;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.security.permission.ResourceActionsUtil;
-import com.liferay.portal.service.ResourceActionLocalServiceUtil;
-import com.liferay.portal.service.ServiceComponentLocalService;
-import com.liferay.portal.service.configuration.ServiceComponentConfiguration;
-import com.liferay.portal.service.configuration.configurator.ServiceConfigurator;
-import com.liferay.util.log4j.Log4JUtil;
+import com.liferay.registry.Registry;
+import com.liferay.registry.RegistryUtil;
+import com.liferay.registry.ServiceRegistrar;
 
 import java.net.URL;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /**
  * @author Miguel Pastor
  */
 public class ServiceConfiguratorImpl implements ServiceConfigurator {
+
+	public void destory() {
+		if (_serviceRegistrar != null) {
+			_serviceRegistrar.destroy();
+		}
+	}
 
 	@Override
 	public void destroyServices(
@@ -56,19 +67,11 @@ public class ServiceConfiguratorImpl implements ServiceConfigurator {
 			ClassLoader classLoader)
 		throws Exception {
 
-		initLog4J(classLoader);
-
 		initServiceComponent(serviceComponentConfiguration, classLoader);
 
 		reconfigureCaches(classLoader);
 
 		readResourceActions(classLoader);
-	}
-
-	public void setPortalCacheConfigurator(
-		PortalCacheConfigurator portalCacheConfigurator) {
-
-		_portalCacheConfigurator = portalCacheConfigurator;
 	}
 
 	public void setServiceComponentLocalService(
@@ -97,11 +100,6 @@ public class ServiceConfiguratorImpl implements ServiceConfigurator {
 		}
 
 		return classLoader.getResource(cacheConfigurationLocation);
-	}
-
-	protected void initLog4J(ClassLoader classLoader) {
-		Log4JUtil.configureLog4J(
-			classLoader.getResource("META-INF/portal-log4j.xml"));
 	}
 
 	protected void initServiceComponent(
@@ -150,9 +148,8 @@ public class ServiceConfiguratorImpl implements ServiceConfigurator {
 
 		try {
 			_serviceComponentLocalService.initServiceComponent(
-				serviceComponentConfiguration,
-				classLoader, buildNamespace, buildNumber, buildDate,
-				buildAutoUpgrade);
+				serviceComponentConfiguration, classLoader, buildNamespace,
+				buildNumber, buildDate, buildAutoUpgrade);
 		}
 		catch (PortalException pe) {
 			_log.error("Unable to initialize service component", pe);
@@ -160,8 +157,19 @@ public class ServiceConfiguratorImpl implements ServiceConfigurator {
 	}
 
 	protected void readResourceActions(ClassLoader classLoader) {
-		Configuration configuration = ConfigurationFactoryUtil.getConfiguration(
-			classLoader, "portlet");
+		Configuration configuration = null;
+
+		try {
+			configuration = ConfigurationFactoryUtil.getConfiguration(
+				classLoader, "portlet");
+		}
+		catch (Exception e) {
+			if (_log.isDebugEnabled()) {
+				_log.debug("Unable to read portlet.properties");
+			}
+
+			return;
+		}
 
 		String[] resourceActionsConfigs = StringUtil.split(
 			configuration.get(PropsKeys.RESOURCE_ACTIONS_CONFIGS));
@@ -180,17 +188,11 @@ public class ServiceConfiguratorImpl implements ServiceConfigurator {
 		}
 
 		String[] portletIds = StringUtil.split(
-			configuration.get("portlet.ids"));
+			configuration.get("service.configurator.portlet.ids"));
 
 		for (String portletId : portletIds) {
 			List<String> modelNames =
 				ResourceActionsUtil.getPortletModelResources(portletId);
-
-			List<String> portletActions =
-				ResourceActionsUtil.getPortletResourceActions(portletId);
-
-			ResourceActionLocalServiceUtil.checkResourceActions(
-				portletId, portletActions);
 
 			for (String modelName : modelNames) {
 				List<String> modelActions =
@@ -217,28 +219,56 @@ public class ServiceConfiguratorImpl implements ServiceConfigurator {
 			return;
 		}
 
-		_portalCacheConfigurator.reconfigureCaches(
-			classLoader,
-			getPortalCacheConfigurationURL(
-				configuration, classLoader,
-				PropsKeys.EHCACHE_SINGLE_VM_CONFIG_LOCATION));
+		String singleVMConfigurationLocation = configuration.get(
+			PropsKeys.EHCACHE_SINGLE_VM_CONFIG_LOCATION);
+		String multiVMConfigurationLocation = configuration.get(
+			PropsKeys.EHCACHE_MULTI_VM_CONFIG_LOCATION);
 
-		_portalCacheConfigurator.reconfigureCaches(
-			classLoader,
-			getPortalCacheConfigurationURL(
-				configuration, classLoader,
-				PropsKeys.EHCACHE_MULTI_VM_CONFIG_LOCATION));
+		if (Validator.isNull(singleVMConfigurationLocation) &&
+			Validator.isNull(multiVMConfigurationLocation)) {
 
-		_portalCacheConfigurator.reconfigureHibernateCache(
-			getPortalCacheConfigurationURL(
-				configuration, classLoader,
-				PropsKeys.NET_SF_EHCACHE_CONFIGURATION_RESOURCE_NAME));
+			return;
+		}
+
+		if (_serviceRegistrar == null) {
+			Registry registry = RegistryUtil.getRegistry();
+
+			_serviceRegistrar = registry.getServiceRegistrar(
+				PortalCacheConfiguratorSettings.class);
+		}
+
+		if (Validator.isNotNull(singleVMConfigurationLocation)) {
+			Map<String, Object> properties = new HashMap<>();
+
+			properties.put(
+				"portal.cache.manager.name", PortalCacheManagerNames.SINGLE_VM);
+
+			_serviceRegistrar.registerService(
+				PortalCacheConfiguratorSettings.class,
+				new PortalCacheConfiguratorSettings(
+					classLoader, singleVMConfigurationLocation),
+				properties);
+		}
+
+		if (Validator.isNotNull(multiVMConfigurationLocation)) {
+			Map<String, Object> properties = new HashMap<>();
+
+			properties.put(
+				"portal.cache.manager.name", PortalCacheManagerNames.MULTI_VM);
+
+			_serviceRegistrar.registerService(
+				PortalCacheConfiguratorSettings.class,
+				new PortalCacheConfiguratorSettings(
+					classLoader, multiVMConfigurationLocation),
+				properties);
+		}
 	}
 
-	private static Log _log = LogFactoryUtil.getLog(
+	private static final Log _log = LogFactoryUtil.getLog(
 		ServiceConfiguratorImpl.class);
 
-	private PortalCacheConfigurator _portalCacheConfigurator;
 	private ServiceComponentLocalService _serviceComponentLocalService;
+	private volatile ServiceRegistrar<PortalCacheConfiguratorSettings>
+		_serviceRegistrar;
 
 }

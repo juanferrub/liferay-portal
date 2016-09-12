@@ -63,8 +63,8 @@ public class BufferedIncrementConfiguration {
 		if (threadpoolMaxSize < 1) {
 			if (_log.isWarnEnabled()) {
 				_log.warn(
-					PropsKeys.BUFFERED_INCREMENT_THREADPOOL_MAX_SIZE +
-						"[" + configuration + "]=" + threadpoolMaxSize +
+					PropsKeys.BUFFERED_INCREMENT_THREADPOOL_MAX_SIZE + "[" +
+						configuration + "]=" + threadpoolMaxSize +
 							". Auto reset to 1.");
 			}
 
@@ -123,7 +123,7 @@ public class BufferedIncrementConfiguration {
 		return _standbyEnabled;
 	}
 
-	private static Log _log = LogFactoryUtil.getLog(
+	private static final Log _log = LogFactoryUtil.getLog(
 		BufferedIncrementConfiguration.class);
 
 	private final boolean _enabled;

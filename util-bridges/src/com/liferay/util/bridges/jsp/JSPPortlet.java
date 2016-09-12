@@ -14,12 +14,11 @@
 
 package com.liferay.util.bridges.jsp;
 
-import com.liferay.util.bridges.mvc.MVCPortlet;
+import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 
 /**
  * @author     Brian Wing Shun Chan
- * @deprecated As of 6.2.0, renamed to {@link
- *             com.liferay.util.bridges.mvc.MVCPortlet}
+ * @deprecated As of 6.2.0, renamed to {@link MVCPortlet}
  */
 @Deprecated
 public class JSPPortlet extends MVCPortlet {

@@ -15,7 +15,7 @@
 package com.liferay.portal.struts;
 
 import com.liferay.portal.kernel.struts.BaseStrutsAction;
-import com.liferay.portal.util.ClassLoaderUtil;
+import com.liferay.portal.kernel.util.ClassLoaderUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -65,8 +65,8 @@ public class StrutsActionAdapter extends BaseStrutsAction {
 		}
 	}
 
-	private Action _action;
-	private ActionForm _actionForm;
-	private ActionMapping _actionMapping;
+	private final Action _action;
+	private final ActionForm _actionForm;
+	private final ActionMapping _actionMapping;
 
 }

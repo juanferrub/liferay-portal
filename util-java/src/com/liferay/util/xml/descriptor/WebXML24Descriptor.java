@@ -83,8 +83,7 @@ public class WebXML24Descriptor extends SimpleXMLDescriptor {
 		return _UNIQUE_ELEMENTS;
 	}
 
-	private static final ElementIdentifier[] _ELEMENTS_IDENTIFIED_BY_ATTR = {
-	};
+	private static final ElementIdentifier[] _ELEMENTS_IDENTIFIED_BY_ATTR = {};
 
 	private static final ElementIdentifier[] _ELEMENTS_IDENTIFIED_BY_CHILD = {
 		new ElementIdentifier("context-param", "param-name"),
@@ -116,7 +115,6 @@ public class WebXML24Descriptor extends SimpleXMLDescriptor {
 		"session-config", "welcome-file-list", "jsp-config", "login-config"
 	};
 
-	private Map<String, String[]> _orderedChildren =
-		new HashMap<String, String[]>();
+	private final Map<String, String[]> _orderedChildren = new HashMap<>();
 
 }

@@ -1,0 +1,78 @@
+/**
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ */
+
+package com.liferay.portal.kernel.messaging;
+
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.ProxyFactory;
+import com.liferay.registry.Registry;
+import com.liferay.registry.RegistryUtil;
+
+import java.util.Collection;
+
+/**
+ * @author Michael C. Han
+ */
+public class DestinationFactoryUtil {
+
+	public static Destination createDestination(
+		DestinationConfiguration destinationConfiguration) {
+
+		return _instance.getDestinationFactory().createDestination(
+			destinationConfiguration);
+	}
+
+	public static Collection<String> getDestinationTypes() {
+		return _instance.getDestinationFactory().getDestinationTypes();
+	}
+
+	protected DestinationFactory getDestinationFactory() {
+		try {
+			while (_destinationFactory == null) {
+				Registry registry = RegistryUtil.getRegistry();
+
+				_destinationFactory = registry.getService(
+					DestinationFactory.class);
+
+				if (_log.isDebugEnabled()) {
+					_log.debug("Waiting for a destination factory");
+				}
+
+				Thread.sleep(500);
+			}
+		}
+		catch (InterruptedException ie) {
+			throw new IllegalStateException(
+				"Unable to obtain reference for destination factory", ie);
+		}
+
+		return _destinationFactory;
+	}
+
+	private DestinationFactoryUtil() {
+	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		DestinationFactoryUtil.class);
+
+	private static final DestinationFactoryUtil _instance =
+		new DestinationFactoryUtil();
+
+	private static volatile DestinationFactory _destinationFactory =
+		ProxyFactory.newServiceTrackedInstanceWithoutDummyService(
+			DestinationFactory.class, DestinationFactoryUtil.class,
+			"_destinationFactory");
+
+}

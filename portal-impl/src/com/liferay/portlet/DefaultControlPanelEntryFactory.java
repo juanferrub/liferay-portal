@@ -14,6 +14,7 @@
 
 package com.liferay.portlet;
 
+import com.liferay.portal.kernel.portlet.ControlPanelEntry;
 import com.liferay.registry.Filter;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
@@ -42,10 +43,10 @@ public class DefaultControlPanelEntryFactory {
 		_serviceTracker.open();
 	}
 
-	private static DefaultControlPanelEntryFactory _instance =
+	private static final DefaultControlPanelEntryFactory _instance =
 		new DefaultControlPanelEntryFactory();
 
-	private ServiceTracker<ControlPanelEntry, ControlPanelEntry>
+	private final ServiceTracker<ControlPanelEntry, ControlPanelEntry>
 		_serviceTracker;
 
 }

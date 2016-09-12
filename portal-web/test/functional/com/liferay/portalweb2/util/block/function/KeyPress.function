@@ -1,7 +1,0 @@
-<definition>
-	<command name="keyPress">
-		<execute selenium="mouseOver" />
-
-		<execute selenium="keyPress" />
-	</command>
-</definition>

@@ -16,8 +16,8 @@ package com.liferay.portlet.trash.service.impl;
 
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portlet.trash.model.TrashVersion;
 import com.liferay.portlet.trash.service.base.TrashVersionLocalServiceBaseImpl;
+import com.liferay.trash.kernel.model.TrashVersion;
 
 import java.util.List;
 
@@ -63,14 +63,22 @@ public class TrashVersionLocalServiceImpl
 		return null;
 	}
 
+	/**
+	 * @deprecated As of 7.0.0, replaced by {@link #fetchVersion(String, long)}
+	 */
+	@Deprecated
 	@Override
 	public TrashVersion fetchVersion(
 		long entryId, String className, long classPK) {
 
+		return fetchVersion(className, classPK);
+	}
+
+	@Override
+	public TrashVersion fetchVersion(String className, long classPK) {
 		long classNameId = classNameLocalService.getClassNameId(className);
 
-		return trashVersionPersistence.fetchByE_C_C(
-			entryId, classNameId, classPK);
+		return trashVersionPersistence.fetchByC_C(classNameId, classPK);
 	}
 
 	@Override

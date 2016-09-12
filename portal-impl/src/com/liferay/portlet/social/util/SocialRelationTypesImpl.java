@@ -15,7 +15,8 @@
 package com.liferay.portlet.social.util;
 
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portlet.social.model.SocialRelationConstants;
+import com.liferay.social.kernel.model.SocialRelationConstants;
+import com.liferay.social.kernel.util.SocialRelationTypes;
 
 import java.util.Arrays;
 import java.util.List;
@@ -93,7 +94,7 @@ public class SocialRelationTypesImpl implements SocialRelationTypes {
 		}
 	}
 
-	private static List<Integer> _allSocialRelationTypes = Arrays.asList(
+	private static final List<Integer> _allSocialRelationTypes = Arrays.asList(
 		SocialRelationConstants.TYPE_BI_CONNECTION,
 		SocialRelationConstants.TYPE_BI_COWORKER,
 		SocialRelationConstants.TYPE_BI_FRIEND,

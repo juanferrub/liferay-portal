@@ -14,7 +14,8 @@
 
 package com.liferay.portal.verify.model;
 
-import com.liferay.portlet.blogs.model.BlogsEntry;
+import com.liferay.blogs.kernel.model.BlogsEntry;
+import com.liferay.portal.kernel.verify.model.VerifiableResourcedModel;
 
 /**
  * @author Brian Wing Shun Chan
@@ -34,6 +35,11 @@ public class BlogsEntryVerifiableModel implements VerifiableResourcedModel {
 	@Override
 	public String getTableName() {
 		return "BlogsEntry";
+	}
+
+	@Override
+	public String getUserIdColumnName() {
+		return "userId";
 	}
 
 }

@@ -14,10 +14,12 @@
 
 package com.liferay.portal.repository.registry;
 
-import com.liferay.portal.kernel.concurrent.ConcurrentHashSet;
+import com.liferay.portal.kernel.cache.CacheRegistryItem;
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.repository.RepositoryFactory;
 import com.liferay.portal.kernel.repository.registry.RepositoryDefiner;
 import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
+import com.liferay.portal.kernel.util.ResourceBundleLoader;
 import com.liferay.portal.repository.external.LegacyExternalRepositoryDefiner;
 import com.liferay.portal.repository.util.ExternalRepositoryFactory;
 import com.liferay.portal.repository.util.ExternalRepositoryFactoryImpl;
@@ -30,21 +32,36 @@ import com.liferay.registry.ServiceRegistration;
 import com.liferay.registry.ServiceTracker;
 import com.liferay.registry.ServiceTrackerCustomizer;
 import com.liferay.registry.collections.StringServiceRegistrationMap;
+import com.liferay.registry.collections.StringServiceRegistrationMapImpl;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Adolfo Pérez
  */
 public class RepositoryClassDefinitionCatalogImpl
-	implements RepositoryClassDefinitionCatalog {
+	implements CacheRegistryItem, RepositoryClassDefinitionCatalog {
+
+	@Override
+	public Iterable<RepositoryClassDefinition>
+		getExternalRepositoryClassDefinitions() {
+
+		return _externalRepositoryClassDefinitions.values();
+	}
 
 	@Override
 	public Collection<String> getExternalRepositoryClassNames() {
-		return _externalRepositoriesClassNames;
+		return _externalRepositoryClassDefinitions.keySet();
+	}
+
+	@Override
+	public String getRegistryName() {
+		Class<?> clazz = getClass();
+
+		return clazz.getName();
 	}
 
 	@Override
@@ -52,6 +69,15 @@ public class RepositoryClassDefinitionCatalogImpl
 		String className) {
 
 		return _repositoryClassDefinitions.get(className);
+	}
+
+	@Override
+	public void invalidate() {
+		for (RepositoryClassDefinition repositoryClassDefinition :
+				_repositoryClassDefinitions.values()) {
+
+			repositoryClassDefinition.invalidateCache();
+		}
 	}
 
 	public void loadDefaultRepositoryDefiners() {
@@ -63,7 +89,9 @@ public class RepositoryClassDefinitionCatalogImpl
 
 		_serviceTracker.open();
 
-		registerRepositoryDefiner(_liferayRepositoryDefiner);
+		for (RepositoryDefiner repositoryDefiner : _repositoryDefiners) {
+			registerRepositoryDefiner(repositoryDefiner);
+		}
 
 		ClassLoader classLoader = PortalClassLoaderUtil.getClassLoader();
 
@@ -72,20 +100,23 @@ public class RepositoryClassDefinitionCatalogImpl
 				new ExternalRepositoryFactoryImpl(className, classLoader);
 
 			registerLegacyExternalRepositoryFactory(
-				className, externalRepositoryFactory);
+				className, externalRepositoryFactory,
+				LanguageUtil.getPortalResourceBundleLoader());
 		}
 	}
 
 	@Override
 	public void registerLegacyExternalRepositoryFactory(
-		String className, ExternalRepositoryFactory externalRepositoryFactory) {
+		String className, ExternalRepositoryFactory externalRepositoryFactory,
+		ResourceBundleLoader resourceBundleLoader) {
 
 		ExternalRepositoryFactoryUtil.registerExternalRepositoryFactory(
 			className, externalRepositoryFactory);
 
 		RepositoryDefiner repositoryDefiner =
 			new LegacyExternalRepositoryDefiner(
-				className, _legacyExternalRepositoryFactory);
+				className, _legacyExternalRepositoryFactory,
+				resourceBundleLoader);
 
 		ServiceRegistration<RepositoryDefiner> serviceRegistration =
 			registerRepositoryDefiner(repositoryDefiner);
@@ -99,10 +130,10 @@ public class RepositoryClassDefinitionCatalogImpl
 		_legacyExternalRepositoryFactory = legacyExternalRepositoryFactory;
 	}
 
-	public void setLiferayRepositoryDefiner(
-		RepositoryDefiner liferayRepositoryDefiner) {
+	public void setRepositoryDefiners(
+		List<RepositoryDefiner> repositoryDefiners) {
 
-		_liferayRepositoryDefiner = liferayRepositoryDefiner;
+		_repositoryDefiners = repositoryDefiners;
 	}
 
 	@Override
@@ -118,23 +149,8 @@ public class RepositoryClassDefinitionCatalogImpl
 		unregisterRepositoryDefiner(className);
 	}
 
-	protected RepositoryClassDefinition createRepositoryClassDefinition(
+	protected ServiceRegistration<RepositoryDefiner> registerRepositoryDefiner(
 		RepositoryDefiner repositoryDefiner) {
-
-		DefaultRepositoryClassDefinition defaultRepositoryClassDefinition =
-			new DefaultRepositoryClassDefinition(repositoryDefiner);
-
-		repositoryDefiner.registerRepositoryFactory(
-			defaultRepositoryClassDefinition);
-		repositoryDefiner.registerRepositoryEventListeners(
-			defaultRepositoryClassDefinition);
-
-		return defaultRepositoryClassDefinition;
-	}
-
-	protected ServiceRegistration<RepositoryDefiner>
-		registerRepositoryDefiner(
-			RepositoryDefiner repositoryDefiner) {
 
 		Registry registry = RegistryUtil.getRegistry();
 
@@ -143,20 +159,19 @@ public class RepositoryClassDefinitionCatalogImpl
 	}
 
 	protected void unregisterRepositoryDefiner(String className) {
-		_externalRepositoriesClassNames.remove(className);
+		_externalRepositoryClassDefinitions.remove(className);
 
 		_repositoryClassDefinitions.remove(className);
 	}
 
-	private Set<String> _externalRepositoriesClassNames =
-		new ConcurrentHashSet<String>();
+	private final Map<String, RepositoryClassDefinition>
+		_externalRepositoryClassDefinitions = new ConcurrentHashMap<>();
 	private RepositoryFactory _legacyExternalRepositoryFactory;
-	private RepositoryDefiner _liferayRepositoryDefiner;
-	private Map<String, RepositoryClassDefinition> _repositoryClassDefinitions =
-		new ConcurrentHashMap<String, RepositoryClassDefinition>();
-	private StringServiceRegistrationMap<RepositoryDefiner>
-		_serviceRegistrations =
-			new StringServiceRegistrationMap<RepositoryDefiner>();
+	private final Map<String, RepositoryClassDefinition>
+		_repositoryClassDefinitions = new ConcurrentHashMap<>();
+	private List<RepositoryDefiner> _repositoryDefiners;
+	private final StringServiceRegistrationMap<RepositoryDefiner>
+		_serviceRegistrations = new StringServiceRegistrationMapImpl<>();
 	private ServiceTracker<RepositoryDefiner, RepositoryDefiner>
 		_serviceTracker;
 
@@ -174,13 +189,17 @@ public class RepositoryClassDefinitionCatalogImpl
 				serviceReference);
 
 			String className = repositoryDefiner.getClassName();
+			RepositoryClassDefinition repositoryClassDefinition =
+				RepositoryClassDefinition.fromRepositoryDefiner(
+					repositoryDefiner);
 
 			if (repositoryDefiner.isExternalRepository()) {
-				_externalRepositoriesClassNames.add(className);
+				_externalRepositoryClassDefinitions.put(
+					className, repositoryClassDefinition);
 			}
 
 			_repositoryClassDefinitions.put(
-				className, createRepositoryClassDefinition(repositoryDefiner));
+				className, repositoryClassDefinition);
 
 			return repositoryDefiner;
 		}
@@ -191,17 +210,20 @@ public class RepositoryClassDefinitionCatalogImpl
 			RepositoryDefiner repositoryDefiner) {
 
 			String className = repositoryDefiner.getClassName();
+			RepositoryClassDefinition repositoryClassDefinition =
+				RepositoryClassDefinition.fromRepositoryDefiner(
+					repositoryDefiner);
 
 			if (repositoryDefiner.isExternalRepository()) {
-				_externalRepositoriesClassNames.add(className);
+				_externalRepositoryClassDefinitions.put(
+					className, repositoryClassDefinition);
 			}
 			else {
-				_externalRepositoriesClassNames.remove(className);
+				_externalRepositoryClassDefinitions.remove(className);
 			}
 
 			_repositoryClassDefinitions.put(
-				repositoryDefiner.getClassName(),
-				createRepositoryClassDefinition(repositoryDefiner));
+				className, repositoryClassDefinition);
 		}
 
 		@Override

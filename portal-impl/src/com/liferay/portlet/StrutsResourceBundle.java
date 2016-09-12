@@ -55,7 +55,7 @@ public class StrutsResourceBundle extends ResourceBundle {
 
 	@Override
 	public Enumeration<String> getKeys() {
-		Set<String> keys = new HashSet<String>();
+		Set<String> keys = new HashSet<>();
 
 		for (String key : _keys) {
 			if (parent.containsKey(_buildKey(key))) {
@@ -97,7 +97,7 @@ public class StrutsResourceBundle extends ResourceBundle {
 		return key.concat(StringPool.PERIOD).concat(_portletName);
 	}
 
-	private static Set<String> _keys = SetUtil.fromArray(
+	private static final Set<String> _keys = SetUtil.fromArray(
 		new String[] {
 			JavaConstants.JAVAX_PORTLET_DESCRIPTION,
 			JavaConstants.JAVAX_PORTLET_KEYWORDS,
@@ -106,7 +106,7 @@ public class StrutsResourceBundle extends ResourceBundle {
 			JavaConstants.JAVAX_PORTLET_TITLE
 		});
 
-	private Locale _locale;
-	private String _portletName;
+	private final Locale _locale;
+	private final String _portletName;
 
 }

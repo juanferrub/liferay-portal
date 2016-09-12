@@ -16,7 +16,7 @@ package com.liferay.portal.spring.servlet;
 
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.security.ac.AccessControlThreadLocal;
+import com.liferay.portal.kernel.security.access.control.AccessControlThreadLocal;
 import com.liferay.portal.spring.context.TunnelApplicationContext;
 
 import javax.servlet.ServletException;
@@ -73,6 +73,7 @@ public class RemotingServlet extends DispatcherServlet {
 		}
 	}
 
-	private static Log _log = LogFactoryUtil.getLog(RemotingServlet.class);
+	private static final Log _log = LogFactoryUtil.getLog(
+		RemotingServlet.class);
 
 }

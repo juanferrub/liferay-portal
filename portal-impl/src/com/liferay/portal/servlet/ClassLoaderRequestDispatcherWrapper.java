@@ -15,7 +15,7 @@
 package com.liferay.portal.servlet;
 
 import com.liferay.portal.kernel.servlet.PluginContextListener;
-import com.liferay.portal.util.ClassLoaderUtil;
+import com.liferay.portal.kernel.util.ClassLoaderUtil;
 
 import java.io.IOException;
 
@@ -86,7 +86,7 @@ public class ClassLoaderRequestDispatcherWrapper implements RequestDispatcher {
 		}
 	}
 
-	private RequestDispatcher _requestDispatcher;
-	private ServletContext _servletContext;
+	private final RequestDispatcher _requestDispatcher;
+	private final ServletContext _servletContext;
 
 }

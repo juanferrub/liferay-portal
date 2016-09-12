@@ -1,0 +1,9 @@
+;
+; Do not manually edit this file.
+;
+[subrepo]
+	cmdver = liferay
+	commit = ee6ec0bc526ce9174b735d38a146727dd18fcf36
+	mode = push
+	parent = c549188e002dd45f0447249bba4a7c18a67241fc
+	remote = git@github.com:liferay/com-liferay-web-proxy.git

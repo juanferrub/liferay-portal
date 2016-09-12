@@ -17,14 +17,16 @@ package com.liferay.portlet.usersadmin.search;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.portlet.PortalPreferences;
+import com.liferay.portal.kernel.portlet.PortletPreferencesFactoryUtil;
+import com.liferay.portal.kernel.portlet.PortletProvider;
+import com.liferay.portal.kernel.portlet.PortletProviderUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.model.Group;
-import com.liferay.portal.util.PortletKeys;
-import com.liferay.portlet.PortalPreferences;
-import com.liferay.portlet.PortletPreferencesFactoryUtil;
-import com.liferay.portlet.usersadmin.util.UsersAdminUtil;
+import com.liferay.users.admin.kernel.util.UsersAdminUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,8 +41,10 @@ import javax.portlet.PortletURL;
  */
 public class GroupSearch extends SearchContainer<Group> {
 
-	static List<String> headerNames = new ArrayList<String>();
-	static Map<String, String> orderableHeaders = new HashMap<String, String>();
+	public static final String EMPTY_RESULTS_MESSAGE = "no-sites-were-found";
+
+	public static List<String> headerNames = new ArrayList<>();
+	public static Map<String, String> orderableHeaders = new HashMap<>();
 
 	static {
 		headerNames.add("name");
@@ -49,8 +53,6 @@ public class GroupSearch extends SearchContainer<Group> {
 		orderableHeaders.put("name", "name");
 		orderableHeaders.put("type", "type");
 	}
-
-	public static final String EMPTY_RESULTS_MESSAGE = "no-sites-were-found";
 
 	public GroupSearch(PortletRequest portletRequest, PortletURL iteratorURL) {
 		super(
@@ -70,6 +72,9 @@ public class GroupSearch extends SearchContainer<Group> {
 				PortletPreferencesFactoryUtil.getPortalPreferences(
 					portletRequest);
 
+			String portletId = PortletProviderUtil.getPortletId(
+				User.class.getName(), PortletProvider.Action.VIEW);
+
 			String orderByCol = ParamUtil.getString(
 				portletRequest, "orderByCol");
 			String orderByType = ParamUtil.getString(
@@ -79,16 +84,15 @@ public class GroupSearch extends SearchContainer<Group> {
 				Validator.isNotNull(orderByType)) {
 
 				preferences.setValue(
-					PortletKeys.USERS_ADMIN, "groups-order-by-col", orderByCol);
+					portletId, "groups-order-by-col", orderByCol);
 				preferences.setValue(
-					PortletKeys.USERS_ADMIN, "groups-order-by-type",
-					orderByType);
+					portletId, "groups-order-by-type", orderByType);
 			}
 			else {
 				orderByCol = preferences.getValue(
-					PortletKeys.USERS_ADMIN, "groups-order-by-col", "name");
+					portletId, "groups-order-by-col", "name");
 				orderByType = preferences.getValue(
-					PortletKeys.USERS_ADMIN, "groups-order-by-type", "asc");
+					portletId, "groups-order-by-type", "asc");
 			}
 
 			OrderByComparator<Group> orderByComparator =
@@ -105,6 +109,6 @@ public class GroupSearch extends SearchContainer<Group> {
 		}
 	}
 
-	private static Log _log = LogFactoryUtil.getLog(GroupSearch.class);
+	private static final Log _log = LogFactoryUtil.getLog(GroupSearch.class);
 
 }

@@ -1,0 +1,9 @@
+;
+; Do not manually edit this file.
+;
+[subrepo]
+	cmdver = liferay
+	commit = 9788d04aa18a01cc82181495200737101f359a57
+	mode = push
+	parent = ea2234436584461730aa988254ee282fd99bd98c
+	remote = git@github.com:liferay/com-liferay-frontend-taglib.git

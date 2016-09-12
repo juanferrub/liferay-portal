@@ -14,16 +14,15 @@
 
 package com.liferay.portal.security.pacl;
 
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
-import com.liferay.portal.model.User;
 import com.liferay.portal.model.impl.UserImpl;
 import com.liferay.portal.security.lang.DoPrivilegedBean;
 import com.liferay.portal.security.lang.DoPrivilegedFactory;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import org.testng.Assert;
 
 /**
  * @author Raymond Augé
@@ -61,7 +60,7 @@ public class DoPrivilegedFactoryTest {
 	public void testString() {
 		String string = DoPrivilegedFactory.wrap("Test");
 
-		Assert.assertEquals(string, "Test");
+		Assert.assertEquals("Test", string);
 		Assert.assertEquals(string.getClass(), String.class);
 	}
 
@@ -72,7 +71,7 @@ public class DoPrivilegedFactoryTest {
 		Assert.assertTrue(user instanceof DoPrivilegedBean);
 	}
 
-	private class ClassWithNoInterfaces {
+	private static class ClassWithNoInterfaces {
 	}
 
 }

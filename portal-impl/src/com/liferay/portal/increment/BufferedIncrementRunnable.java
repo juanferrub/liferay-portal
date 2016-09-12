@@ -14,14 +14,14 @@
 
 package com.liferay.portal.increment;
 
-import com.liferay.portal.kernel.cache.Lifecycle;
-import com.liferay.portal.kernel.cache.ThreadLocalCacheManager;
+import com.liferay.portal.kernel.cache.thread.local.Lifecycle;
+import com.liferay.portal.kernel.cache.thread.local.ThreadLocalCacheManager;
 import com.liferay.portal.kernel.concurrent.BatchablePipe;
 import com.liferay.portal.kernel.increment.Increment;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.util.CentralizedThreadLocal;
-import com.liferay.portal.security.auth.CompanyThreadLocal;
 
 import java.io.Serializable;
 
@@ -35,11 +35,12 @@ public class BufferedIncrementRunnable implements Runnable {
 	public BufferedIncrementRunnable(
 		BufferedIncrementConfiguration bufferedIncrementConfiguration,
 		BatchablePipe<Serializable, Increment<?>> batchablePipe,
-		AtomicInteger queueLengthTracker) {
+		AtomicInteger queueLengthTracker, Thread dispatchThread) {
 
 		_bufferedIncrementConfiguration = bufferedIncrementConfiguration;
 		_batchablePipe = batchablePipe;
 		_queueLengthTracker = queueLengthTracker;
+		_dispatchThread = dispatchThread;
 
 		if (_bufferedIncrementConfiguration.isStandbyEnabled()) {
 			_queueLengthTracker.incrementAndGet();
@@ -86,18 +87,21 @@ public class BufferedIncrementRunnable implements Runnable {
 			}
 		}
 
-		ThreadLocalCacheManager.clearAll(Lifecycle.REQUEST);
+		if (_dispatchThread != Thread.currentThread()) {
+			ThreadLocalCacheManager.clearAll(Lifecycle.REQUEST);
 
-		CentralizedThreadLocal.clearShortLivedThreadLocals();
+			CentralizedThreadLocal.clearShortLivedThreadLocals();
+		}
 	}
 
-	private static Log _log = LogFactoryUtil.getLog(
+	private static final Log _log = LogFactoryUtil.getLog(
 		BufferedIncrementRunnable.class);
 
 	private final BatchablePipe<Serializable, Increment<?>> _batchablePipe;
 	private final BufferedIncrementConfiguration
 		_bufferedIncrementConfiguration;
 	private final long _companyId;
+	private final Thread _dispatchThread;
 	private final AtomicInteger _queueLengthTracker;
 
 }

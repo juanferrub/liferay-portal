@@ -117,11 +117,11 @@ public class PortletActionAdapter extends PortletAction {
 			return _originalPortletAction.isCheckMethodOnProcessAction();
 		}
 		else {
-			return super.isCheckMethodOnProcessAction();
+			return _strutsPortletAction.isCheckMethodOnProcessAction();
 		}
 	}
 
 	private PortletAction _originalPortletAction;
-	private StrutsPortletAction _strutsPortletAction;
+	private final StrutsPortletAction _strutsPortletAction;
 
 }

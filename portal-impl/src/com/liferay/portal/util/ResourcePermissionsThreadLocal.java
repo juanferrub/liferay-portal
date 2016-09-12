@@ -14,8 +14,8 @@
 
 package com.liferay.portal.util;
 
+import com.liferay.portal.kernel.model.ResourcePermission;
 import com.liferay.portal.kernel.util.InitialThreadLocal;
-import com.liferay.portal.model.ResourcePermission;
 
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +36,7 @@ public class ResourcePermissionsThreadLocal {
 
 		if (resourcePermissions != null) {
 			Map<Long, ResourcePermission> resourcePermissionMap =
-				new HashMap<Long, ResourcePermission>();
+				new HashMap<>();
 
 			for (ResourcePermission resourcePermission : resourcePermissions) {
 				resourcePermissionMap.put(
@@ -50,7 +50,7 @@ public class ResourcePermissionsThreadLocal {
 		}
 	}
 
-	private static ThreadLocal<Map<Long, ResourcePermission>>
+	private static final ThreadLocal<Map<Long, ResourcePermission>>
 		_resourcePermissions = new InitialThreadLocal
 			<Map<Long, ResourcePermission>>(
 				ResourcePermissionsThreadLocal.class + "._resourcePermissions",

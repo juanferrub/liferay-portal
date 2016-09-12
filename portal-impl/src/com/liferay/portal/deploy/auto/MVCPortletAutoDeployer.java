@@ -33,7 +33,7 @@ public class MVCPortletAutoDeployer extends PortletAutoDeployer {
 
 		super.copyXmls(srcFile, displayName, pluginPackage);
 
-		Map<String, String> filterMap = new HashMap<String, String>();
+		Map<String, String> filterMap = new HashMap<>();
 
 		String pluginName = displayName;
 
@@ -42,7 +42,8 @@ public class MVCPortletAutoDeployer extends PortletAutoDeployer {
 		}
 
 		filterMap.put(
-			"portlet_class", "com.liferay.util.bridges.mvc.MVCPortlet");
+			"portlet_class",
+			"com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet");
 		filterMap.put("portlet_name", pluginName);
 		filterMap.put("portlet_title", pluginName);
 		filterMap.put("restore_current_view", "false");

@@ -39,7 +39,7 @@ public class UrlToWebUrlMethodImpl extends BaseMethodImpl {
 	protected List<ResponseElement> getElements(
 		SharepointRequest sharepointRequest) {
 
-		List<ResponseElement> elements = new ArrayList<ResponseElement>();
+		List<ResponseElement> elements = new ArrayList<>();
 
 		String url = sharepointRequest.getParameterValue("url");
 
@@ -66,7 +66,7 @@ public class UrlToWebUrlMethodImpl extends BaseMethodImpl {
 
 	private static final String _METHOD_NAME = "url to web url";
 
-	private static Log _log = LogFactoryUtil.getLog(
+	private static final Log _log = LogFactoryUtil.getLog(
 		UrlToWebUrlMethodImpl.class);
 
 }

@@ -38,7 +38,7 @@ public class EnvironmentClassLoader
 		if (_SECURITY_ENABLED && (_id != null) && _id.startsWith("web-app:") &&
 			!_id.endsWith("/ROOT")) {
 
-			return new ArrayList<Permission>();
+			return new ArrayList<>();
 		}
 
 		return super.getPermissions();
@@ -58,6 +58,6 @@ public class EnvironmentClassLoader
 	private static final boolean _SECURITY_ENABLED =
 		(System.getSecurityManager() != null);
 
-	private String _id;
+	private final String _id;
 
 }

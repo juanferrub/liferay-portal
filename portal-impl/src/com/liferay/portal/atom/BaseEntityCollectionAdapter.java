@@ -16,7 +16,7 @@ package com.liferay.portal.atom;
 
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.model.Company;
+import com.liferay.portal.kernel.model.Company;
 
 import java.util.Date;
 import java.util.List;
@@ -160,7 +160,7 @@ public abstract class BaseEntityCollectionAdapter<T>
 
 	protected String collectionName;
 
-	private static Log _log = LogFactoryUtil.getLog(
+	private static final Log _log = LogFactoryUtil.getLog(
 		BaseEntityCollectionAdapter.class);
 
 }

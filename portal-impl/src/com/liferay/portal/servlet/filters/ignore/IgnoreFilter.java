@@ -14,11 +14,11 @@
 
 package com.liferay.portal.servlet.filters.ignore;
 
-import com.liferay.portal.NoSuchLayoutException;
+import com.liferay.portal.kernel.exception.NoSuchLayoutException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.servlet.filters.BasePortalFilter;
-import com.liferay.portal.util.PortalUtil;
 
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
@@ -46,6 +46,6 @@ public class IgnoreFilter extends BasePortalFilter {
 			request, response);
 	}
 
-	private static Log _log = LogFactoryUtil.getLog(IgnoreFilter.class);
+	private static final Log _log = LogFactoryUtil.getLog(IgnoreFilter.class);
 
 }

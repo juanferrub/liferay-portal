@@ -16,18 +16,17 @@ package com.liferay.portal.security.permission;
 
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.model.Role;
-import com.liferay.portal.model.RoleConstants;
-import com.liferay.portal.model.User;
-import com.liferay.portal.service.RoleLocalServiceUtil;
-import com.liferay.portal.service.UserLocalServiceUtil;
+import com.liferay.portal.kernel.model.Role;
+import com.liferay.portal.kernel.model.RoleConstants;
+import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.security.permission.PermissionChecker;
+import com.liferay.portal.kernel.service.RoleLocalServiceUtil;
+import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portlet.admin.util.OmniadminUtil;
 
 import java.util.Collections;
 import java.util.List;
-
-import javax.portlet.PortletRequest;
 
 /**
  * @author Brian Wing Shun Chan
@@ -40,13 +39,6 @@ public abstract class BasePermissionChecker implements PermissionChecker {
 	@Override
 	public long getCompanyId() {
 		return user.getCompanyId();
-	}
-
-	@Override
-	public List<Long> getGuestResourceBlockIds(
-		long companyId, long groupId, String name, String actionId) {
-
-		return Collections.emptyList();
 	}
 
 	@Override
@@ -134,24 +126,6 @@ public abstract class BasePermissionChecker implements PermissionChecker {
 		return checkGuest;
 	}
 
-	/**
-	 * @deprecated As of 6.1.0, renamed to {@link #isGroupAdmin(long)}
-	 */
-	@Deprecated
-	@Override
-	public boolean isCommunityAdmin(long groupId) {
-		return isGroupAdmin(groupId);
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, renamed to {@link #isGroupOwner(long)}
-	 */
-	@Deprecated
-	@Override
-	public boolean isCommunityOwner(long groupId) {
-		return isGroupOwner(groupId);
-	}
-
 	@Override
 	public boolean isOmniadmin() {
 		if (omniadmin == null) {
@@ -166,14 +140,6 @@ public abstract class BasePermissionChecker implements PermissionChecker {
 		return signedIn;
 	}
 
-	@Override
-	public void resetValues() {
-	}
-
-	@Override
-	public void setValues(PortletRequest portletRequest) {
-	}
-
 	protected boolean checkGuest = PropsValues.PERMISSIONS_CHECK_GUEST_ENABLED;
 	protected long defaultUserId;
 	protected Boolean omniadmin;
@@ -181,7 +147,7 @@ public abstract class BasePermissionChecker implements PermissionChecker {
 	protected boolean signedIn;
 	protected User user;
 
-	private static Log _log = LogFactoryUtil.getLog(
+	private static final Log _log = LogFactoryUtil.getLog(
 		BasePermissionChecker.class);
 
 }

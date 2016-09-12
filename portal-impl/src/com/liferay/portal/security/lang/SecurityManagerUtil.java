@@ -17,6 +17,7 @@ package com.liferay.portal.security.lang;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.ServiceLoader;
+import com.liferay.portal.module.framework.ModuleFrameworkAdapterHelper;
 import com.liferay.portal.util.PropsValues;
 
 import java.util.List;
@@ -66,7 +67,7 @@ public class SecurityManagerUtil {
 				return;
 			}
 
-			loadPortalSecurityManager();
+			_loadPortalSecurityManager();
 
 			if (_portalSecurityManager == null) {
 				_portalSecurityManagerStrategy =
@@ -114,10 +115,12 @@ public class SecurityManagerUtil {
 		return false;
 	}
 
-	private static void loadPortalSecurityManager() {
+	private static void _loadPortalSecurityManager() {
 		try {
 			List<PortalSecurityManager> portalSecurityManagers =
-				ServiceLoader.load(PortalSecurityManager.class);
+				ServiceLoader.load(
+					ModuleFrameworkAdapterHelper.getClassLoader(),
+					PortalSecurityManager.class);
 
 			if (portalSecurityManagers.isEmpty()) {
 				return;
@@ -130,7 +133,8 @@ public class SecurityManagerUtil {
 		}
 	}
 
-	private static Log _log = LogFactoryUtil.getLog(SecurityManagerUtil.class);
+	private static final Log _log = LogFactoryUtil.getLog(
+		SecurityManagerUtil.class);
 
 	private static PortalSecurityManager _portalSecurityManager;
 	private static PortalSecurityManagerStrategy _portalSecurityManagerStrategy;
@@ -140,10 +144,7 @@ public class SecurityManagerUtil {
 		DEFAULT, LIFERAY;
 
 		public static PortalSecurityManagerStrategy parse(String value) {
-			if (PropsValues.TCK_URL) {
-				return DEFAULT;
-			}
-			else if (value.equals("liferay")) {
+			if (value.equals("liferay")) {
 				return LIFERAY;
 			}
 

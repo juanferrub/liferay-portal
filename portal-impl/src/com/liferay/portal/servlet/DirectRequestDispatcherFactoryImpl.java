@@ -20,7 +20,6 @@ import com.liferay.portal.kernel.security.pacl.DoPrivileged;
 import com.liferay.portal.kernel.servlet.DirectRequestDispatcherFactory;
 import com.liferay.portal.kernel.servlet.DirectServletRegistryUtil;
 import com.liferay.portal.kernel.util.CharPool;
-import com.liferay.portal.kernel.util.ContextPathUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.util.PropsValues;
 
@@ -85,7 +84,7 @@ public class DirectRequestDispatcherFactoryImpl
 				"Path " + path + " is not relative to context root");
 		}
 
-		String contextPath = ContextPathUtil.getContextPath(servletContext);
+		String contextPath = servletContext.getContextPath();
 
 		String fullPath = contextPath.concat(path);
 		String queryString = null;
@@ -118,16 +117,16 @@ public class DirectRequestDispatcherFactoryImpl
 			}
 
 			requestDispatcher = new DirectRequestDispatcher(
-				servlet, queryString);
+				servlet, path, queryString);
 		}
 
 		return _pacl.getRequestDispatcher(servletContext, requestDispatcher);
 	}
 
-	private static Log _log = LogFactoryUtil.getLog(
+	private static final Log _log = LogFactoryUtil.getLog(
 		DirectRequestDispatcherFactoryImpl.class);
 
-	private static PACL _pacl = new NoPACL();
+	private static final PACL _pacl = new NoPACL();
 
 	private static class NoPACL implements PACL {
 

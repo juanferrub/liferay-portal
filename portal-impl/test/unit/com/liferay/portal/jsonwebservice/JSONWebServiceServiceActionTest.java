@@ -14,16 +14,22 @@
 
 package com.liferay.portal.jsonwebservice;
 
+import com.liferay.portal.kernel.jsonwebservice.JSONWebServiceAction;
 import com.liferay.portal.kernel.jsonwebservice.JSONWebServiceActionsManagerUtil;
 import com.liferay.portal.kernel.servlet.HttpMethods;
+import com.liferay.portal.kernel.upload.FileItem;
 import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PropsUtil;
+import com.liferay.portal.upload.UploadServletRequestImpl;
 import com.liferay.portal.util.PortalImpl;
-import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PropsImpl;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.DynaActionForm;
@@ -95,9 +101,9 @@ public class JSONWebServiceServiceActionTest
 	public void testInvokerNullCall() throws Exception {
 		registerActionClass(FooService.class);
 
-		Map<String, Object> map = new LinkedHashMap<String, Object>();
+		Map<String, Object> map = new LinkedHashMap<>();
 
-		Map<String, Object> params = new LinkedHashMap<String, Object>();
+		Map<String, Object> params = new LinkedHashMap<>();
 
 		map.put("/foo/null-return", params);
 
@@ -119,9 +125,9 @@ public class JSONWebServiceServiceActionTest
 	public void testInvokerSimpleCall() throws Exception {
 		registerActionClass(FooService.class);
 
-		Map<String, Object> map = new LinkedHashMap<String, Object>();
+		Map<String, Object> map = new LinkedHashMap<>();
 
-		Map<String, Object> params = new LinkedHashMap<String, Object>();
+		Map<String, Object> params = new LinkedHashMap<>();
 
 		map.put("/foo/hello-world", params);
 
@@ -140,6 +146,30 @@ public class JSONWebServiceServiceActionTest
 			mockHttpServletResponse);
 
 		Assert.assertEquals("\"Welcome 173 to Jupiter\"", json);
+	}
+
+	@Test
+	public void testMultipartRequest() throws Exception {
+		registerActionClass(FooService.class);
+
+		Map<String, FileItem[]> fileParams = new HashMap<>();
+
+		fileParams.put("fileName", null);
+
+		HttpServletRequest httpServletRequest = new UploadServletRequestImpl(
+			createHttpRequest("/foo/add-file"), fileParams, null) {
+
+			@Override
+			public String getFileName(String name) {
+				return "test";
+			}
+
+		};
+
+		JSONWebServiceAction jsonWebServiceAction = lookupJSONWebServiceAction(
+			httpServletRequest);
+
+		Assert.assertNotNull(jsonWebServiceAction);
 	}
 
 	@Test
@@ -195,9 +225,9 @@ public class JSONWebServiceServiceActionTest
 
 		registerActionClass(FooService.class, contextName);
 
-		Map<String, Object> map = new LinkedHashMap<String, Object>();
+		Map<String, Object> map = new LinkedHashMap<>();
 
-		Map<String, Object> params = new LinkedHashMap<String, Object>();
+		Map<String, Object> params = new LinkedHashMap<>();
 
 		map.put(query, params);
 

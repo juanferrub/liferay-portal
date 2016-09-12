@@ -1,0 +1,9 @@
+;
+; Do not manually edit this file.
+;
+[subrepo]
+	cmdver = liferay
+	commit = b305e113601363d22d575ca8a773fa3f8de8cb92
+	mode = push
+	parent = e663c882e54b7b6c37e5d1af6f0a7745cbccdccc
+	remote = git@github.com:liferay/com-liferay-wiki.git

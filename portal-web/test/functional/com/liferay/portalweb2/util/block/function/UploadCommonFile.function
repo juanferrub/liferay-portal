@@ -1,9 +1,0 @@
-<definition>
-	<command name="uploadCommonFile">
-		<execute selenium="waitForVisible" />
-
-		<execute selenium="mouseOver" />
-
-		<execute selenium="uploadCommonFile" />
-	</command>
-</definition>

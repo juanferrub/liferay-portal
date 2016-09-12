@@ -14,30 +14,30 @@
 
 package com.liferay.portal.servlet.filters.virtualhost;
 
-import com.liferay.portal.LayoutFriendlyURLException;
-import com.liferay.portal.NoSuchLayoutException;
+import com.liferay.portal.kernel.exception.LayoutFriendlyURLException;
+import com.liferay.portal.kernel.exception.NoSuchLayoutException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.LayoutSet;
+import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
+import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.struts.LastPath;
 import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.HttpUtil;
+import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.model.Group;
-import com.liferay.portal.model.LayoutSet;
+import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.model.impl.LayoutImpl;
-import com.liferay.portal.service.GroupLocalServiceUtil;
-import com.liferay.portal.service.LayoutLocalServiceUtil;
 import com.liferay.portal.servlet.I18nServlet;
 import com.liferay.portal.servlet.filters.BasePortalFilter;
-import com.liferay.portal.util.Portal;
 import com.liferay.portal.util.PortalInstances;
-import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PropsValues;
-import com.liferay.portal.util.WebKeys;
 import com.liferay.portal.webserver.WebServerServlet;
 
 import java.util.Set;
@@ -161,16 +161,35 @@ public class VirtualHostFilter extends BasePortalFilter {
 
 		long companyId = PortalInstances.getCompanyId(request);
 
-		String contextPath = PortalUtil.getPathContext();
+		String originalContextPath = PortalUtil.getPathContext();
+
+		String contextPath = originalContextPath;
 
 		String originalFriendlyURL = request.getRequestURI();
 
 		String friendlyURL = originalFriendlyURL;
 
-		if (Validator.isNotNull(contextPath) &&
-			friendlyURL.contains(contextPath)) {
+		friendlyURL = StringUtil.replace(
+			friendlyURL, StringPool.DOUBLE_SLASH, StringPool.SLASH);
 
-			friendlyURL = friendlyURL.substring(contextPath.length());
+		if (!friendlyURL.equals(StringPool.SLASH) &&
+			Validator.isNotNull(contextPath)) {
+
+			String proxyPath = PortalUtil.getPathProxy();
+
+			if (Validator.isNotNull(proxyPath) &&
+				contextPath.startsWith(proxyPath)) {
+
+				contextPath = contextPath.substring(proxyPath.length());
+			}
+
+			if (friendlyURL.startsWith(contextPath) &&
+				StringUtil.startsWith(
+					friendlyURL.substring(contextPath.length()),
+					StringPool.SLASH)) {
+
+				friendlyURL = friendlyURL.substring(contextPath.length());
+			}
 		}
 
 		int pos = friendlyURL.indexOf(StringPool.SEMICOLON);
@@ -179,10 +198,8 @@ public class VirtualHostFilter extends BasePortalFilter {
 			friendlyURL = friendlyURL.substring(0, pos);
 		}
 
-		friendlyURL = StringUtil.replace(
-			friendlyURL, StringPool.DOUBLE_SLASH, StringPool.SLASH);
-
 		String i18nLanguageId = null;
+		String i18nLanguageIdLowerCase = null;
 
 		Set<String> languageIds = I18nServlet.getLanguageIds();
 
@@ -195,6 +212,11 @@ public class VirtualHostFilter extends BasePortalFilter {
 					 !StringUtil.equalsIgnoreCase(friendlyURL, languageId))) {
 
 					continue;
+				}
+
+				if (!friendlyURL.startsWith(languageId)) {
+					i18nLanguageIdLowerCase = StringUtil.toLowerCase(
+						languageId);
 				}
 
 				if (pos == -1) {
@@ -222,10 +244,25 @@ public class VirtualHostFilter extends BasePortalFilter {
 
 			_log.debug("Friendly URL is not valid");
 
-			processFilter(
-				VirtualHostFilter.class, request, response, filterChain);
+			if (Validator.isNotNull(i18nLanguageIdLowerCase)) {
+				String forwardURL = StringUtil.replace(
+					originalFriendlyURL, i18nLanguageIdLowerCase,
+					i18nLanguageId);
 
-			return;
+				RequestDispatcher requestDispatcher =
+					_servletContext.getRequestDispatcher(forwardURL);
+
+				requestDispatcher.forward(request, response);
+
+				return;
+			}
+			else {
+				processFilter(
+					VirtualHostFilter.class.getName(), request, response,
+					filterChain);
+
+				return;
+			}
 		}
 
 		LayoutSet layoutSet = (LayoutSet)request.getAttribute(
@@ -237,14 +274,16 @@ public class VirtualHostFilter extends BasePortalFilter {
 
 		if (layoutSet == null) {
 			processFilter(
-				VirtualHostFilter.class, request, response, filterChain);
+				VirtualHostFilter.class.getName(), request, response,
+				filterChain);
 
 			return;
 		}
 
 		try {
 			LastPath lastPath = new LastPath(
-				contextPath, friendlyURL, request.getParameterMap());
+				originalContextPath, friendlyURL,
+				HttpUtil.parameterMapToString(request.getParameterMap()));
 
 			request.setAttribute(WebKeys.LAST_PATH, lastPath);
 
@@ -275,7 +314,7 @@ public class VirtualHostFilter extends BasePortalFilter {
 						request, group.getGroupId(), friendlyURL)) {
 
 					processFilter(
-						VirtualHostFilter.class, request, response,
+						VirtualHostFilter.class.getName(), request, response,
 						filterChain);
 
 					return;
@@ -322,7 +361,8 @@ public class VirtualHostFilter extends BasePortalFilter {
 			_log.error(e, e);
 
 			processFilter(
-				VirtualHostFilter.class, request, response, filterChain);
+				VirtualHostFilter.class.getName(), request, response,
+				filterChain);
 		}
 	}
 
@@ -349,7 +389,8 @@ public class VirtualHostFilter extends BasePortalFilter {
 	private static final String _PUBLIC_GROUP_SERVLET_MAPPING_SLASH =
 		_PUBLIC_GROUP_SERVLET_MAPPING + StringPool.SLASH;
 
-	private static Log _log = LogFactoryUtil.getLog(VirtualHostFilter.class);
+	private static final Log _log = LogFactoryUtil.getLog(
+		VirtualHostFilter.class);
 
 	private ServletContext _servletContext;
 

@@ -24,7 +24,7 @@ import javax.servlet.jsp.JspException;
  * @author Julio Camarero
  * @generated
  */
-public class BaseNavItemTag extends com.liferay.taglib.util.IncludeTag {
+public abstract class BaseNavItemTag extends com.liferay.taglib.util.IncludeTag {
 
 	@Override
 	public int doStartTag() throws JspException {
@@ -95,6 +95,10 @@ public class BaseNavItemTag extends com.liferay.taglib.util.IncludeTag {
 
 	public java.lang.String getState() {
 		return _state;
+	}
+
+	public java.lang.String getTarget() {
+		return _target;
 	}
 
 	public java.lang.String getTitle() {
@@ -213,6 +217,12 @@ public class BaseNavItemTag extends com.liferay.taglib.util.IncludeTag {
 		setScopedAttribute("state", state);
 	}
 
+	public void setTarget(java.lang.String target) {
+		_target = target;
+
+		setScopedAttribute("target", target);
+	}
+
 	public void setTitle(java.lang.String title) {
 		_title = title;
 
@@ -245,6 +255,8 @@ public class BaseNavItemTag extends com.liferay.taglib.util.IncludeTag {
 
 	@Override
 	protected void cleanUp() {
+		super.cleanUp();
+
 		_anchorCssClass = null;
 		_anchorData = null;
 		_anchorId = null;
@@ -261,6 +273,7 @@ public class BaseNavItemTag extends com.liferay.taglib.util.IncludeTag {
 		_localizeLabel = true;
 		_selected = false;
 		_state = null;
+		_target = null;
 		_title = null;
 		_toggle = false;
 		_toggleTouch = true;
@@ -271,11 +284,6 @@ public class BaseNavItemTag extends com.liferay.taglib.util.IncludeTag {
 	@Override
 	protected String getEndPage() {
 		return _END_PAGE;
-	}
-
-	@Override
-	protected String getStartPage() {
-		return _START_PAGE;
 	}
 
 	@Override
@@ -296,6 +304,7 @@ public class BaseNavItemTag extends com.liferay.taglib.util.IncludeTag {
 		setNamespacedAttribute(request, "localizeLabel", _localizeLabel);
 		setNamespacedAttribute(request, "selected", _selected);
 		setNamespacedAttribute(request, "state", _state);
+		setNamespacedAttribute(request, "target", _target);
 		setNamespacedAttribute(request, "title", _title);
 		setNamespacedAttribute(request, "toggle", _toggle);
 		setNamespacedAttribute(request, "toggleTouch", _toggleTouch);
@@ -307,9 +316,6 @@ public class BaseNavItemTag extends com.liferay.taglib.util.IncludeTag {
 
 	private static final String _END_PAGE =
 		"/html/taglib/aui/nav_item/end.jsp";
-
-	private static final String _START_PAGE =
-		"/html/taglib/aui/nav_item/start.jsp";
 
 	private java.lang.String _anchorCssClass = null;
 	private java.lang.Object _anchorData = null;
@@ -327,6 +333,7 @@ public class BaseNavItemTag extends com.liferay.taglib.util.IncludeTag {
 	private boolean _localizeLabel = true;
 	private boolean _selected = false;
 	private java.lang.String _state = null;
+	private java.lang.String _target = null;
 	private java.lang.String _title = null;
 	private boolean _toggle = false;
 	private boolean _toggleTouch = true;

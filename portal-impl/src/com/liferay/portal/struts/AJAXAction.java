@@ -16,7 +16,7 @@ package com.liferay.portal.struts;
 
 import com.liferay.portal.kernel.servlet.HttpHeaders;
 import com.liferay.portal.kernel.util.ContentTypes;
-import com.liferay.portal.util.PortalUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
 
 import java.io.PrintWriter;
 
@@ -57,11 +57,9 @@ public abstract class AJAXAction extends Action {
 			HttpHeaders.CACHE_CONTROL,
 			HttpHeaders.CACHE_CONTROL_NO_CACHE_VALUE);
 
-		PrintWriter printWriter = response.getWriter();
-
-		printWriter.write(text);
-
-		printWriter.close();
+		try (PrintWriter printWriter = response.getWriter()) {
+			printWriter.write(text);
+		}
 
 		return null;
 	}

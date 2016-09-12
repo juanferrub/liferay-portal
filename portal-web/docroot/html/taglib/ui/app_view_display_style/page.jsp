@@ -19,6 +19,7 @@
 <%
 String displayStyle = (String)request.getAttribute("liferay-ui:app-view-display-style:displayStyle");
 String[] displayStyles = (String[])request.getAttribute("liferay-ui:app-view-display-style:displayStyles");
+PortletURL displayStyleURL = (PortletURL)request.getAttribute("liferay-ui:app-view-display-style:displayStyleURL");
 String eventName = (String)request.getAttribute("liferay-ui:app-view-display-style:eventName");
 Map<String, String> requestParams = (Map<String, String>)request.getAttribute("liferay-ui:app-view-display-style:requestParams");
 %>
@@ -26,23 +27,41 @@ Map<String, String> requestParams = (Map<String, String>)request.getAttribute("l
 <c:if test="<%= displayStyles.length > 1 %>">
 	<span class="display-style-buttons-container" id="<portlet:namespace />displayStyleButtonsContainer">
 		<div class="display-style-buttons" id="<portlet:namespace />displayStyleButtons">
-			<aui:nav-item anchorCssClass="btn btn-default" dropdown="<%= true %>" iconCssClass='<%= "icon-" + _getIcon(displayStyle) %>'>
+			<aui:nav-item anchorCssClass="btn btn-default" dropdown="<%= true %>" iconCssClass='<%= "icon-" + HtmlUtil.escapeAttribute(_getIcon(displayStyle)) %>'>
 
 				<%
-				for (int i = 0; i < displayStyles.length; i++) {
-					String dataStyle = displayStyles[i];
-
-					Map<String, Object> data = new HashMap<String, Object>();
-
-					data.put("displayStyle", dataStyle);
+				for (String curDisplayStyle : displayStyles) {
 				%>
 
-					<aui:nav-item
-						anchorData="<%= data %>"
-						href="javascript:;"
-						iconCssClass='<%= "icon-" + _getIcon(dataStyle) %>'
-						label="<%= dataStyle %>"
-					/>
+					<c:choose>
+						<c:when test="<%= displayStyleURL != null %>">
+
+							<%
+							displayStyleURL.setParameter("displayStyle", curDisplayStyle);
+							%>
+
+							<aui:nav-item
+								href="<%= displayStyleURL.toString() %>"
+								iconCssClass='<%= "icon-" + HtmlUtil.escapeAttribute(_getIcon(curDisplayStyle)) %>'
+								label="<%= HtmlUtil.escape(curDisplayStyle) %>"
+							/>
+						</c:when>
+						<c:otherwise>
+
+							<%
+							Map<String, Object> data = new HashMap<String, Object>();
+
+							data.put("displayStyle", curDisplayStyle);
+							%>
+
+							<aui:nav-item
+								anchorData="<%= data %>"
+								href="javascript:;"
+								iconCssClass='<%= "icon-" + HtmlUtil.escapeAttribute(_getIcon(curDisplayStyle)) %>'
+								label="<%= HtmlUtil.escape(curDisplayStyle) %>"
+							/>
+						</c:otherwise>
+					</c:choose>
 
 				<%
 				}
@@ -51,47 +70,43 @@ Map<String, String> requestParams = (Map<String, String>)request.getAttribute("l
 			</aui:nav-item>
 		</div>
 	</span>
-</c:if>
 
-<c:if test="<%= displayStyles.length > 1 %>">
-	<aui:script use="aui-base">
-		function changeDisplayStyle(displayStyle) {
-			var config = {};
+	<c:if test="<%= displayStyleURL == null %>">
+		<aui:script sandbox="<%= true %>">
+			function changeDisplayStyle(displayStyle) {
+				var config = {};
 
-			<%
-			if (requestParams != null) {
-				Set<String> requestParamNames = requestParams.keySet();
+				<%
+				if (requestParams != null) {
+					Set<String> requestParamNames = requestParams.keySet();
 
-				for (String requestParamName : requestParamNames) {
-					String requestParamValue = requestParams.get(requestParamName);
-			%>
+					for (String requestParamName : requestParamNames) {
+						String requestParamValue = requestParams.get(requestParamName);
+				%>
 
-					config['<portlet:namespace /><%= requestParamName %>'] = '<%= HtmlUtil.escapeJS(requestParamValue) %>';
+						config['<portlet:namespace /><%= requestParamName %>'] = '<%= HtmlUtil.escapeJS(requestParamValue) %>';
 
-			<%
+				<%
+					}
 				}
+				%>
+
+				config['<portlet:namespace />displayStyle'] = displayStyle;
+
+				Liferay.fire(
+					'<portlet:namespace />dataRequest',
+					{
+						requestParams: config,
+						src: Liferay.DL_ENTRIES_PAGINATOR
+					}
+				);
 			}
-			%>
 
-			config['<portlet:namespace />displayStyle'] = displayStyle;
-			config['<portlet:namespace />saveDisplayStyle'] = true;
-
-			Liferay.fire(
-				'<portlet:namespace />dataRequest',
-				{
-					requestParams: config,
-					src: Liferay.DL_ENTRIES_PAGINATOR
-				}
-			);
-		}
-
-		var displayStyleButtonsMenu = A.one('#<portlet:namespace />displayStyleButtons .dropdown-menu');
-
-		if (displayStyleButtonsMenu) {
-			displayStyleButtonsMenu.delegate(
+			$('#<portlet:namespace />displayStyleButtons .dropdown-menu').on(
 				'click',
+				'li > a',
 				function(event) {
-					var displayStyle = event.currentTarget.attr('data-displayStyle');
+					var displayStyle = $(event.currentTarget).data('displaystyle');
 
 					if (<%= requestParams != null %>) {
 						changeDisplayStyle(displayStyle);
@@ -104,11 +119,10 @@ Map<String, String> requestParams = (Map<String, String>)request.getAttribute("l
 							}
 						);
 					}
-				},
-				'li > a'
+				}
 			);
-		}
-	</aui:script>
+		</aui:script>
+	</c:if>
 </c:if>
 
 <%!

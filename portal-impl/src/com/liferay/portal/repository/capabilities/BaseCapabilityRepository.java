@@ -14,42 +14,43 @@
 
 package com.liferay.portal.repository.capabilities;
 
-import com.liferay.portal.kernel.repository.capabilities.BaseCapabilityProvider;
+import com.liferay.portal.kernel.repository.DocumentRepository;
 import com.liferay.portal.kernel.repository.capabilities.Capability;
-import com.liferay.portal.kernel.util.ClassUtil;
-
-import java.util.Map;
-import java.util.Set;
+import com.liferay.portal.kernel.repository.capabilities.CapabilityProvider;
 
 /**
  * @author Adolfo Pérez
  */
-public abstract class BaseCapabilityRepository<T>
-	extends BaseCapabilityProvider {
+public abstract class BaseCapabilityRepository<R>
+	implements DocumentRepository {
 
 	public BaseCapabilityRepository(
-		T repository,
-		Map<Class<? extends Capability>, Capability> supportedCapabilities,
-		Set<Class<? extends Capability>> exportedCapabilityClasses) {
-
-		super(supportedCapabilities, exportedCapabilityClasses);
+		R repository, CapabilityProvider capabilityProvider) {
 
 		_repository = repository;
+		_capabilityProvider = capabilityProvider;
 	}
 
 	@Override
-	protected String getProviderKey() {
-		return String.format(
-			"%s:%s", ClassUtil.getClassName(getRepository()),
-			getRepositoryId());
+	public <T extends Capability> T getCapability(Class<T> capabilityClass) {
+		return _capabilityProvider.getCapability(capabilityClass);
 	}
 
-	protected T getRepository() {
+	@Override
+	public abstract long getRepositoryId();
+
+	@Override
+	public <T extends Capability> boolean isCapabilityProvided(
+		Class<T> capabilityClass) {
+
+		return _capabilityProvider.isCapabilityProvided(capabilityClass);
+	}
+
+	protected R getRepository() {
 		return _repository;
 	}
 
-	protected abstract long getRepositoryId();
-
-	private T _repository;
+	private final CapabilityProvider _capabilityProvider;
+	private final R _repository;
 
 }

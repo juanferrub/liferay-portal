@@ -14,16 +14,15 @@
 
 package com.liferay.portal.facebook;
 
-import com.liferay.portal.NoSuchLayoutException;
+import com.liferay.portal.kernel.exception.NoSuchLayoutException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.servlet.BufferCacheServletResponse;
 import com.liferay.portal.kernel.servlet.ServletResponseUtil;
-import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.servlet.filters.gzip.GZipFilter;
-import com.liferay.portal.util.PortalUtil;
-import com.liferay.portal.util.WebKeys;
 import com.liferay.portlet.social.util.FacebookUtil;
 
 import java.io.IOException;
@@ -59,9 +58,9 @@ public class FacebookServlet extends HttpServlet {
 				String facebookCanvasPageURL = facebookData[0];
 				String redirect = facebookData[1];
 
+				request.setAttribute(GZipFilter.SKIP_FILTER, Boolean.TRUE);
 				request.setAttribute(
 					WebKeys.FACEBOOK_CANVAS_PAGE_URL, facebookCanvasPageURL);
-				request.setAttribute(GZipFilter.SKIP_FILTER, Boolean.TRUE);
 
 				ServletContext servletContext = getServletContext();
 
@@ -90,18 +89,10 @@ public class FacebookServlet extends HttpServlet {
 	}
 
 	protected String fixFbml(String fbml) {
-		fbml = StringUtil.replace(
-			fbml,
-			new String[] {
-				"<nobr>", "</nobr>"
-			},
-			new String[] {
-				StringPool.BLANK, StringPool.BLANK
-			});
-
-		return fbml;
+		return StringUtil.removeSubstrings(fbml, "<nobr>", "</nobr>");
 	}
 
-	private static Log _log = LogFactoryUtil.getLog(FacebookServlet.class);
+	private static final Log _log = LogFactoryUtil.getLog(
+		FacebookServlet.class);
 
 }

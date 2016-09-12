@@ -14,21 +14,24 @@
 
 package com.liferay.portal.service.impl;
 
-import com.liferay.portal.kernel.staging.LayoutStagingUtil;
-import com.liferay.portal.kernel.staging.MergeLayoutPrototypesThreadLocal;
+import com.liferay.exportimport.kernel.staging.LayoutStagingUtil;
+import com.liferay.exportimport.kernel.staging.MergeLayoutPrototypesThreadLocal;
+import com.liferay.exportimport.kernel.staging.StagingUtil;
+import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.model.LayoutRevision;
+import com.liferay.portal.kernel.model.PortletPreferencesIds;
+import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
+import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
+import com.liferay.portal.kernel.service.LayoutRevisionLocalServiceUtil;
+import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
+import com.liferay.portal.kernel.service.UserLocalServiceUtil;
+import com.liferay.portal.kernel.service.persistence.LayoutRevisionUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
-import com.liferay.portal.model.Layout;
-import com.liferay.portal.model.LayoutConstants;
-import com.liferay.portal.model.LayoutRevision;
-import com.liferay.portal.model.PortletPreferencesIds;
-import com.liferay.portal.service.LayoutLocalServiceUtil;
-import com.liferay.portal.service.LayoutRevisionLocalServiceUtil;
-import com.liferay.portal.service.ServiceContext;
-import com.liferay.portal.service.ServiceContextThreadLocal;
-import com.liferay.portal.service.persistence.LayoutRevisionUtil;
-import com.liferay.portal.staging.ProxiedLayoutsThreadLocal;
-import com.liferay.portal.staging.StagingAdvicesThreadLocal;
+import com.liferay.portlet.exportimport.staging.ProxiedLayoutsThreadLocal;
+import com.liferay.portlet.exportimport.staging.StagingAdvicesThreadLocal;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -60,7 +63,8 @@ public class PortletPreferencesLocalServiceStagingAdvice
 			String methodName = method.getName();
 
 			if (methodName.equals("getPortletPreferences") &&
-				((arguments.length == 3) || (arguments.length == 4))) {
+				((arguments.length == 2) || (arguments.length == 3) ||
+				 (arguments.length == 4))) {
 
 				return getPortletPreferences(methodInvocation);
 			}
@@ -89,34 +93,69 @@ public class PortletPreferencesLocalServiceStagingAdvice
 		}
 	}
 
+	protected LayoutRevision getLayoutRevision(long plid) {
+		if (plid <= 0) {
+			return null;
+		}
+
+		LayoutRevision layoutRevision = LayoutRevisionUtil.fetchByPrimaryKey(
+			plid);
+
+		if (layoutRevision != null) {
+			return layoutRevision;
+		}
+
+		Layout layout = LayoutLocalServiceUtil.fetchLayout(plid);
+
+		if (layout == null) {
+			return null;
+		}
+
+		if (!LayoutStagingUtil.isBranchingLayout(layout)) {
+			return null;
+		}
+
+		return LayoutStagingUtil.getLayoutRevision(layout);
+	}
+
 	protected Object getPortletPreferences(MethodInvocation methodInvocation)
 		throws Throwable {
 
 		Method method = methodInvocation.getMethod();
 		Object[] arguments = methodInvocation.getArguments();
 
+		int index = -1;
+
+		if ((arguments.length == 2) && (arguments[0] instanceof Long) &&
+			(arguments[1] instanceof String)) {
+
+			index = 0;
+		}
+		else if ((arguments.length == 3) && (arguments[0] instanceof Integer) &&
+				 (arguments[1] instanceof Long) &&
+				 (arguments[2] instanceof String)) {
+
+			index = 1;
+		}
+		else if (((arguments.length == 3) || (arguments.length == 4)) &&
+				 (arguments[2] instanceof Long)) {
+
+			index = 2;
+		}
+
 		long plid = 0;
 
-		if (((arguments.length == 3) || (arguments.length == 4)) &&
-			(arguments[2] instanceof Long)) {
-
-			plid = (Long)arguments[2];
+		if (index >= 0) {
+			plid = (Long)arguments[index];
 		}
 
-		if (plid <= 0) {
+		LayoutRevision layoutRevision = getLayoutRevision(plid);
+
+		if (layoutRevision == null) {
 			return methodInvocation.proceed();
 		}
 
-		Layout layout = LayoutLocalServiceUtil.getLayout(plid);
-
-		if (!LayoutStagingUtil.isBranchingLayout(layout)) {
-			return methodInvocation.proceed();
-		}
-
-		LayoutRevision layoutRevision = LayoutStagingUtil.getLayoutRevision(
-			layout);
-
-		arguments[2] = layoutRevision.getLayoutRevisionId();
+		arguments[index] = layoutRevision.getLayoutRevisionId();
 
 		return method.invoke(methodInvocation.getThis(), arguments);
 	}
@@ -128,7 +167,7 @@ public class PortletPreferencesLocalServiceStagingAdvice
 		Method method = methodInvocation.getMethod();
 		Object[] arguments = methodInvocation.getArguments();
 
-		long plid = LayoutConstants.DEFAULT_PLID;
+		long plid = 0;
 
 		if (arguments.length == 3) {
 			plid = (Long)arguments[1];
@@ -137,22 +176,11 @@ public class PortletPreferencesLocalServiceStagingAdvice
 			plid = (Long)arguments[2];
 		}
 
-		if (plid <= 0) {
+		LayoutRevision layoutRevision = getLayoutRevision(plid);
+
+		if (layoutRevision == null) {
 			return methodInvocation.proceed();
 		}
-
-		Layout layout = LayoutLocalServiceUtil.fetchLayout(plid);
-
-		if (layout == null) {
-			return methodInvocation.proceed();
-		}
-
-		if (!LayoutStagingUtil.isBranchingLayout(layout)) {
-			return methodInvocation.proceed();
-		}
-
-		LayoutRevision layoutRevision = LayoutStagingUtil.getLayoutRevision(
-			layout);
 
 		if (arguments.length == 3) {
 			arguments[1] = layoutRevision.getLayoutRevisionId();
@@ -182,30 +210,33 @@ public class PortletPreferencesLocalServiceStagingAdvice
 			plid = (Long)arguments[3];
 		}
 
-		if (plid <= 0) {
-			return methodInvocation.proceed();
-		}
-
-		Layout layout = LayoutLocalServiceUtil.getLayout(plid);
-
-		if (!LayoutStagingUtil.isBranchingLayout(layout)) {
-			return methodInvocation.proceed();
-		}
-
-		LayoutRevision layoutRevision = LayoutStagingUtil.getLayoutRevision(
-			layout);
+		LayoutRevision layoutRevision = getLayoutRevision(plid);
 
 		if (layoutRevision == null) {
 			return methodInvocation.proceed();
 		}
 
-		plid = layoutRevision.getLayoutRevisionId();
+		User user = UserLocalServiceUtil.fetchUser(
+			PrincipalThreadLocal.getUserId());
+
+		if ((user == null) || user.isDefaultUser()) {
+			plid = layoutRevision.getLayoutRevisionId();
+		}
+		else {
+			plid = StagingUtil.getRecentLayoutRevisionId(
+				user, layoutRevision.getLayoutSetBranchId(),
+				layoutRevision.getPlid());
+		}
 
 		if (arguments.length == 1) {
 			PortletPreferencesIds portletPreferencesIds =
 				(PortletPreferencesIds)arguments[0];
 
-			portletPreferencesIds.setPlid(plid);
+			arguments[0] = new PortletPreferencesIds(
+				portletPreferencesIds.getCompanyId(),
+				portletPreferencesIds.getOwnerId(),
+				portletPreferencesIds.getOwnerType(), plid,
+				portletPreferencesIds.getPortletId());
 		}
 		else {
 			arguments[3] = plid;
@@ -222,12 +253,11 @@ public class PortletPreferencesLocalServiceStagingAdvice
 
 		long plid = (Long)arguments[2];
 
-		if (plid <= 0) {
+		LayoutRevision layoutRevision = getLayoutRevision(plid);
+
+		if (layoutRevision == null) {
 			return methodInvocation.proceed();
 		}
-
-		LayoutRevision layoutRevision = LayoutRevisionUtil.fetchByPrimaryKey(
-			plid);
 
 		ServiceContext serviceContext =
 			ServiceContextThreadLocal.getServiceContext();
@@ -238,7 +268,7 @@ public class PortletPreferencesLocalServiceStagingAdvice
 
 		boolean exporting = ParamUtil.getBoolean(serviceContext, "exporting");
 
-		if ((layoutRevision == null) || exporting) {
+		if (exporting) {
 			return methodInvocation.proceed();
 		}
 
@@ -254,8 +284,7 @@ public class PortletPreferencesLocalServiceStagingAdvice
 			layoutRevision.getKeywords(), layoutRevision.getRobots(),
 			layoutRevision.getTypeSettings(), layoutRevision.getIconImage(),
 			layoutRevision.getIconImageId(), layoutRevision.getThemeId(),
-			layoutRevision.getColorSchemeId(), layoutRevision.getWapThemeId(),
-			layoutRevision.getWapColorSchemeId(), layoutRevision.getCss(),
+			layoutRevision.getColorSchemeId(), layoutRevision.getCss(),
 			serviceContext);
 
 		arguments[2] = layoutRevision.getLayoutRevisionId();

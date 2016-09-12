@@ -87,7 +87,7 @@ public class DeployManagerImpl implements DeployManager {
 				levelRequiredDeploymentContexts);
 
 			for (int j = 0; j < levelRequiredDeploymentWARFileNames.length;
-					j++) {
+				j++) {
 
 				String warFileName = levelRequiredDeploymentWARFileNames[j];
 
@@ -217,11 +217,12 @@ public class DeployManagerImpl implements DeployManager {
 		DeployUtil.undeploy(ServerDetector.getServerId(), deployDir);
 	}
 
-	private static Log _log = LogFactoryUtil.getLog(DeployManagerImpl.class);
+	private static final Log _log = LogFactoryUtil.getLog(
+		DeployManagerImpl.class);
 
-	private List<String[]> _levelsRequiredDeploymentContexts =
-		new ArrayList<String[]>();
-	private List<String[]> _levelsRequiredDeploymentWARFileNames =
-		new ArrayList<String[]>();
+	private final List<String[]> _levelsRequiredDeploymentContexts =
+		new ArrayList<>();
+	private final List<String[]> _levelsRequiredDeploymentWARFileNames =
+		new ArrayList<>();
 
 }

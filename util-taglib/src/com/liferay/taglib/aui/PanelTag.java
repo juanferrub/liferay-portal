@@ -15,7 +15,8 @@
 package com.liferay.taglib.aui;
 
 import com.liferay.portal.kernel.servlet.taglib.aui.ToolTag;
-import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.taglib.aui.base.BasePanelTag;
 
@@ -32,7 +33,7 @@ public class PanelTag extends BasePanelTag {
 
 	public void addToolTag(ToolTag toolTag) {
 		if (_toolTags == null) {
-			_toolTags = new ArrayList<ToolTag>();
+			_toolTags = new ArrayList<>();
 		}
 
 		_toolTags.add(toolTag);
@@ -67,7 +68,8 @@ public class PanelTag extends BasePanelTag {
 		String id = getId();
 
 		if (Validator.isNull(id)) {
-			id = StringUtil.randomId();
+			id = PortalUtil.getUniqueElementId(
+				request, StringPool.BLANK, AUIUtil.normalizeId("panel"));
 		}
 
 		setNamespacedAttribute(request, "id", id);

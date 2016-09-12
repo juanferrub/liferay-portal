@@ -52,7 +52,8 @@ public class MinifierUtil {
 		}
 		catch (Exception e) {
 			_log.error(
-				"Unable to instantiate "+ PropsValues.MINIFIER_JAVASCRIPT_IMPL);
+				"Unable to instantiate " +
+					PropsValues.MINIFIER_JAVASCRIPT_IMPL);
 
 			return new GoogleJavaScriptMinifier();
 		}
@@ -85,10 +86,10 @@ public class MinifierUtil {
 		return _javaScriptMinifierInstance.compress(resourceName, content);
 	}
 
-	private static Log _log = LogFactoryUtil.getLog(MinifierUtil.class);
+	private static final Log _log = LogFactoryUtil.getLog(MinifierUtil.class);
 
-	private static MinifierUtil _instance = new MinifierUtil();
+	private static final MinifierUtil _instance = new MinifierUtil();
 
-	private JavaScriptMinifier _javaScriptMinifierInstance;
+	private final JavaScriptMinifier _javaScriptMinifierInstance;
 
 }

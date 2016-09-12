@@ -17,9 +17,9 @@ package com.liferay.portal.kernel.log;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.log.CaptureAppender;
-import com.liferay.portal.log.Log4JLoggerTestUtil;
-import com.liferay.portal.test.runners.LiferayIntegrationJUnitTestRunner;
+import com.liferay.portal.test.log.CaptureAppender;
+import com.liferay.portal.test.log.Log4JLoggerTestUtil;
+import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.util.List;
 import java.util.Properties;
@@ -33,14 +33,19 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 /**
  * @author Tomas Polesovsky
  */
-@RunWith(LiferayIntegrationJUnitTestRunner.class)
 public class SanitizerLogWrapperTest {
+
+	@ClassRule
+	@Rule
+	public static final LiferayIntegrationTestRule liferayIntegrationTestRule =
+		new LiferayIntegrationTestRule();
 
 	@BeforeClass
 	public static void setUpClass() {
@@ -54,20 +59,20 @@ public class SanitizerLogWrapperTest {
 
 		String sanitizedMessageSuffix = " [Sanitized]";
 
-		_expectedMessageChars =
+		_messageChars =
 			new char[chars.length + sanitizedMessageSuffix.length()];
 
 		for (int i = 0; i < chars.length; i++) {
 			if ((i == 9) || ((i >= 32) && (i != 127))) {
-				_expectedMessageChars[i] = (char)i;
+				_messageChars[i] = (char)i;
 			}
 			else {
-				_expectedMessageChars[i] = CharPool.UNDERLINE;
+				_messageChars[i] = CharPool.UNDERLINE;
 			}
 		}
 
 		System.arraycopy(
-			sanitizedMessageSuffix.toCharArray(), 0, _expectedMessageChars,
+			sanitizedMessageSuffix.toCharArray(), 0, _messageChars,
 			chars.length, sanitizedMessageSuffix.length());
 
 		_systemProperties = new Properties(System.getProperties());
@@ -116,6 +121,93 @@ public class SanitizerLogWrapperTest {
 	}
 
 	@Test
+	public void testAllowCRLF() {
+		Exception exception = new NullPointerException();
+
+		char[] expectedMessageWithCRLFChars = new char[_messageChars.length];
+
+		System.arraycopy(
+			_messageChars, 0, expectedMessageWithCRLFChars, 0,
+			expectedMessageWithCRLFChars.length);
+
+		expectedMessageWithCRLFChars[CharPool.NEW_LINE] = CharPool.NEW_LINE;
+		expectedMessageWithCRLFChars[CharPool.RETURN] = CharPool.RETURN;
+
+		Log log = SanitizerLogWrapper.allowCRLF(_log);
+
+		try {
+			log.debug(_message);
+			log.debug(_message, exception);
+			log.error(_message);
+			log.error(_message, exception);
+			log.fatal(_message);
+			log.fatal(_message, exception);
+			log.info(_message);
+			log.info(_message, exception);
+			log.trace(_message);
+			log.trace(_message, exception);
+			log.warn(_message);
+			log.warn(_message, exception);
+
+			List<LoggingEvent> loggingEvents =
+				_captureAppender.getLoggingEvents();
+
+			Assert.assertNotNull(loggingEvents);
+			Assert.assertEquals(12, loggingEvents.size());
+
+			for (LoggingEvent loggingEvent : loggingEvents) {
+				String message = loggingEvent.getRenderedMessage();
+
+				Assert.assertTrue(
+					message.startsWith(SanitizerLogWrapper.CRLF_WARNING));
+
+				int messageWithCRLFCharsLength =
+					message.length() -
+						SanitizerLogWrapper.CRLF_WARNING.length();
+
+				char[] messageWithCRLFChars =
+					new char[messageWithCRLFCharsLength];
+
+				message.getChars(
+					SanitizerLogWrapper.CRLF_WARNING.length(), message.length(),
+					messageWithCRLFChars, 0);
+
+				Assert.assertArrayEquals(
+					expectedMessageWithCRLFChars, messageWithCRLFChars);
+			}
+
+			loggingEvents.clear();
+
+			_log.debug(_message);
+			_log.debug(_message, exception);
+			_log.error(_message);
+			_log.error(_message, exception);
+			_log.fatal(_message);
+			_log.fatal(_message, exception);
+			_log.info(_message);
+			_log.info(_message, exception);
+			_log.trace(_message);
+			_log.trace(_message, exception);
+			_log.warn(_message);
+			_log.warn(_message, exception);
+
+			Assert.assertNotNull(loggingEvents);
+			Assert.assertEquals(12, loggingEvents.size());
+
+			for (LoggingEvent loggingEvent : loggingEvents) {
+				String message = loggingEvent.getRenderedMessage();
+
+				char[] messageChars = message.toCharArray();
+
+				Assert.assertArrayEquals(_messageChars, messageChars);
+			}
+		}
+		finally {
+			_captureAppender.close();
+		}
+	}
+
+	@Test
 	public void testInvalidCharactersInExceptionMessage() {
 		Exception exception = new Exception(
 			new RuntimeException(new NullPointerException(_message)));
@@ -152,15 +244,13 @@ public class SanitizerLogWrapperTest {
 
 				Assert.assertTrue(line.startsWith(exceptionPrefix));
 
-				char[] sanitizedMessageChars =
+				char[] messageChars =
 					new char[line.length() - exceptionPrefix.length()];
 
 				line.getChars(
-					exceptionPrefix.length(), line.length(),
-					sanitizedMessageChars, 0);
+					exceptionPrefix.length(), line.length(), messageChars, 0);
 
-				Assert.assertArrayEquals(
-					_expectedMessageChars, sanitizedMessageChars);
+				Assert.assertArrayEquals(_messageChars, messageChars);
 			}
 		}
 		finally {
@@ -195,10 +285,9 @@ public class SanitizerLogWrapperTest {
 			for (LoggingEvent loggingEvent : loggingEvents) {
 				String message = loggingEvent.getRenderedMessage();
 
-				char[] sanitizedMessageChars = message.toCharArray();
+				char[] messageChars = message.toCharArray();
 
-				Assert.assertArrayEquals(
-					_expectedMessageChars, sanitizedMessageChars);
+				Assert.assertArrayEquals(_messageChars, messageChars);
 			}
 		}
 		finally {
@@ -208,8 +297,8 @@ public class SanitizerLogWrapperTest {
 
 	private static Log _log;
 
-	private static char[] _expectedMessageChars;
 	private static String _message;
+	private static char[] _messageChars;
 	private static Properties _systemProperties;
 
 	private CaptureAppender _captureAppender;

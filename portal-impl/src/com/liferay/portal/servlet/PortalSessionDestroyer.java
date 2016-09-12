@@ -24,19 +24,17 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.messaging.DestinationNames;
 import com.liferay.portal.kernel.messaging.MessageBusUtil;
+import com.liferay.portal.kernel.security.auth.AuthenticatedUserUUIDStoreUtil;
+import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
 import com.liferay.portal.kernel.servlet.PortalSessionContext;
 import com.liferay.portal.kernel.util.BasePortalLifecycle;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.security.auth.AuthenticatedUserUUIDStoreUtil;
-import com.liferay.portal.service.CompanyLocalServiceUtil;
+import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.util.PropsValues;
-import com.liferay.portal.util.WebKeys;
 
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
-
-import org.apache.struts.Globals;
 
 /**
  * @author Michael Young
@@ -75,10 +73,6 @@ public class PortalSessionDestroyer extends BasePortalLifecycle {
 			if (userIdObj == null) {
 				return;
 			}
-
-			// Language
-
-			session.removeAttribute(Globals.LOCALE_KEY);
 
 			// Live users
 
@@ -136,9 +130,9 @@ public class PortalSessionDestroyer extends BasePortalLifecycle {
 		}
 	}
 
-	private static Log _log = LogFactoryUtil.getLog(
+	private static final Log _log = LogFactoryUtil.getLog(
 		PortalSessionDestroyer.class);
 
-	private HttpSessionEvent _httpSessionEvent;
+	private final HttpSessionEvent _httpSessionEvent;
 
 }

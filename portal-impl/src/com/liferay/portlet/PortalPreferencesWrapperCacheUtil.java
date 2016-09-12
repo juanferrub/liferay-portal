@@ -16,6 +16,7 @@ package com.liferay.portlet;
 
 import com.liferay.portal.kernel.cache.MultiVMPoolUtil;
 import com.liferay.portal.kernel.cache.PortalCache;
+import com.liferay.portal.kernel.cache.PortalCacheHelperUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 
 /**
@@ -38,8 +39,9 @@ public class PortalPreferencesWrapperCacheUtil {
 
 		String cacheKey = _getCacheKey(ownerId, ownerType);
 
-		_portalPreferencesWrapperPortalCache.putQuiet(
-			cacheKey, portalPreferencesWrapper);
+		PortalCacheHelperUtil.putWithoutReplicator(
+			_portalPreferencesWrapperPortalCache, cacheKey,
+			portalPreferencesWrapper);
 	}
 
 	public static void remove(long ownerId, int ownerType) {
@@ -56,8 +58,8 @@ public class PortalPreferencesWrapperCacheUtil {
 		return cacheKey;
 	}
 
-	private static PortalCache<String, PortalPreferencesWrapper>
-		_portalPreferencesWrapperPortalCache = MultiVMPoolUtil.getCache(
+	private static final PortalCache<String, PortalPreferencesWrapper>
+		_portalPreferencesWrapperPortalCache = MultiVMPoolUtil.getPortalCache(
 			CACHE_NAME);
 
 }

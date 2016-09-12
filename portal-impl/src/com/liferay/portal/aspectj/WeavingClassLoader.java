@@ -67,8 +67,7 @@ public class WeavingClassLoader extends URLClassLoader {
 				UnsyncByteArrayOutputStream unsyncByteArrayOutputStream =
 					new UnsyncByteArrayOutputStream();
 
-				StreamUtil.transfer(
-					inputStream, unsyncByteArrayOutputStream, true);
+				StreamUtil.transfer(inputStream, unsyncByteArrayOutputStream);
 
 				data = unsyncByteArrayOutputStream.toByteArray();
 			}
@@ -99,12 +98,11 @@ public class WeavingClassLoader extends URLClassLoader {
 
 				dumpDir.mkdirs();
 
-				FileOutputStream fileOutputStream = new FileOutputStream(
-					dumpFile);
+				try (FileOutputStream fileOutputStream = new FileOutputStream(
+						dumpFile)) {
 
-				fileOutputStream.write(data);
-
-				fileOutputStream.close();
+					fileOutputStream.write(data);
+				}
 
 				if (_log.isInfoEnabled()) {
 					_log.info(
@@ -149,9 +147,10 @@ public class WeavingClassLoader extends URLClassLoader {
 		return clazz;
 	}
 
-	private static Log _log = LogFactoryUtil.getLog(WeavingClassLoader.class);
+	private static final Log _log = LogFactoryUtil.getLog(
+		WeavingClassLoader.class);
 
-	private File _dumpDir;
-	private URLWeavingAdapter _urlWeavingAdapter;
+	private final File _dumpDir;
+	private final URLWeavingAdapter _urlWeavingAdapter;
 
 }

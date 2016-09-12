@@ -14,9 +14,9 @@
 
 package com.liferay.portal.jsonwebservice;
 
+import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.service.ServiceContext;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,6 +29,9 @@ import java.util.Map;
  * @author Igor Spasic
  */
 public class FooService {
+
+	public static void addFile(String fileName) {
+	}
 
 	public static BarData bar() {
 		return new BarData();
@@ -101,7 +104,7 @@ public class FooService {
 	}
 
 	public static List<FooData> getFooDatas() {
-		List<FooData> fooDataList = new ArrayList<FooData>();
+		List<FooData> fooDataList = new ArrayList<>();
 
 		fooDataList.add(getFooData(1));
 		fooDataList.add(getFooData(2));
@@ -132,6 +135,18 @@ public class FooService {
 
 	public static String hello() {
 		return "world";
+	}
+
+	public static String hello(int i1) {
+		return "hello:" + i1;
+	}
+
+	public static String hello(int i1, int i2, int i3) {
+		return "hello:" + i1 + ":" + i2 + ":" + i3;
+	}
+
+	public static String hello(int i1, int i2, String s) {
+		return "hello:" + i1 + ":" + i2 + ">" + s;
 	}
 
 	public static String helloWorld(Integer userId, String worldName) {

@@ -14,21 +14,21 @@
 
 package com.liferay.portal.systemevent;
 
-import com.liferay.portal.kernel.lar.StagedModelType;
+import com.liferay.exportimport.kernel.lar.StagedModelType;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.AuditedModel;
+import com.liferay.portal.kernel.model.ClassedModel;
+import com.liferay.portal.kernel.model.GroupedModel;
+import com.liferay.portal.kernel.model.StagedModel;
+import com.liferay.portal.kernel.model.SystemEventConstants;
+import com.liferay.portal.kernel.model.TypedModel;
+import com.liferay.portal.kernel.service.SystemEventLocalServiceUtil;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.systemevent.SystemEventHierarchyEntry;
 import com.liferay.portal.kernel.systemevent.SystemEventHierarchyEntryThreadLocal;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.model.AuditedModel;
-import com.liferay.portal.model.ClassedModel;
-import com.liferay.portal.model.GroupedModel;
-import com.liferay.portal.model.StagedModel;
-import com.liferay.portal.model.SystemEventConstants;
-import com.liferay.portal.model.TypedModel;
-import com.liferay.portal.service.SystemEventLocalServiceUtil;
 import com.liferay.portal.spring.aop.AnnotationChainableMethodAdvice;
 
 import java.io.Serializable;
@@ -284,7 +284,9 @@ public class SystemEventAdvice
 
 		ClassedModel classedModel = (ClassedModel)arguments[0];
 
-		if (!(classedModel.getPrimaryKeyObj() instanceof Long)) {
+		if ((classedModel == null) ||
+			!(classedModel.getPrimaryKeyObj() instanceof Long)) {
+
 			if (_log.isDebugEnabled() && (phase == _PHASE_BEFORE)) {
 				_log.debug(
 					"The first parameter of " + methodInvocation +
@@ -325,18 +327,19 @@ public class SystemEventAdvice
 
 	private static final int _PHASE_DURING_FINALLY = 2;
 
-	private static Log _log = LogFactoryUtil.getLog(SystemEventAdvice.class);
+	private static final Log _log = LogFactoryUtil.getLog(
+		SystemEventAdvice.class);
 
-	private static SystemEvent _nullSystemEvent = new SystemEvent() {
-
-		@Override
-		public Class<? extends Annotation> annotationType() {
-			return SystemEvent.class;
-		}
+	private static final SystemEvent _nullSystemEvent = new SystemEvent() {
 
 		@Override
 		public int action() {
 			return SystemEventConstants.ACTION_NONE;
+		}
+
+		@Override
+		public Class<? extends Annotation> annotationType() {
+			return SystemEvent.class;
 		}
 
 		@Override

@@ -22,6 +22,7 @@ import com.liferay.portal.kernel.dao.orm.ScrollableResults;
 import com.liferay.portal.kernel.security.pacl.DoPrivileged;
 import com.liferay.portal.kernel.security.pacl.NotPrivileged;
 import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.StringBundler;
 
 import java.io.Serializable;
 
@@ -45,11 +46,15 @@ public class QueryImpl implements Query {
 		_query = query;
 		_strictName = strictName;
 
-		if (!_strictName) {
-			_names = query.getNamedParameters();
+		String[] names = null;
 
-			Arrays.sort(_names);
+		if (!_strictName) {
+			names = query.getNamedParameters();
+
+			Arrays.sort(names);
 		}
+
+		_names = names;
 	}
 
 	@NotPrivileged
@@ -348,6 +353,21 @@ public class QueryImpl implements Query {
 		return this;
 	}
 
+	@Override
+	public String toString() {
+		StringBundler sb = new StringBundler(7);
+
+		sb.append("{names=");
+		sb.append(Arrays.toString(_names));
+		sb.append(", _query=");
+		sb.append(String.valueOf(_query));
+		sb.append(", _strictName=");
+		sb.append(_strictName);
+		sb.append("}");
+
+		return sb.toString();
+	}
+
 	@NotPrivileged
 	@Override
 	public Object uniqueResult() throws ORMException {
@@ -359,8 +379,8 @@ public class QueryImpl implements Query {
 		}
 	}
 
-	private String[] _names;
-	private org.hibernate.Query _query;
-	private boolean _strictName;
+	private final String[] _names;
+	private final org.hibernate.Query _query;
+	private final boolean _strictName;
 
 }

@@ -1,5 +1,0 @@
-<definition>
-	<command name="antCommand">
-		<execute selenium="antCommand" />
-	</command>
-</definition>

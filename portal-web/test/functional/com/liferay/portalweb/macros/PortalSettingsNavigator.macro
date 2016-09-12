@@ -1,0 +1,9 @@
+<definition>
+	<command name="gotoAuthenticationGoogle">
+		<execute function="AssertClick" locator1="NavTab#GOOGLE" value1="Google" />
+	</command>
+
+	<command name="gotoAuthenticationLDAP">
+		<execute function="AssertClick" locator1="NavTab#LDAP" value1="LDAP" />
+	</command>
+</definition>

@@ -38,7 +38,7 @@ public class LiferayConvertCmd extends ConvertCmd {
 
 		setGlobalSearchPath(globalSearchPath);
 
-		LinkedList<String> arguments = new LinkedList<String>();
+		LinkedList<String> arguments = new LinkedList<>();
 
 		arguments.addAll(_instance.getCommand());
 		arguments.addAll(resourceLimits);
@@ -58,8 +58,9 @@ public class LiferayConvertCmd extends ConvertCmd {
 		return getProcessTask(arguments);
 	}
 
-	private static Log _log = LogFactoryUtil.getLog(LiferayConvertCmd.class);
+	private static final Log _log = LogFactoryUtil.getLog(
+		LiferayConvertCmd.class);
 
-	private static LiferayConvertCmd _instance = new LiferayConvertCmd();
+	private static final LiferayConvertCmd _instance = new LiferayConvertCmd();
 
 }

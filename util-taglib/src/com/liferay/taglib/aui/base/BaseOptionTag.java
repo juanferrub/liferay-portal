@@ -24,7 +24,7 @@ import javax.servlet.jsp.JspException;
  * @author Julio Camarero
  * @generated
  */
-public class BaseOptionTag extends com.liferay.taglib.util.IncludeTag {
+public abstract class BaseOptionTag extends com.liferay.taglib.util.IncludeTag {
 
 	@Override
 	public int doStartTag() throws JspException {
@@ -125,6 +125,8 @@ public class BaseOptionTag extends com.liferay.taglib.util.IncludeTag {
 
 	@Override
 	protected void cleanUp() {
+		super.cleanUp();
+
 		_cssClass = null;
 		_data = null;
 		_disabled = false;
@@ -134,11 +136,6 @@ public class BaseOptionTag extends com.liferay.taglib.util.IncludeTag {
 		_style = null;
 		_useModelValue = true;
 		_value = null;
-	}
-
-	@Override
-	protected String getEndPage() {
-		return _END_PAGE;
 	}
 
 	@Override
@@ -160,9 +157,6 @@ public class BaseOptionTag extends com.liferay.taglib.util.IncludeTag {
 	}
 
 	protected static final String _ATTRIBUTE_NAMESPACE = "aui:option:";
-
-	private static final String _END_PAGE =
-		"/html/taglib/aui/option/end.jsp";
 
 	private static final String _START_PAGE =
 		"/html/taglib/aui/option/start.jsp";

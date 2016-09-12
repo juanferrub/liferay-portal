@@ -73,7 +73,7 @@ public class WordsImpl implements Words {
 	@Override
 	public Set<String> getDictionarySet() {
 		if (_dictionarySet == null) {
-			_dictionarySet = new HashSet<String>(getDictionaryList());
+			_dictionarySet = new HashSet<>(getDictionaryList());
 		}
 
 		return _dictionarySet;
@@ -126,7 +126,7 @@ public class WordsImpl implements Words {
 		return _spellDictionaryHashMap;
 	}
 
-	private static Log _log = LogFactoryUtil.getLog(WordsImpl.class);
+	private static final Log _log = LogFactoryUtil.getLog(WordsImpl.class);
 
 	private List<String> _dictionaryList;
 	private Set<String> _dictionarySet;

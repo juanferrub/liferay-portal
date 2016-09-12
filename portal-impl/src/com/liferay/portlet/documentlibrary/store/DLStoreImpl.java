@@ -14,42 +14,22 @@
 
 package com.liferay.portlet.documentlibrary.store;
 
+import com.liferay.document.library.kernel.antivirus.AntivirusScannerUtil;
+import com.liferay.document.library.kernel.exception.DirectoryNameException;
+import com.liferay.document.library.kernel.store.DLStore;
+import com.liferay.document.library.kernel.store.Store;
+import com.liferay.document.library.kernel.util.DLValidatorUtil;
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.io.ByteArrayFileInputStream;
-import com.liferay.portal.kernel.search.BooleanClause;
-import com.liferay.portal.kernel.search.BooleanClauseOccur;
-import com.liferay.portal.kernel.search.BooleanQuery;
-import com.liferay.portal.kernel.search.BooleanQueryFactoryUtil;
-import com.liferay.portal.kernel.search.Field;
-import com.liferay.portal.kernel.search.Hits;
-import com.liferay.portal.kernel.search.Indexer;
-import com.liferay.portal.kernel.search.IndexerRegistryUtil;
-import com.liferay.portal.kernel.search.SearchContext;
-import com.liferay.portal.kernel.search.SearchEngineUtil;
-import com.liferay.portal.kernel.search.TermQuery;
-import com.liferay.portal.kernel.search.TermQueryFactoryUtil;
-import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.util.FileUtil;
-import com.liferay.portal.model.Group;
-import com.liferay.portal.security.permission.ActionKeys;
-import com.liferay.portal.security.permission.PermissionChecker;
-import com.liferay.portal.security.permission.PermissionThreadLocal;
-import com.liferay.portal.service.GroupLocalService;
 import com.liferay.portal.util.PropsValues;
-import com.liferay.portlet.documentlibrary.DirectoryNameException;
-import com.liferay.portlet.documentlibrary.antivirus.AntivirusScannerUtil;
-import com.liferay.portlet.documentlibrary.model.DLFileEntryConstants;
-import com.liferay.portlet.documentlibrary.model.DLFolderConstants;
-import com.liferay.portlet.documentlibrary.service.permission.DLFolderPermission;
-import com.liferay.portlet.documentlibrary.util.DLValidatorUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-
-import java.util.List;
 
 /**
  * @author Brian Wing Shun Chan
@@ -58,6 +38,10 @@ import java.util.List;
  */
 public class DLStoreImpl implements DLStore {
 
+	public DLStoreImpl() {
+		_storeFactory = StoreFactory.getInstance();
+	}
+
 	@Override
 	public void addDirectory(long companyId, long repositoryId, String dirName)
 		throws PortalException {
@@ -65,6 +49,8 @@ public class DLStoreImpl implements DLStore {
 		if (!DLValidatorUtil.isValidName(dirName) || dirName.equals("/")) {
 			throw new DirectoryNameException(dirName);
 		}
+
+		Store store = _storeFactory.getStore();
 
 		store.addDirectory(companyId, repositoryId, dirName);
 	}
@@ -75,11 +61,13 @@ public class DLStoreImpl implements DLStore {
 			boolean validateFileExtension, byte[] bytes)
 		throws PortalException {
 
-		validate(fileName, validateFileExtension, bytes);
+		validate(fileName, validateFileExtension);
 
 		if (PropsValues.DL_STORE_ANTIVIRUS_ENABLED) {
 			AntivirusScannerUtil.scan(bytes);
 		}
+
+		Store store = _storeFactory.getStore();
 
 		store.addFile(companyId, repositoryId, fileName, bytes);
 	}
@@ -90,11 +78,13 @@ public class DLStoreImpl implements DLStore {
 			boolean validateFileExtension, File file)
 		throws PortalException {
 
-		validate(fileName, validateFileExtension, file);
+		validate(fileName, validateFileExtension);
 
 		if (PropsValues.DL_STORE_ANTIVIRUS_ENABLED) {
 			AntivirusScannerUtil.scan(file);
 		}
+
+		Store store = _storeFactory.getStore();
 
 		store.addFile(companyId, repositoryId, fileName, file);
 	}
@@ -117,7 +107,9 @@ public class DLStoreImpl implements DLStore {
 			return;
 		}
 
-		validate(fileName, validateFileExtension, is);
+		validate(fileName, validateFileExtension);
+
+		Store store = _storeFactory.getStore();
 
 		if (!PropsValues.DL_STORE_ANTIVIRUS_ENABLED ||
 			!AntivirusScannerUtil.isActive()) {
@@ -185,6 +177,8 @@ public class DLStoreImpl implements DLStore {
 
 	@Override
 	public void checkRoot(long companyId) {
+		Store store = _storeFactory.getStore();
+
 		store.checkRoot(companyId);
 	}
 
@@ -194,6 +188,8 @@ public class DLStoreImpl implements DLStore {
 			String fromVersionLabel, String toVersionLabel)
 		throws PortalException {
 
+		Store store = _storeFactory.getStore();
+
 		store.copyFileVersion(
 			companyId, repositoryId, fileName, fromVersionLabel,
 			toVersionLabel);
@@ -201,8 +197,9 @@ public class DLStoreImpl implements DLStore {
 
 	@Override
 	public void deleteDirectory(
-			long companyId, long repositoryId, String dirName)
-		throws PortalException {
+		long companyId, long repositoryId, String dirName) {
+
+		Store store = _storeFactory.getStore();
 
 		store.deleteDirectory(companyId, repositoryId, dirName);
 	}
@@ -212,6 +209,8 @@ public class DLStoreImpl implements DLStore {
 		throws PortalException {
 
 		validate(fileName, false);
+
+		Store store = _storeFactory.getStore();
 
 		store.deleteFile(companyId, repositoryId, fileName);
 	}
@@ -224,6 +223,8 @@ public class DLStoreImpl implements DLStore {
 
 		validate(fileName, false, versionLabel);
 
+		Store store = _storeFactory.getStore();
+
 		store.deleteFile(companyId, repositoryId, fileName, versionLabel);
 	}
 
@@ -232,6 +233,8 @@ public class DLStoreImpl implements DLStore {
 		throws PortalException {
 
 		validate(fileName, false);
+
+		Store store = _storeFactory.getStore();
 
 		return store.getFile(companyId, repositoryId, fileName);
 	}
@@ -244,6 +247,8 @@ public class DLStoreImpl implements DLStore {
 
 		validate(fileName, false, versionLabel);
 
+		Store store = _storeFactory.getStore();
+
 		return store.getFile(companyId, repositoryId, fileName, versionLabel);
 	}
 
@@ -253,6 +258,8 @@ public class DLStoreImpl implements DLStore {
 		throws PortalException {
 
 		validate(fileName, false);
+
+		Store store = _storeFactory.getStore();
 
 		return store.getFileAsBytes(companyId, repositoryId, fileName);
 	}
@@ -265,6 +272,8 @@ public class DLStoreImpl implements DLStore {
 
 		validate(fileName, false, versionLabel);
 
+		Store store = _storeFactory.getStore();
+
 		return store.getFileAsBytes(
 			companyId, repositoryId, fileName, versionLabel);
 	}
@@ -276,6 +285,8 @@ public class DLStoreImpl implements DLStore {
 
 		validate(fileName, false);
 
+		Store store = _storeFactory.getStore();
+
 		return store.getFileAsStream(companyId, repositoryId, fileName);
 	}
 
@@ -286,6 +297,8 @@ public class DLStoreImpl implements DLStore {
 		throws PortalException {
 
 		validate(fileName, false, versionLabel);
+
+		Store store = _storeFactory.getStore();
 
 		return store.getFileAsStream(
 			companyId, repositoryId, fileName, versionLabel);
@@ -300,6 +313,8 @@ public class DLStoreImpl implements DLStore {
 			throw new DirectoryNameException(dirName);
 		}
 
+		Store store = _storeFactory.getStore();
+
 		return store.getFileNames(companyId, repositoryId, dirName);
 	}
 
@@ -308,6 +323,8 @@ public class DLStoreImpl implements DLStore {
 		throws PortalException {
 
 		validate(fileName, false);
+
+		Store store = _storeFactory.getStore();
 
 		return store.getFileSize(companyId, repositoryId, fileName);
 	}
@@ -321,6 +338,8 @@ public class DLStoreImpl implements DLStore {
 			throw new DirectoryNameException(dirName);
 		}
 
+		Store store = _storeFactory.getStore();
+
 		return store.hasDirectory(companyId, repositoryId, dirName);
 	}
 
@@ -329,6 +348,8 @@ public class DLStoreImpl implements DLStore {
 		throws PortalException {
 
 		validate(fileName, false);
+
+		Store store = _storeFactory.getStore();
 
 		return store.hasFile(companyId, repositoryId, fileName);
 	}
@@ -340,6 +361,8 @@ public class DLStoreImpl implements DLStore {
 		throws PortalException {
 
 		validate(fileName, false, versionLabel);
+
+		Store store = _storeFactory.getStore();
 
 		return store.hasFile(companyId, repositoryId, fileName, versionLabel);
 	}
@@ -356,102 +379,9 @@ public class DLStoreImpl implements DLStore {
 
 	@Override
 	public void move(String srcDir, String destDir) {
+		Store store = _storeFactory.getStore();
+
 		store.move(srcDir, destDir);
-	}
-
-	public Hits search(
-		long companyId, long userId, String portletId, long groupId,
-		long[] repositoryIds, String keywords, int start, int end) {
-
-		try {
-			SearchContext searchContext = new SearchContext();
-
-			searchContext.setCompanyId(companyId);
-			searchContext.setEnd(end);
-			searchContext.setEntryClassNames(
-				new String[] {DLFileEntryConstants.getClassName()});
-			searchContext.setGroupIds(new long[] {groupId});
-
-			Indexer indexer = IndexerRegistryUtil.getIndexer(
-				DLFileEntryConstants.getClassName());
-
-			searchContext.setSearchEngineId(indexer.getSearchEngineId());
-
-			searchContext.setStart(start);
-			searchContext.setUserId(userId);
-
-			BooleanQuery contextQuery = BooleanQueryFactoryUtil.create(
-				searchContext);
-
-			contextQuery.addRequiredTerm(Field.PORTLET_ID, portletId);
-
-			if (groupId > 0) {
-				Group group = groupLocalService.getGroup(groupId);
-
-				if (group.isLayout()) {
-					contextQuery.addRequiredTerm(Field.SCOPE_GROUP_ID, groupId);
-
-					groupId = group.getParentGroupId();
-				}
-
-				contextQuery.addRequiredTerm(Field.GROUP_ID, groupId);
-			}
-
-			if (ArrayUtil.isNotEmpty(repositoryIds)) {
-				BooleanQuery repositoryIdsQuery =
-					BooleanQueryFactoryUtil.create(searchContext);
-
-				for (long repositoryId : repositoryIds) {
-					try {
-						if (userId > 0) {
-							PermissionChecker permissionChecker =
-								PermissionThreadLocal.getPermissionChecker();
-
-							DLFolderPermission.check(
-								permissionChecker, groupId, repositoryId,
-								ActionKeys.VIEW);
-						}
-
-						if (repositoryId ==
-								DLFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
-
-							repositoryId = groupId;
-						}
-
-						TermQuery termQuery = TermQueryFactoryUtil.create(
-							searchContext, "repositoryId", repositoryId);
-
-						repositoryIdsQuery.add(
-							termQuery, BooleanClauseOccur.SHOULD);
-					}
-					catch (Exception e) {
-					}
-				}
-
-				contextQuery.add(repositoryIdsQuery, BooleanClauseOccur.MUST);
-			}
-
-			BooleanQuery searchQuery = BooleanQueryFactoryUtil.create(
-				searchContext);
-
-			searchQuery.addTerms(_KEYWORDS_FIELDS, keywords);
-
-			BooleanQuery fullQuery = BooleanQueryFactoryUtil.create(
-				searchContext);
-
-			fullQuery.add(contextQuery, BooleanClauseOccur.MUST);
-
-			List<BooleanClause> clauses = searchQuery.clauses();
-
-			if (!clauses.isEmpty()) {
-				fullQuery.add(searchQuery, BooleanClauseOccur.MUST);
-			}
-
-			return SearchEngineUtil.search(searchContext, fullQuery);
-		}
-		catch (Exception e) {
-			throw new SystemException(e);
-		}
 	}
 
 	@Override
@@ -459,6 +389,8 @@ public class DLStoreImpl implements DLStore {
 			long companyId, long repositoryId, long newRepositoryId,
 			String fileName)
 		throws PortalException {
+
+		Store store = _storeFactory.getStore();
 
 		store.updateFile(companyId, repositoryId, newRepositoryId, fileName);
 	}
@@ -468,6 +400,8 @@ public class DLStoreImpl implements DLStore {
 			long companyId, long repositoryId, String fileName,
 			String newFileName)
 		throws PortalException {
+
+		Store store = _storeFactory.getStore();
 
 		store.updateFile(companyId, repositoryId, fileName, newFileName);
 	}
@@ -480,12 +414,15 @@ public class DLStoreImpl implements DLStore {
 		throws PortalException {
 
 		validate(
-			fileName, fileExtension, sourceFileName, validateFileExtension,
-			file, versionLabel);
+			fileName, fileExtension, sourceFileName, validateFileExtension);
+
+		DLValidatorUtil.validateVersionLabel(versionLabel);
 
 		if (PropsValues.DL_STORE_ANTIVIRUS_ENABLED) {
 			AntivirusScannerUtil.scan(file);
 		}
+
+		Store store = _storeFactory.getStore();
 
 		store.updateFile(companyId, repositoryId, fileName, versionLabel, file);
 	}
@@ -511,8 +448,11 @@ public class DLStoreImpl implements DLStore {
 		}
 
 		validate(
-			fileName, fileExtension, sourceFileName, validateFileExtension, is,
-			versionLabel);
+			fileName, fileExtension, sourceFileName, validateFileExtension);
+
+		DLValidatorUtil.validateVersionLabel(versionLabel);
+
+		Store store = _storeFactory.getStore();
 
 		if (!PropsValues.DL_STORE_ANTIVIRUS_ENABLED ||
 			!AntivirusScannerUtil.isActive()) {
@@ -563,6 +503,8 @@ public class DLStoreImpl implements DLStore {
 			long companyId, long repositoryId, String fileName,
 			String fromVersionLabel, String toVersionLabel)
 		throws PortalException {
+
+		Store store = _storeFactory.getStore();
 
 		store.updateFileVersion(
 			companyId, repositoryId, fileName, fromVersionLabel,
@@ -693,11 +635,6 @@ public class DLStoreImpl implements DLStore {
 	@BeanReference(type = GroupLocalService.class)
 	protected GroupLocalService groupLocalService;
 
-	@BeanReference(type = Store.class)
-	protected Store store;
-
-	private static final String[] _KEYWORDS_FIELDS = {
-		Field.ASSET_TAG_NAMES, Field.CONTENT, Field.PROPERTIES
-	};
+	private final StoreFactory _storeFactory;
 
 }

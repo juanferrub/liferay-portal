@@ -15,7 +15,6 @@
 package com.liferay.portal.jsonwebservice;
 
 import com.liferay.portal.kernel.jsonwebservice.JSONWebServiceActionMapping;
-import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.MethodParameter;
 import com.liferay.portal.kernel.util.MethodParametersResolverUtil;
@@ -25,81 +24,100 @@ import com.liferay.portal.kernel.util.Validator;
 
 import java.lang.reflect.Method;
 
+import java.util.Objects;
+
 /**
  * @author Igor Spasic
  * @author Raymond Augé
  */
 public class JSONWebServiceActionConfig
 	implements Comparable<JSONWebServiceActionConfig>,
-	JSONWebServiceActionMapping {
+			   JSONWebServiceActionMapping {
 
 	public JSONWebServiceActionConfig(
 		String contextName, String contextPath, Class<?> actionClass,
 		Method actionMethod, String path, String method) {
 
-		_contextName = GetterUtil.getString(contextName);
-		_contextPath = GetterUtil.getString(contextPath);
-		_actionClass = actionClass;
-		_actionMethod = actionMethod;
-		_path = path;
-		_method = method;
-
-		Deprecated depreacted = actionMethod.getAnnotation(Deprecated.class);
-
-		if (depreacted != null) {
-			_deprecated = true;
-		}
-
-		if (Validator.isNotNull(_contextName)) {
-			path = _path.substring(1);
-
-			_path = StringPool.SLASH.concat(_contextName).concat(
-				StringPool.PERIOD).concat(path);
-		}
-
-		_methodParameters =
-			MethodParametersResolverUtil.resolveMethodParameters(actionMethod);
-
-		try {
-			_realActionMethod = _actionClass.getDeclaredMethod(
-				actionMethod.getName(), actionMethod.getParameterTypes());
-		}
-		catch (NoSuchMethodException nsme) {
-		}
-
-		StringBundler sb = new StringBundler(_methodParameters.length * 2 + 4);
-
-		sb.append(_path);
-		sb.append(CharPool.MINUS);
-		sb.append(_methodParameters.length);
-
-		for (MethodParameter methodParameter : _methodParameters) {
-			sb.append(CharPool.MINUS);
-			sb.append(methodParameter.getName());
-		}
-
-		_signature = sb.toString();
+		this(
+			contextName, contextPath, null, actionClass, actionMethod, path,
+			method);
 	}
 
 	public JSONWebServiceActionConfig(
 		String contextName, String contextPath, Object actionObject,
 		Class<?> actionClass, Method actionMethod, String path, String method) {
 
-		this(contextName, contextPath, actionClass, actionMethod, path, method);
-
+		_contextName = GetterUtil.getString(contextName);
+		_contextPath = GetterUtil.getString(contextPath);
 		_actionObject = actionObject;
+		_actionClass = actionClass;
+
+		Method newActionMethod = actionMethod;
+
+		if (actionObject != null) {
+			try {
+				Class<?> actionObjectClass = actionObject.getClass();
+
+				newActionMethod = actionObjectClass.getMethod(
+					actionMethod.getName(), actionMethod.getParameterTypes());
+			}
+			catch (NoSuchMethodException nsme) {
+				throw new IllegalArgumentException(nsme);
+			}
+		}
+
+		_actionMethod = newActionMethod;
+
+		if (Validator.isNotNull(_contextName)) {
+			StringBundler sb = new StringBundler(4);
+
+			sb.append(StringPool.SLASH);
+			sb.append(_contextName);
+			sb.append(StringPool.PERIOD);
+			sb.append(path.substring(1));
+
+			path = sb.toString();
+		}
+
+		_path = path;
+
+		_method = method;
+
+		Deprecated deprecated = actionMethod.getAnnotation(Deprecated.class);
+
+		if (deprecated != null) {
+			_deprecated = true;
+		}
+		else {
+			_deprecated = false;
+		}
+
+		_methodParameters =
+			MethodParametersResolverUtil.resolveMethodParameters(actionMethod);
+
+		Method realActionMethod = null;
 
 		try {
-			Class<?> actionObjectClass = actionObject.getClass();
-
-			Method actionObjectClassActionMethod = actionObjectClass.getMethod(
+			realActionMethod = _actionClass.getDeclaredMethod(
 				actionMethod.getName(), actionMethod.getParameterTypes());
-
-			_actionMethod = actionObjectClassActionMethod;
 		}
 		catch (NoSuchMethodException nsme) {
-			throw new IllegalArgumentException(nsme);
 		}
+
+		_realActionMethod = realActionMethod;
+
+		StringBundler sb = new StringBundler(_methodParameters.length * 2 + 3);
+
+		sb.append(_path);
+		sb.append(StringPool.MINUS);
+		sb.append(_methodParameters.length);
+
+		for (MethodParameter methodParameter : _methodParameters) {
+			sb.append(StringPool.MINUS);
+			sb.append(methodParameter.getName());
+		}
+
+		_signature = sb.toString();
 	}
 
 	@Override
@@ -122,9 +140,7 @@ public class JSONWebServiceActionConfig
 		JSONWebServiceActionConfig jsonWebServiceActionConfig =
 			(JSONWebServiceActionConfig)object;
 
-		if (Validator.equals(
-				_signature, jsonWebServiceActionConfig._signature)) {
-
+		if (Objects.equals(_signature, jsonWebServiceActionConfig._signature)) {
 			return true;
 		}
 
@@ -220,16 +236,16 @@ public class JSONWebServiceActionConfig
 		return sb.toString();
 	}
 
-	private Class<?> _actionClass;
-	private Method _actionMethod;
-	private Object _actionObject;
-	private String _contextName;
-	private String _contextPath;
-	private boolean _deprecated;
-	private String _method;
-	private MethodParameter[] _methodParameters;
-	private String _path;
-	private Method _realActionMethod;
-	private String _signature;
+	private final Class<?> _actionClass;
+	private final Method _actionMethod;
+	private final Object _actionObject;
+	private final String _contextName;
+	private final String _contextPath;
+	private final boolean _deprecated;
+	private final String _method;
+	private final MethodParameter[] _methodParameters;
+	private final String _path;
+	private final Method _realActionMethod;
+	private final String _signature;
 
 }

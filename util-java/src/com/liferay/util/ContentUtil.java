@@ -26,6 +26,7 @@ import java.util.Map;
 /**
  * @author Brian Wing Shun Chan
  * @author Raymond Augé
+ * @see com.liferay.petra.content.ContentUtil
  */
 public class ContentUtil {
 
@@ -48,7 +49,7 @@ public class ContentUtil {
 	}
 
 	private ContentUtil() {
-		_contentPool = new HashMap<String, String>();
+		_contentPool = new HashMap<>();
 	}
 
 	private String _get(ClassLoader classLoader, String location, boolean all) {
@@ -69,17 +70,19 @@ public class ContentUtil {
 	}
 
 	private String _get(String location, boolean all) {
-		return _get(getClass().getClassLoader(), location, all);
+		Class<?> clazz = getClass();
+
+		return _get(clazz.getClassLoader(), location, all);
 	}
 
 	private void _put(String location, String content) {
 		_contentPool.put(location, content);
 	}
 
-	private static Log _log = LogFactoryUtil.getLog(ContentUtil.class);
+	private static final Log _log = LogFactoryUtil.getLog(ContentUtil.class);
 
-	private static ContentUtil _instance = new ContentUtil();
+	private static final ContentUtil _instance = new ContentUtil();
 
-	private Map<String, String> _contentPool;
+	private final Map<String, String> _contentPool;
 
 }

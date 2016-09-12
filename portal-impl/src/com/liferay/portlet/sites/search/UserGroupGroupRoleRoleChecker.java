@@ -14,20 +14,20 @@
 
 package com.liferay.portlet.sites.search;
 
-import com.liferay.portal.kernel.dao.search.RowChecker;
+import com.liferay.portal.kernel.dao.search.EmptyOnClickRowChecker;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.model.Group;
-import com.liferay.portal.model.Role;
-import com.liferay.portal.model.UserGroup;
-import com.liferay.portal.service.UserGroupGroupRoleLocalServiceUtil;
+import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.Role;
+import com.liferay.portal.kernel.model.UserGroup;
+import com.liferay.portal.kernel.service.UserGroupGroupRoleLocalServiceUtil;
 
 import javax.portlet.RenderResponse;
 
 /**
  * @author Brett Swaim
  */
-public class UserGroupGroupRoleRoleChecker extends RowChecker {
+public class UserGroupGroupRoleRoleChecker extends EmptyOnClickRowChecker {
 
 	public UserGroupGroupRoleRoleChecker(
 		RenderResponse renderResponse, UserGroup userGroup, Group group) {
@@ -54,10 +54,10 @@ public class UserGroupGroupRoleRoleChecker extends RowChecker {
 		}
 	}
 
-	private static Log _log = LogFactoryUtil.getLog(
+	private static final Log _log = LogFactoryUtil.getLog(
 		UserGroupGroupRoleRoleChecker.class);
 
-	private Group _group;
-	private UserGroup _userGroup;
+	private final Group _group;
+	private final UserGroup _userGroup;
 
 }

@@ -16,6 +16,7 @@ package com.liferay.portal.dao.orm.hibernate;
 
 import com.liferay.portal.kernel.dao.orm.Projection;
 import com.liferay.portal.kernel.dao.orm.ProjectionList;
+import com.liferay.portal.kernel.util.StringBundler;
 
 /**
  * @author Brian Wing Shun Chan
@@ -53,6 +54,17 @@ public class ProjectionListImpl
 		return _projectionList;
 	}
 
-	private org.hibernate.criterion.ProjectionList _projectionList;
+	@Override
+	public String toString() {
+		StringBundler sb = new StringBundler(3);
+
+		sb.append("{_projectionList=");
+		sb.append(String.valueOf(_projectionList));
+		sb.append("}");
+
+		return sb.toString();
+	}
+
+	private final org.hibernate.criterion.ProjectionList _projectionList;
 
 }

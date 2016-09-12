@@ -24,7 +24,7 @@ import javax.servlet.jsp.JspException;
  * @author Julio Camarero
  * @generated
  */
-public class BaseInputTag extends com.liferay.taglib.util.IncludeTag {
+public abstract class BaseInputTag extends com.liferay.taglib.BaseValidatorTagSupport {
 
 	@Override
 	public int doStartTag() throws JspException {
@@ -207,6 +207,10 @@ public class BaseInputTag extends com.liferay.taglib.util.IncludeTag {
 
 	public java.lang.Object getValue() {
 		return _value;
+	}
+
+	public boolean getWrappedField() {
+		return _wrappedField;
 	}
 
 	public java.lang.String getWrapperCssClass() {
@@ -477,6 +481,12 @@ public class BaseInputTag extends com.liferay.taglib.util.IncludeTag {
 		setScopedAttribute("value", value);
 	}
 
+	public void setWrappedField(boolean wrappedField) {
+		_wrappedField = wrappedField;
+
+		setScopedAttribute("wrappedField", wrappedField);
+	}
+
 	public void setWrapperCssClass(java.lang.String wrapperCssClass) {
 		_wrapperCssClass = wrapperCssClass;
 
@@ -485,6 +495,8 @@ public class BaseInputTag extends com.liferay.taglib.util.IncludeTag {
 
 	@Override
 	protected void cleanUp() {
+		super.cleanUp();
+
 		_autoFocus = false;
 		_autoSize = false;
 		_bean = null;
@@ -529,6 +541,7 @@ public class BaseInputTag extends com.liferay.taglib.util.IncludeTag {
 		_type = null;
 		_useNamespace = true;
 		_value = null;
+		_wrappedField = false;
 		_wrapperCssClass = null;
 	}
 
@@ -583,6 +596,7 @@ public class BaseInputTag extends com.liferay.taglib.util.IncludeTag {
 		setNamespacedAttribute(request, "type", _type);
 		setNamespacedAttribute(request, "useNamespace", _useNamespace);
 		setNamespacedAttribute(request, "value", _value);
+		setNamespacedAttribute(request, "wrappedField", _wrappedField);
 		setNamespacedAttribute(request, "wrapperCssClass", _wrapperCssClass);
 	}
 
@@ -635,6 +649,7 @@ public class BaseInputTag extends com.liferay.taglib.util.IncludeTag {
 	private java.lang.String _type = null;
 	private boolean _useNamespace = true;
 	private java.lang.Object _value = null;
+	private boolean _wrappedField = false;
 	private java.lang.String _wrapperCssClass = null;
 
 }

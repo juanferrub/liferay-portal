@@ -32,6 +32,14 @@ public class LiferayLoggerAdapter
 
 	public LiferayLoggerAdapter(Log log) {
 		_log = log;
+
+		_log.setLogWrapperClassName(LiferayLoggerAdapter.class.getName());
+	}
+
+	public LiferayLoggerAdapter(Log log, String name) {
+		this(log);
+
+		this.name = name;
 	}
 
 	@Override
@@ -313,6 +321,6 @@ public class LiferayLoggerAdapter
 		_log.warn(message, t);
 	}
 
-	private transient Log _log;
+	private final transient Log _log;
 
 }

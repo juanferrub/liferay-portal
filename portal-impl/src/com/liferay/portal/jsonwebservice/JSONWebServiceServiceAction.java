@@ -23,6 +23,7 @@ import com.liferay.portal.kernel.jsonwebservice.JSONWebServiceActionsManagerUtil
 import com.liferay.portal.kernel.jsonwebservice.NoSuchJSONWebServiceException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.security.auth.PrincipalException;
 import com.liferay.portal.kernel.upload.UploadException;
 import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.ClassUtil;
@@ -31,8 +32,8 @@ import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.security.auth.PrincipalException;
-import com.liferay.portal.util.WebKeys;
+import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.util.PropsValues;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -176,7 +177,9 @@ public class JSONWebServiceServiceAction extends JSONServiceAction {
 			return new JSONWebServiceInvokerAction(request);
 		}
 
-		if (request.getParameter("discover") != null) {
+		if (PropsValues.JSONWS_WEB_SERVICE_API_DISCOVERABLE &&
+			(request.getParameter("discover") != null)) {
+
 			return new JSONWebServiceDiscoverAction(request);
 		}
 
@@ -201,7 +204,7 @@ public class JSONWebServiceServiceAction extends JSONServiceAction {
 
 	private static final String _REROUTE_PATH = "/jsonws";
 
-	private static Log _log = LogFactoryUtil.getLog(
+	private static final Log _log = LogFactoryUtil.getLog(
 		JSONWebServiceServiceAction.class);
 
 }

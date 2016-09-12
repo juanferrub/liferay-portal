@@ -23,7 +23,7 @@ import javax.servlet.jsp.JspException;
  * @author Julio Camarero
  * @generated
  */
-public class BaseATag extends com.liferay.taglib.util.IncludeTag {
+public abstract class BaseATag extends com.liferay.taglib.util.IncludeTag {
 
 	@Override
 	public int doStartTag() throws JspException {
@@ -46,6 +46,10 @@ public class BaseATag extends com.liferay.taglib.util.IncludeTag {
 
 	public java.lang.String getHref() {
 		return _href;
+	}
+
+	public java.lang.String getIconCssClass() {
+		return _iconCssClass;
 	}
 
 	public java.lang.String getId() {
@@ -100,6 +104,12 @@ public class BaseATag extends com.liferay.taglib.util.IncludeTag {
 		setScopedAttribute("href", href);
 	}
 
+	public void setIconCssClass(java.lang.String iconCssClass) {
+		_iconCssClass = iconCssClass;
+
+		setScopedAttribute("iconCssClass", iconCssClass);
+	}
+
 	public void setId(java.lang.String id) {
 		_id = id;
 
@@ -144,10 +154,13 @@ public class BaseATag extends com.liferay.taglib.util.IncludeTag {
 
 	@Override
 	protected void cleanUp() {
+		super.cleanUp();
+
 		_ariaRole = null;
 		_cssClass = null;
 		_data = null;
 		_href = null;
+		_iconCssClass = null;
 		_id = null;
 		_label = null;
 		_lang = null;
@@ -179,6 +192,7 @@ public class BaseATag extends com.liferay.taglib.util.IncludeTag {
 	private java.lang.String _cssClass = null;
 	private java.util.Map<java.lang.String, java.lang.Object> _data = null;
 	private java.lang.String _href = null;
+	private java.lang.String _iconCssClass = null;
 	private java.lang.String _id = null;
 	private java.lang.String _label = null;
 	private java.lang.String _lang = null;

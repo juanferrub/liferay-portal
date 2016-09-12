@@ -23,15 +23,31 @@ import javax.servlet.jsp.JspException;
  * @author Julio Camarero
  * @generated
  */
-public class BaseScriptTag extends com.liferay.taglib.util.PositionTagSupport {
+public abstract class BaseScriptTag extends com.liferay.taglib.util.PositionTagSupport {
 
 	@Override
 	public int doStartTag() throws JspException {
 		return super.doStartTag();
 	}
 
+	public boolean getSandbox() {
+		return _sandbox;
+	}
+
+	public java.lang.String getRequire() {
+		return _require;
+	}
+
 	public java.lang.String getUse() {
 		return _use;
+	}
+
+	public void setSandbox(boolean sandbox) {
+		_sandbox = sandbox;
+	}
+
+	public void setRequire(java.lang.String require) {
+		_require = require;
 	}
 
 	public void setUse(java.lang.String use) {
@@ -40,6 +56,10 @@ public class BaseScriptTag extends com.liferay.taglib.util.PositionTagSupport {
 
 	@Override
 	protected void cleanUp() {
+		super.cleanUp();
+
+		_sandbox = false;
+		_require = null;
 		_use = null;
 	}
 
@@ -50,6 +70,8 @@ public class BaseScriptTag extends com.liferay.taglib.util.PositionTagSupport {
 	private static final String _PAGE =
 		"/html/taglib/aui/script/page.jsp";
 
+	private boolean _sandbox = false;
+	private java.lang.String _require = null;
 	private java.lang.String _use = null;
 
 }

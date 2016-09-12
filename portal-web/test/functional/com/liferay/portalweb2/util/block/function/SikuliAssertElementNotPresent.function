@@ -1,5 +1,0 @@
-<definition>
-	<command name="sikuliAssertElementNotPresent">
-		<execute selenium="sikuliAssertElementNotPresent" />
-	</command>
-</definition>

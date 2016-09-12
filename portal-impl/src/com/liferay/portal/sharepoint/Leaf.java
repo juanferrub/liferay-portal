@@ -43,7 +43,7 @@ public class Leaf implements ResponseElement {
 
 	@Override
 	public String parse() {
-		StringBundler sb = new StringBundler(7);
+		StringBundler sb = new StringBundler(6);
 
 		if (_useEqualSymbol) {
 			sb.append(OPEN_LI);
@@ -69,9 +69,9 @@ public class Leaf implements ResponseElement {
 		return sb.toString();
 	}
 
-	private String _key;
-	private boolean _newLine;
-	private boolean _useEqualSymbol;
-	private String _value;
+	private final String _key;
+	private final boolean _newLine;
+	private final boolean _useEqualSymbol;
+	private final String _value;
 
 }

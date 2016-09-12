@@ -52,7 +52,11 @@ public class ResourceBundleEnumeration implements Enumeration<String> {
 			}
 		}
 
-		return _nextElement != null;
+		if (_nextElement != null) {
+			return true;
+		}
+
+		return false;
 	}
 
 	@Override
@@ -68,9 +72,9 @@ public class ResourceBundleEnumeration implements Enumeration<String> {
 		throw new NoSuchElementException();
 	}
 
-	private Enumeration<String> _enumeration;
-	private Iterator<String> _iterator;
+	private final Enumeration<String> _enumeration;
+	private final Iterator<String> _iterator;
 	private String _nextElement;
-	private Set<String> _set;
+	private final Set<String> _set;
 
 }

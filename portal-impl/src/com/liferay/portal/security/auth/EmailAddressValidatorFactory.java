@@ -14,6 +14,7 @@
 
 package com.liferay.portal.security.auth;
 
+import com.liferay.portal.kernel.security.auth.EmailAddressValidator;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceTracker;
@@ -37,9 +38,9 @@ public class EmailAddressValidatorFactory {
 		_serviceTracker.open();
 	}
 
-	private static EmailAddressValidatorFactory _instance =
+	private static final EmailAddressValidatorFactory _instance =
 		new EmailAddressValidatorFactory();
 
-	private ServiceTracker<?, EmailAddressValidator> _serviceTracker;
+	private final ServiceTracker<?, EmailAddressValidator> _serviceTracker;
 
 }

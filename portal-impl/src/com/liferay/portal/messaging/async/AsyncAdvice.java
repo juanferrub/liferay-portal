@@ -18,7 +18,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.messaging.MessageBusUtil;
 import com.liferay.portal.kernel.messaging.async.Async;
-import com.liferay.portal.kernel.transaction.TransactionCommitCallbackRegistryUtil;
+import com.liferay.portal.kernel.transaction.TransactionCommitCallbackUtil;
 import com.liferay.portal.spring.aop.AnnotationChainableMethodAdvice;
 
 import java.lang.annotation.Annotation;
@@ -75,7 +75,7 @@ public class AsyncAdvice extends AnnotationChainableMethodAdvice<Async> {
 
 		final String callbackDestinationName = destinationName;
 
-		TransactionCommitCallbackRegistryUtil.registerCallback(
+		TransactionCommitCallbackUtil.registerCallback(
 			new Callable<Void>() {
 
 				@Override
@@ -109,17 +109,16 @@ public class AsyncAdvice extends AnnotationChainableMethodAdvice<Async> {
 		_destinationNames = destinationNames;
 	}
 
-	private static Log _log = LogFactoryUtil.getLog(AsyncAdvice.class);
+	private static final Log _log = LogFactoryUtil.getLog(AsyncAdvice.class);
 
-	private static Async _nullAsync =
-		new Async() {
+	private static final Async _nullAsync = new Async() {
 
-			@Override
-			public Class<? extends Annotation> annotationType() {
-				return Async.class;
-			}
+		@Override
+		public Class<? extends Annotation> annotationType() {
+			return Async.class;
+		}
 
-		};
+	};
 
 	private String _defaultDestinationName;
 	private Map<Class<?>, String> _destinationNames;

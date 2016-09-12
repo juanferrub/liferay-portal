@@ -14,11 +14,12 @@
 
 package com.liferay.portal.liveusers.messaging;
 
-import com.liferay.portal.kernel.cluster.BaseClusterResponseCallback;
 import com.liferay.portal.kernel.cluster.ClusterExecutorUtil;
 import com.liferay.portal.kernel.cluster.ClusterNodeResponse;
 import com.liferay.portal.kernel.cluster.ClusterNodeResponses;
 import com.liferay.portal.kernel.cluster.ClusterRequest;
+import com.liferay.portal.kernel.cluster.FutureClusterResponses;
+import com.liferay.portal.kernel.concurrent.BaseFutureListener;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
@@ -31,8 +32,7 @@ import com.liferay.portal.liveusers.LiveUsers;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.Future;
 
 /**
  * @author Brian Wing Shun Chan
@@ -48,9 +48,11 @@ public class LiveUsersMessageListener extends BaseMessageListener {
 		ClusterRequest clusterRequest = ClusterRequest.createUnicastRequest(
 			_getLocalClusterUsersMethodHandler, clusterNodeId);
 
-		ClusterExecutorUtil.execute(
-			clusterRequest, new LiveUsersClusterResponseCallback(clusterNodeId),
-			20000, TimeUnit.MILLISECONDS);
+		FutureClusterResponses futureClusterResponses =
+			ClusterExecutorUtil.execute(clusterRequest);
+
+		futureClusterResponses.addFutureListener(
+			new LiveUsersClusterResponseFutureListener(clusterNodeId));
 	}
 
 	protected void doCommandRemoveClusterNode(JSONObject jsonObject)
@@ -106,22 +108,33 @@ public class LiveUsersMessageListener extends BaseMessageListener {
 		}
 	}
 
-	private static Log _log = LogFactoryUtil.getLog(
+	private static final Log _log = LogFactoryUtil.getLog(
 		LiveUsersMessageListener.class);
 
-	private static MethodHandler _getLocalClusterUsersMethodHandler =
+	private static final MethodHandler _getLocalClusterUsersMethodHandler =
 		new MethodHandler(
 			new MethodKey(LiveUsers.class, "getLocalClusterUsers"));
 
-	private class LiveUsersClusterResponseCallback
-		extends BaseClusterResponseCallback {
+	private static class LiveUsersClusterResponseFutureListener
+		extends BaseFutureListener<ClusterNodeResponses> {
 
-		public LiveUsersClusterResponseCallback(String clusterNodeId) {
+		public LiveUsersClusterResponseFutureListener(String clusterNodeId) {
 			_clusterNodeId = clusterNodeId;
 		}
 
 		@Override
-		public void callback(ClusterNodeResponses clusterNodeResponses) {
+		public void completeWithException(
+			Future<ClusterNodeResponses> future, Throwable throwable) {
+
+			_log.error(
+				"Uanble to add cluster node " + _clusterNodeId, throwable);
+		}
+
+		@Override
+		public void completeWithResult(
+			Future<ClusterNodeResponses> future,
+			ClusterNodeResponses clusterNodeResponses) {
+
 			ClusterNodeResponse clusterNodeResponse =
 				clusterNodeResponses.getClusterResponse(_clusterNodeId);
 
@@ -142,14 +155,7 @@ public class LiveUsersMessageListener extends BaseMessageListener {
 			}
 		}
 
-		@Override
-		public void processTimeoutException(TimeoutException timeoutException) {
-			_log.error(
-				"Uanble to add cluster node " + _clusterNodeId,
-				timeoutException);
-		}
-
-		private String _clusterNodeId;
+		private final String _clusterNodeId;
 
 	}
 

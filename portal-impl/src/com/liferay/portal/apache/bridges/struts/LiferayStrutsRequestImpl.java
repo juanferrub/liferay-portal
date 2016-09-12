@@ -17,8 +17,8 @@ package com.liferay.portal.apache.bridges.struts;
 import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayInputStream;
 import com.liferay.portal.kernel.servlet.ServletInputStreamAdapter;
 import com.liferay.portal.kernel.util.FileUtil;
+import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.struts.StrutsUtil;
-import com.liferay.portal.util.WebKeys;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,15 +43,18 @@ public class LiferayStrutsRequestImpl extends HttpServletRequestWrapper {
 	public LiferayStrutsRequestImpl(HttpServletRequest request) {
 		super(request);
 
-		_strutsAttributes = (Map<String, Object>)request.getAttribute(
-			WebKeys.STRUTS_BRIDGES_ATTRIBUTES);
+		Map<String, Object> strutsAttributes =
+			(Map<String, Object>)request.getAttribute(
+				WebKeys.STRUTS_BRIDGES_ATTRIBUTES);
 
-		if (_strutsAttributes == null) {
-			_strutsAttributes = new HashMap<String, Object>();
+		if (strutsAttributes == null) {
+			strutsAttributes = new HashMap<>();
 
 			request.setAttribute(
-				WebKeys.STRUTS_BRIDGES_ATTRIBUTES, _strutsAttributes);
+				WebKeys.STRUTS_BRIDGES_ATTRIBUTES, strutsAttributes);
 		}
+
+		_strutsAttributes = strutsAttributes;
 	}
 
 	@Override
@@ -72,7 +75,7 @@ public class LiferayStrutsRequestImpl extends HttpServletRequestWrapper {
 
 	@Override
 	public Enumeration<String> getAttributeNames() {
-		List<String> attributeNames = new Vector<String>();
+		List<String> attributeNames = new Vector<>();
 
 		Enumeration<String> enu = super.getAttributeNames();
 
@@ -124,6 +127,6 @@ public class LiferayStrutsRequestImpl extends HttpServletRequestWrapper {
 	}
 
 	private byte[] _bytes;
-	private Map<String, Object> _strutsAttributes;
+	private final Map<String, Object> _strutsAttributes;
 
 }

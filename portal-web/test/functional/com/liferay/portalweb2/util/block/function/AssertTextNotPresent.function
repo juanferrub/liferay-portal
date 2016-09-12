@@ -1,7 +1,0 @@
-<definition>
-	<command name="assertTextNotPresent">
-		<execute selenium="waitForTextNotPresent" />
-
-		<execute selenium="assertTextNotPresent" />
-	</command>
-</definition>

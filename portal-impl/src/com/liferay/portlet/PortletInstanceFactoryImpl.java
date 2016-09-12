@@ -14,14 +14,25 @@
 
 package com.liferay.portlet;
 
+import com.liferay.portal.kernel.model.Portlet;
+import com.liferay.portal.kernel.model.PortletApp;
+import com.liferay.portal.kernel.model.PortletConstants;
+import com.liferay.portal.kernel.portlet.InvokerFilterContainer;
+import com.liferay.portal.kernel.portlet.InvokerPortlet;
+import com.liferay.portal.kernel.portlet.InvokerPortletFactory;
 import com.liferay.portal.kernel.portlet.PortletBag;
 import com.liferay.portal.kernel.portlet.PortletBagPool;
+import com.liferay.portal.kernel.portlet.PortletConfigFactoryUtil;
+import com.liferay.portal.kernel.portlet.PortletContextFactoryUtil;
+import com.liferay.portal.kernel.portlet.PortletInstanceFactory;
 import com.liferay.portal.kernel.security.pacl.DoPrivileged;
-import com.liferay.portal.model.Portlet;
-import com.liferay.portal.model.PortletApp;
-import com.liferay.portal.model.PortletConstants;
-import com.liferay.portal.service.PortletLocalServiceUtil;
-import com.liferay.portal.util.ClassLoaderUtil;
+import com.liferay.portal.kernel.service.PortletLocalServiceUtil;
+import com.liferay.portal.kernel.util.ClassLoaderUtil;
+import com.liferay.portal.kernel.util.ReflectionUtil;
+import com.liferay.registry.Registry;
+import com.liferay.registry.RegistryUtil;
+import com.liferay.registry.ServiceTracker;
+import com.liferay.registry.ServiceTrackerFieldUpdaterCustomizer;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,8 +50,29 @@ import javax.servlet.ServletContext;
 @DoPrivileged
 public class PortletInstanceFactoryImpl implements PortletInstanceFactory {
 
-	public PortletInstanceFactoryImpl() {
-		_pool = new ConcurrentHashMap<String, Map<String, InvokerPortlet>>();
+	public void afterPropertiesSet() throws Exception {
+		Registry registry = RegistryUtil.getRegistry();
+
+		_serviceTracker = registry.trackServices(
+			InvokerPortletFactory.class,
+			new ServiceTrackerFieldUpdaterCustomizer
+				<InvokerPortletFactory, InvokerPortletFactory>(
+					ReflectionUtil.getDeclaredField(
+						PortletInstanceFactoryImpl.class,
+						"_invokerPortletFactory"),
+					this, _defaultInvokerPortletFactory) {
+
+				@Override
+				protected void afterServiceUpdate(
+					InvokerPortletFactory oldInvokerPortletFactory,
+					InvokerPortletFactory newInvokerPortletFactory) {
+
+					_pool.clear();
+				}
+
+			});
+
+		_serviceTracker.open();
 	}
 
 	@Override
@@ -81,6 +113,19 @@ public class PortletInstanceFactoryImpl implements PortletInstanceFactory {
 	public InvokerPortlet create(Portlet portlet, ServletContext servletContext)
 		throws PortletException {
 
+		return create(portlet, servletContext, false);
+	}
+
+	@Override
+	public InvokerPortlet create(
+			Portlet portlet, ServletContext servletContext,
+			boolean destroyPrevious)
+		throws PortletException {
+
+		if (destroyPrevious) {
+			destroyRelated(portlet);
+		}
+
 		boolean instanceable = false;
 
 		boolean deployed = !portlet.isUndeployedPortlet();
@@ -101,8 +146,7 @@ public class PortletInstanceFactoryImpl implements PortletInstanceFactory {
 			portletInstances = _pool.get(rootPortletId);
 
 			if (portletInstances == null) {
-				portletInstances =
-					new ConcurrentHashMap<String, InvokerPortlet>();
+				portletInstances = new ConcurrentHashMap<>();
 
 				_pool.put(rootPortletId, portletInstances);
 			}
@@ -174,6 +218,7 @@ public class PortletInstanceFactoryImpl implements PortletInstanceFactory {
 		InvokerPortlet instanceInvokerPortletInstance =
 			_invokerPortletFactory.create(
 				portlet, portletInstance, portletConfig, portletContext,
+				(InvokerFilterContainer)rootInvokerPortletInstance,
 				checkAuthToken, facesPortlet, strutsPortlet,
 				strutsBridgePortlet);
 
@@ -205,18 +250,26 @@ public class PortletInstanceFactoryImpl implements PortletInstanceFactory {
 
 	@Override
 	public void destroy(Portlet portlet) {
+		_serviceTracker.close();
+
 		clear(portlet);
 
-		PortletConfigFactoryUtil.destroy(portlet);
-		PortletContextFactory.destroy(portlet);
+		destroyRelated(portlet);
 
 		PortletLocalServiceUtil.destroyPortlet(portlet);
 	}
 
-	public void setInvokerPortletFactory(
-		InvokerPortletFactory invokerPortletFactory) {
+	public void setDefaultInvokerPortletFactory(
+		InvokerPortletFactory defaultInvokerPortletFactory) {
 
-		_invokerPortletFactory = invokerPortletFactory;
+		_defaultInvokerPortletFactory = defaultInvokerPortletFactory;
+
+		_invokerPortletFactory = defaultInvokerPortletFactory;
+	}
+
+	protected void destroyRelated(Portlet portlet) {
+		PortletConfigFactoryUtil.destroy(portlet);
+		PortletContextFactoryUtil.destroy(portlet);
 	}
 
 	protected InvokerPortlet init(
@@ -226,15 +279,22 @@ public class PortletInstanceFactoryImpl implements PortletInstanceFactory {
 
 		PortletContext portletContext = portletConfig.getPortletContext();
 
+		InvokerFilterContainer invokerFilterContainer =
+			new InvokerFilterContainerImpl(portlet, portletContext);
+
 		InvokerPortlet invokerPortlet = _invokerPortletFactory.create(
-			portlet, portletInstance, portletContext);
+			portlet, portletInstance, portletContext, invokerFilterContainer);
 
 		invokerPortlet.init(portletConfig);
 
 		return invokerPortlet;
 	}
 
-	private InvokerPortletFactory _invokerPortletFactory;
-	private Map<String, Map<String, InvokerPortlet>> _pool;
+	private InvokerPortletFactory _defaultInvokerPortletFactory;
+	private volatile InvokerPortletFactory _invokerPortletFactory;
+	private final Map<String, Map<String, InvokerPortlet>> _pool =
+		new ConcurrentHashMap<>();
+	private ServiceTracker<InvokerPortletFactory, InvokerPortletFactory>
+		_serviceTracker;
 
 }

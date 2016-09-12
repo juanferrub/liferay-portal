@@ -14,9 +14,11 @@
 
 package com.liferay.portal.security.pwd;
 
-import com.liferay.portal.PwdEncryptorException;
+import com.liferay.portal.kernel.exception.PwdEncryptorException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.security.pwd.PasswordEncryptor;
+import com.liferay.portal.kernel.security.pwd.PasswordEncryptorUtil;
 import com.liferay.portal.kernel.util.ClassUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -54,9 +56,11 @@ public class CompositePasswordEncryptor
 				passwordEncryptor.getSupportedAlgorithmTypes();
 
 			if (_log.isDebugEnabled()) {
+				Class<?> clazz = passwordEncryptor.getClass();
+
 				_log.debug(
 					"Registering " + StringUtil.merge(supportedAlgorithmTypes) +
-						" for " + passwordEncryptor.getClass().getName());
+						" for " + clazz.getName());
 			}
 
 			for (String supportedAlgorithmType : supportedAlgorithmTypes) {
@@ -108,11 +112,11 @@ public class CompositePasswordEncryptor
 			algorithm, plainTextPassword, encryptedPassword);
 	}
 
-	private static Log _log = LogFactoryUtil.getLog(
+	private static final Log _log = LogFactoryUtil.getLog(
 		CompositePasswordEncryptor.class);
 
 	private PasswordEncryptor _defaultPasswordEncryptor;
-	private Map<String, PasswordEncryptor> _passwordEncryptors =
-		new HashMap<String, PasswordEncryptor>();
+	private final Map<String, PasswordEncryptor> _passwordEncryptors =
+		new HashMap<>();
 
 }

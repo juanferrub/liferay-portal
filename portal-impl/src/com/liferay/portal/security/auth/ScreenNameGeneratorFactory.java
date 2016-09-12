@@ -14,6 +14,7 @@
 
 package com.liferay.portal.security.auth;
 
+import com.liferay.portal.kernel.security.auth.ScreenNameGenerator;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceTracker;
@@ -37,9 +38,9 @@ public class ScreenNameGeneratorFactory {
 		_serviceTracker.open();
 	}
 
-	private static ScreenNameGeneratorFactory _instance =
+	private static final ScreenNameGeneratorFactory _instance =
 		new ScreenNameGeneratorFactory();
 
-	private ServiceTracker<?, ScreenNameGenerator> _serviceTracker;
+	private final ServiceTracker<?, ScreenNameGenerator> _serviceTracker;
 
 }

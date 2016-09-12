@@ -90,6 +90,10 @@ public class PortletServletResponse extends HttpServletResponseWrapper {
 		return false;
 	}
 
+	/**
+	 * @deprecated As of 7.0.0
+	 */
+	@Deprecated
 	@Override
 	public String encodeRedirectUrl(String url) {
 		return null;
@@ -100,6 +104,10 @@ public class PortletServletResponse extends HttpServletResponseWrapper {
 		return null;
 	}
 
+	/**
+	 * @deprecated As of 7.0.0
+	 */
+	@Deprecated
 	@Override
 	public String encodeUrl(String url) {
 		return _portletResponse.encodeURL(url);
@@ -362,6 +370,10 @@ public class PortletServletResponse extends HttpServletResponseWrapper {
 		}
 	}
 
+	/**
+	 * @deprecated As of 7.0.0
+	 */
+	@Deprecated
 	@Override
 	public void setStatus(int status, String message) {
 		setStatus(status);
@@ -379,8 +391,8 @@ public class PortletServletResponse extends HttpServletResponseWrapper {
 		return (ResourceResponse)_portletResponse;
 	}
 
-	private boolean _include;
-	private String _lifecycle;
-	private PortletResponse _portletResponse;
+	private final boolean _include;
+	private final String _lifecycle;
+	private final PortletResponse _portletResponse;
 
 }

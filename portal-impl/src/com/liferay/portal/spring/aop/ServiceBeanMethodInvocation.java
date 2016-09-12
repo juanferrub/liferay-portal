@@ -14,9 +14,9 @@
 
 package com.liferay.portal.spring.aop;
 
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.Validator;
 
 import java.io.Serializable;
 
@@ -25,9 +25,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+
+import org.springframework.aop.TargetSource;
+import org.springframework.aop.framework.AdvisedSupport;
 
 /**
  * @author Shuyang Zhou
@@ -47,6 +51,14 @@ public class ServiceBeanMethodInvocation
 		if (!_method.isAccessible()) {
 			_method.setAccessible(true);
 		}
+
+		if (_method.getDeclaringClass() == Object.class) {
+			String methodName = _method.getName();
+
+			if (methodName.equals("equals")) {
+				_equalsMethod = true;
+			}
+		}
 	}
 
 	@Override
@@ -62,7 +74,7 @@ public class ServiceBeanMethodInvocation
 		ServiceBeanMethodInvocation serviceBeanMethodInvocation =
 			(ServiceBeanMethodInvocation)obj;
 
-		if (Validator.equals(_method, serviceBeanMethodInvocation._method)) {
+		if (Objects.equals(_method, serviceBeanMethodInvocation._method)) {
 			return true;
 		}
 
@@ -102,6 +114,10 @@ public class ServiceBeanMethodInvocation
 		return _hashCode;
 	}
 
+	public void mark() {
+		_markIndex = _index;
+	}
+
 	@Override
 	public Object proceed() throws Throwable {
 		if (_index < _methodInterceptors.size()) {
@@ -111,12 +127,38 @@ public class ServiceBeanMethodInvocation
 			return methodInterceptor.invoke(this);
 		}
 
+		if (_equalsMethod) {
+			Object argument = _arguments[0];
+
+			if (argument == null) {
+				return false;
+			}
+
+			if (ProxyUtil.isProxyClass(argument.getClass())) {
+				AdvisedSupport advisedSupport =
+					ServiceBeanAopProxy.getAdvisedSupport(argument);
+
+				if (advisedSupport != null) {
+					TargetSource targetSource =
+						advisedSupport.getTargetSource();
+
+					argument = targetSource.getTarget();
+				}
+			}
+
+			return _target.equals(argument);
+		}
+
 		try {
 			return _method.invoke(_target, _arguments);
 		}
 		catch (InvocationTargetException ite) {
 			throw ite.getTargetException();
 		}
+	}
+
+	public void reset() {
+		_index = _markIndex;
 	}
 
 	public void setMethodInterceptors(
@@ -129,6 +171,7 @@ public class ServiceBeanMethodInvocation
 		ServiceBeanMethodInvocation serviceBeanMethodInvocation =
 			new ServiceBeanMethodInvocation(null, null, _method, null);
 
+		serviceBeanMethodInvocation._equalsMethod = _equalsMethod;
 		serviceBeanMethodInvocation._hashCode = _hashCode;
 
 		return serviceBeanMethodInvocation;
@@ -174,13 +217,15 @@ public class ServiceBeanMethodInvocation
 		return _toString;
 	}
 
-	private Object[] _arguments;
+	private final Object[] _arguments;
+	private boolean _equalsMethod;
 	private int _hashCode;
 	private int _index;
-	private Method _method;
+	private int _markIndex;
+	private final Method _method;
 	private List<MethodInterceptor> _methodInterceptors;
-	private Object _target;
-	private Class<?> _targetClass;
+	private final Object _target;
+	private final Class<?> _targetClass;
 	private String _toString;
 
 }

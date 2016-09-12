@@ -417,19 +417,10 @@ public abstract class LiferayConverter {
 	}
 
 	protected int getAudioBitRate(ICodec outputICodec, int originalBitRate) {
-		if ((originalBitRate == 0) || (originalBitRate > AUDIO_BIT_RATE_MAX)) {
-			originalBitRate = AUDIO_BIT_RATE_DEFAULT;
-		}
-
-		ICodec.ID iCodecID = outputICodec.getID();
-
-		if (iCodecID.equals(ICodec.ID.CODEC_ID_VORBIS)) {
-			if (originalBitRate < 64000) {
-				originalBitRate = 64000;
-			}
-		}
-
-		return originalBitRate;
+		return getCodecBitRate(
+			outputICodec,
+			getProperty(
+				originalBitRate, AUDIO_BIT_RATE_DEFAULT, AUDIO_BIT_RATE_MAX));
 	}
 
 	protected int getAudioEncodingChannels(
@@ -487,16 +478,32 @@ public abstract class LiferayConverter {
 		return AUDIO_SAMPLE_RATE_DEFAULT;
 	}
 
+	protected int getCodecBitRate(ICodec outputICodec, int originalBitRate) {
+		if ((originalBitRate == 0) || (originalBitRate > AUDIO_BIT_RATE_MAX)) {
+			originalBitRate = AUDIO_BIT_RATE_DEFAULT;
+		}
+
+		ICodec.ID iCodecID = outputICodec.getID();
+
+		if (iCodecID.equals(ICodec.ID.CODEC_ID_VORBIS)) {
+			if (originalBitRate < 64000) {
+				return 64000;
+			}
+		}
+
+		return originalBitRate;
+	}
+
 	protected abstract IContainer getInputIContainer();
 
 	protected int getProperty(
 		int originalValue, int defaultValue, int maxValue) {
 
 		if (originalValue <= 0) {
-			originalValue = defaultValue;
+			return defaultValue;
 		}
 		else if (originalValue > maxValue) {
-			originalValue = maxValue;
+			return maxValue;
 		}
 
 		return originalValue;
@@ -807,6 +814,11 @@ public abstract class LiferayConverter {
 		int value = inputIContainer.seekKeyFrame(index, -1, 0);
 
 		if (value < 0) {
+			value = inputIContainer.seekKeyFrame(
+				index, -1, IContainer.SEEK_FLAG_BACKWARDS);
+		}
+
+		if (value < 0) {
 			throw new RuntimeException("Error while seeking file");
 		}
 
@@ -889,7 +901,8 @@ public abstract class LiferayConverter {
 
 	protected static final int DECODE_VIDEO_THUMBNAIL = 2;
 
-	private static Log _log = LogFactoryUtil.getLog(LiferayConverter.class);
+	private static final Log _log = LogFactoryUtil.getLog(
+		LiferayConverter.class);
 
 	private ConverterFactory.Type _converterFactoryType;
 	private IConverter _videoIConverter;

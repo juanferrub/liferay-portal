@@ -17,6 +17,8 @@ package com.liferay.portal.security.membershippolicy;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.security.membershippolicy.SiteMembershipPolicy;
+import com.liferay.portal.kernel.security.membershippolicy.SiteMembershipPolicyFactory;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
@@ -48,15 +50,15 @@ public class SiteMembershipPolicyFactoryImpl
 		_serviceTracker.open();
 	}
 
-	private static Log _log = LogFactoryUtil.getLog(
+	private static final Log _log = LogFactoryUtil.getLog(
 		SiteMembershipPolicyFactoryImpl.class);
 
-	private static SiteMembershipPolicyFactoryImpl _instance =
+	private static final SiteMembershipPolicyFactoryImpl _instance =
 		new SiteMembershipPolicyFactoryImpl();
 
-	private ServiceTracker<?, SiteMembershipPolicy> _serviceTracker;
+	private final ServiceTracker<?, SiteMembershipPolicy> _serviceTracker;
 
-	private class SiteMembershipPolicyTrackerCustomizer
+	private static class SiteMembershipPolicyTrackerCustomizer
 		implements
 			ServiceTrackerCustomizer
 				<SiteMembershipPolicy, SiteMembershipPolicy> {

@@ -18,9 +18,9 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portlet.ratings.NoSuchStatsException;
-import com.liferay.portlet.ratings.model.RatingsStats;
 import com.liferay.portlet.ratings.service.base.RatingsStatsLocalServiceBaseImpl;
+import com.liferay.ratings.kernel.exception.NoSuchStatsException;
+import com.liferay.ratings.kernel.model.RatingsStats;
 
 import java.util.List;
 
@@ -80,6 +80,16 @@ public class RatingsStatsLocalServiceImpl
 	}
 
 	@Override
+	public RatingsStats fetchStats(String className, long classPK) {
+		long classNameId = classNameLocalService.getClassNameId(className);
+
+		RatingsStats stats = ratingsStatsPersistence.fetchByC_C(
+			classNameId, classPK);
+
+		return stats;
+	}
+
+	@Override
 	public RatingsStats getStats(long statsId) throws PortalException {
 		return ratingsStatsPersistence.findByPrimaryKey(statsId);
 	}
@@ -105,7 +115,7 @@ public class RatingsStatsLocalServiceImpl
 		return stats;
 	}
 
-	private static Log _log = LogFactoryUtil.getLog(
+	private static final Log _log = LogFactoryUtil.getLog(
 		RatingsStatsLocalServiceImpl.class);
 
 }

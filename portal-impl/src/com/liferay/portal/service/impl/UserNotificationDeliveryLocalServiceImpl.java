@@ -14,10 +14,10 @@
 
 package com.liferay.portal.service.impl;
 
-import com.liferay.portal.NoSuchUserNotificationDeliveryException;
+import com.liferay.portal.kernel.exception.NoSuchUserNotificationDeliveryException;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.model.User;
-import com.liferay.portal.model.UserNotificationDelivery;
+import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.model.UserNotificationDelivery;
 import com.liferay.portal.service.base.UserNotificationDeliveryLocalServiceBaseImpl;
 
 /**
@@ -66,7 +66,7 @@ public class UserNotificationDeliveryLocalServiceImpl
 			userNotificationDeliveryPersistence.removeByU_P_C_N_D(
 				userId, portletId, classNameId, notificationType, deliveryType);
 		}
-		catch (NoSuchUserNotificationDeliveryException nsnde) {
+		catch (NoSuchUserNotificationDeliveryException nsunde) {
 		}
 	}
 

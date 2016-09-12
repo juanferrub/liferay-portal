@@ -20,15 +20,15 @@ import com.liferay.portal.kernel.dao.orm.SQLQuery;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.dao.orm.Type;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.model.Organization;
+import com.liferay.portal.kernel.service.persistence.OrganizationFinder;
+import com.liferay.portal.kernel.service.persistence.OrganizationUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.model.Organization;
 import com.liferay.portal.model.impl.OrganizationImpl;
-import com.liferay.portal.service.persistence.OrganizationFinder;
-import com.liferay.portal.service.persistence.OrganizationUtil;
 import com.liferay.util.dao.orm.CustomSQLUtil;
 
 import java.util.ArrayList;
@@ -45,7 +45,7 @@ import java.util.Map;
  * @author Shuyang Zhou
  */
 public class OrganizationFinderImpl
-	extends BasePersistenceImpl<Organization> implements OrganizationFinder {
+	extends OrganizationFinderBaseImpl implements OrganizationFinder {
 
 	public static final String COUNT_BY_GROUP_ID =
 		OrganizationFinder.class.getName() + ".countByGroupId";
@@ -120,8 +120,7 @@ public class OrganizationFinderImpl
 
 	@Override
 	public int countByO_U(long organizationId, long userId) {
-		LinkedHashMap<String, Object> params1 =
-			new LinkedHashMap<String, Object>();
+		LinkedHashMap<String, Object> params1 = new LinkedHashMap<>();
 
 		params1.put("usersOrgs", userId);
 
@@ -182,8 +181,10 @@ public class OrganizationFinderImpl
 
 			boolean doUnion = false;
 
+			Long groupOrganization = null;
+
 			if (params != null) {
-				Long groupOrganization = (Long)params.get("groupOrganization");
+				groupOrganization = (Long)params.get("groupOrganization");
 
 				if (groupOrganization != null) {
 					doUnion = true;
@@ -245,6 +246,10 @@ public class OrganizationFinderImpl
 			q.addScalar(COUNT_COLUMN_NAME, Type.LONG);
 
 			QueryPos qPos = QueryPos.getInstance(q);
+
+			if (doUnion) {
+				qPos.add(groupOrganization);
+			}
 
 			setJoin(qPos, params);
 
@@ -419,7 +424,7 @@ public class OrganizationFinderImpl
 		zips = CustomSQLUtil.keywords(zips);
 
 		if (params == null) {
-			params = new LinkedHashMap<String, Object>();
+			params = new LinkedHashMap<>();
 		}
 
 		StringBundler sb = new StringBundler(4);
@@ -486,6 +491,10 @@ public class OrganizationFinderImpl
 
 			QueryPos qPos = QueryPos.getInstance(q);
 
+			if (doUnion) {
+				qPos.add(groupOrganization);
+			}
+
 			setJoin(qPos, params);
 
 			qPos.add(companyId);
@@ -511,7 +520,7 @@ public class OrganizationFinderImpl
 			qPos.add(cities, 2);
 			qPos.add(zips, 2);
 
-			List<Organization> organizations = new ArrayList<Organization>();
+			List<Organization> organizations = new ArrayList<>();
 
 			Iterator<Long> itr = (Iterator<Long>)QueryUtil.iterate(
 				q, getDialect(), start, end);
@@ -767,7 +776,9 @@ public class OrganizationFinderImpl
 		for (Map.Entry<String, Object> entry : params.entrySet()) {
 			String key = entry.getKey();
 
-			if (key.equals("expandoAttributes")) {
+			if (key.equals("expandoAttributes") ||
+				key.equals("groupOrganization")) {
+
 				continue;
 			}
 

@@ -14,6 +14,8 @@
 
 package com.liferay.portal.security.pwd;
 
+import com.liferay.portal.kernel.security.pwd.PasswordEncryptor;
+import com.liferay.portal.kernel.security.pwd.PasswordEncryptorUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Validator;
 
@@ -60,7 +62,7 @@ public class BCryptPasswordEncryptor
 
 	private static final int _ROUNDS = 10;
 
-	private static Pattern _pattern = Pattern.compile(
+	private static final Pattern _pattern = Pattern.compile(
 		"^BCrypt/([0-9]+)$", Pattern.CASE_INSENSITIVE);
 
 }

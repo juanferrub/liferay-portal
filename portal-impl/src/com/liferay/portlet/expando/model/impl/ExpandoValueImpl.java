@@ -14,7 +14,12 @@
 
 package com.liferay.portlet.expando.model.impl;
 
+import com.liferay.expando.kernel.exception.ValueDataException;
+import com.liferay.expando.kernel.model.ExpandoColumn;
+import com.liferay.expando.kernel.model.ExpandoColumnConstants;
+import com.liferay.expando.kernel.service.ExpandoColumnLocalServiceUtil;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.LocalizationUtil;
@@ -22,10 +27,6 @@ import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portlet.expando.ValueDataException;
-import com.liferay.portlet.expando.model.ExpandoColumn;
-import com.liferay.portlet.expando.model.ExpandoColumnConstants;
-import com.liferay.portlet.expando.service.ExpandoColumnLocalServiceUtil;
 
 import java.io.Serializable;
 
@@ -43,16 +44,13 @@ import java.util.Map;
  */
 public class ExpandoValueImpl extends ExpandoValueBaseImpl {
 
-	public ExpandoValueImpl() {
-	}
-
 	@Override
 	public List<Locale> getAvailableLocales() throws PortalException {
 		if (!isColumnLocalized()) {
 			return null;
 		}
 
-		List<Locale> locales = new ArrayList<Locale>();
+		List<Locale> locales = new ArrayList<>();
 
 		for (String languageId :
 				LocalizationUtil.getAvailableLanguageIds(getData())) {
@@ -317,8 +315,7 @@ public class ExpandoValueImpl extends ExpandoValueBaseImpl {
 		Map<Locale, String> stringMap = LocalizationUtil.getLocalizationMap(
 			getData());
 
-		Map<Locale, String[]> stringArrayMap = new HashMap<Locale, String[]>(
-			stringMap.size());
+		Map<Locale, String[]> stringArrayMap = new HashMap<>(stringMap.size());
 
 		for (Map.Entry<Locale, String> entry : stringMap.entrySet()) {
 			stringArrayMap.put(entry.getKey(), split(entry.getValue()));
@@ -507,7 +504,7 @@ public class ExpandoValueImpl extends ExpandoValueBaseImpl {
 
 		validate(ExpandoColumnConstants.STRING_ARRAY_LOCALIZED);
 
-		Map<Locale, String> stringMap = new HashMap<Locale, String>();
+		Map<Locale, String> stringMap = new HashMap<>();
 
 		for (Map.Entry<Locale, String[]> entry : dataMap.entrySet()) {
 			stringMap.put(entry.getKey(), merge(entry.getValue()));
@@ -581,7 +578,7 @@ public class ExpandoValueImpl extends ExpandoValueBaseImpl {
 		if (data != null) {
 			for (int i = 0; i < data.length; i++) {
 				data[i] = StringUtil.replace(
-					data[i], StringPool.COMMA, _EXPANDO_COMMA);
+					data[i], CharPool.COMMA, _EXPANDO_COMMA);
 			}
 		}
 

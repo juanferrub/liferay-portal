@@ -17,17 +17,21 @@ package com.liferay.portal.json;
 import com.liferay.portal.kernel.json.JSONSerializer;
 import com.liferay.portal.kernel.json.JSONTransformer;
 
-import flexjson.transformer.Transformer;
+import jodd.json.JoddJson;
+import jodd.json.JsonContext;
+import jodd.json.JsonSerializer;
+import jodd.json.TypeJsonSerializer;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
- * Wrapper over flexjson serializer.
- *
  * @author Igor Spasic
  */
 public class JSONSerializerImpl implements JSONSerializer {
 
 	public JSONSerializerImpl() {
-		_jsonSerializer = new flexjson.JSONSerializer();
+		_jsonSerializer = new JsonSerializer();
 	}
 
 	@Override
@@ -51,45 +55,86 @@ public class JSONSerializerImpl implements JSONSerializer {
 
 	@Override
 	public String serializeDeep(Object target) {
-		return _jsonSerializer.deepSerialize(target);
+		return _jsonSerializer.deep(true).serialize(target);
 	}
 
 	@Override
 	public JSONSerializerImpl transform(
-		JSONTransformer jsonTransformer, Class<?>... types) {
+		JSONTransformer jsonTransformer, Class<?> type) {
 
-		Transformer transformer = null;
+		TypeJsonSerializer<?> typeJsonSerializer = null;
 
-		if (jsonTransformer instanceof Transformer) {
-			transformer = (Transformer)jsonTransformer;
+		if (jsonTransformer instanceof TypeJsonSerializer) {
+			typeJsonSerializer = (TypeJsonSerializer<?>)jsonTransformer;
 		}
 		else {
-			transformer = new FlexjsonTransformer(jsonTransformer);
+			typeJsonSerializer = new JoddJsonTransformer(jsonTransformer);
 		}
 
-		_jsonSerializer.transform(transformer, types);
+		_jsonSerializer.use(type, typeJsonSerializer);
 
 		return this;
 	}
 
 	@Override
 	public JSONSerializerImpl transform(
-		JSONTransformer jsonTransformer, String... fields) {
+		JSONTransformer jsonTransformer, String field) {
 
-		Transformer transformer = null;
+		TypeJsonSerializer<?> typeJsonSerializer = null;
 
-		if (jsonTransformer instanceof Transformer) {
-			transformer = (Transformer)jsonTransformer;
+		if (jsonTransformer instanceof TypeJsonSerializer) {
+			typeJsonSerializer = (TypeJsonSerializer<?>)jsonTransformer;
 		}
 		else {
-			transformer = new FlexjsonTransformer(jsonTransformer);
+			typeJsonSerializer = new JoddJsonTransformer(jsonTransformer);
 		}
 
-		_jsonSerializer.transform(transformer, fields);
+		_jsonSerializer.use(field, typeJsonSerializer);
 
 		return this;
 	}
 
-	private final flexjson.JSONSerializer _jsonSerializer;
+	static {
+		JoddJson.defaultSerializers.register(
+			JSONArray.class, new JSONArrayTypeJSONSerializer());
+		JoddJson.defaultSerializers.register(
+			JSONObject.class, new JSONObjectTypeJSONSerializer());
+		JoddJson.defaultSerializers.register(
+			Long.TYPE, new LongToStringTypeJSONSerializer());
+		JoddJson.defaultSerializers.register(
+			Long.class, new LongToStringTypeJSONSerializer());
+	}
+
+	private final JsonSerializer _jsonSerializer;
+
+	private static class JSONArrayTypeJSONSerializer
+		implements TypeJsonSerializer<JSONArray> {
+
+		@Override
+		public void serialize(JsonContext jsonContext, JSONArray jsonArray) {
+			jsonContext.write(jsonArray.toString());
+		}
+
+	}
+
+	private static class JSONObjectTypeJSONSerializer
+		implements TypeJsonSerializer<JSONObject> {
+
+		@Override
+		public void serialize(JsonContext jsonContext, JSONObject jsonObject) {
+			jsonContext.write(jsonObject.toString());
+		}
+
+	}
+
+	private static class LongToStringTypeJSONSerializer
+		implements TypeJsonSerializer<Long> {
+
+		@Override
+		public void serialize(JsonContext jsonContext, Long value) {
+			jsonContext.writeString(Long.toString(value));
+		}
+
+	}
 
 }

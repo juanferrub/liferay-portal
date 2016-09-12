@@ -1,5 +1,0 @@
-<definition>
-	<command name="sikuliDragAndDrop">
-		<execute selenium="sikuliDragAndDrop" />
-	</command>
-</definition>

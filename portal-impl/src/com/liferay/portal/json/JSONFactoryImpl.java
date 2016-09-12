@@ -14,7 +14,6 @@
 
 package com.liferay.portal.json;
 
-import com.liferay.alloy.util.json.StringTransformer;
 import com.liferay.portal.json.jabsorb.serializer.LiferayJSONSerializer;
 import com.liferay.portal.json.jabsorb.serializer.LiferaySerializer;
 import com.liferay.portal.json.jabsorb.serializer.LocaleSerializer;
@@ -130,11 +129,8 @@ public class JSONFactoryImpl implements JSONFactory {
 	public JSONTransformer createJavaScriptNormalizerJSONTransformer(
 		List<String> javaScriptAttributes) {
 
-		StringTransformer stringTransformer = new StringTransformer();
-
-		stringTransformer.setJavaScriptAttributes(javaScriptAttributes);
-
-		return stringTransformer;
+		throw new UnsupportedOperationException(
+			"Temporally disabled until alloy-taglib.jar is updated");
 	}
 
 	@Override
@@ -149,7 +145,7 @@ public class JSONFactoryImpl implements JSONFactory {
 
 	@Override
 	public <T> JSONDeserializer<T> createJSONDeserializer() {
-		return new JSONDeserializerImpl<T>();
+		return new JSONDeserializerImpl<>();
 	}
 
 	@Override
@@ -222,35 +218,6 @@ public class JSONFactoryImpl implements JSONFactory {
 	@Override
 	public <T> T looseDeserialize(String json, Class<T> clazz) {
 		JSONDeserializer<?> jsonDeserializer = createJSONDeserializer();
-
-		jsonDeserializer.use(null, clazz);
-
-		return (T)jsonDeserializer.deserialize(json);
-	}
-
-	@Override
-	public Object looseDeserializeSafe(String json) {
-		try {
-			JSONDeserializer<?> jsonDeserializer = createJSONDeserializer();
-
-			jsonDeserializer.safeMode(true);
-
-			return jsonDeserializer.deserialize(json);
-		}
-		catch (Exception e) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(e, e);
-			}
-
-			throw new IllegalStateException("Unable to deserialize object", e);
-		}
-	}
-
-	@Override
-	public <T> T looseDeserializeSafe(String json, Class<T> clazz) {
-		JSONDeserializer<?> jsonDeserializer = createJSONDeserializer();
-
-		jsonDeserializer.safeMode(true);
 
 		jsonDeserializer.use(null, clazz);
 
@@ -370,10 +337,11 @@ public class JSONFactoryImpl implements JSONFactory {
 
 	private static final String _NULL_JSON = "{}";
 
-	private static Log _log = LogFactoryUtil.getLog(JSONFactoryImpl.class);
+	private static final Log _log = LogFactoryUtil.getLog(
+		JSONFactoryImpl.class);
 
-	private org.jabsorb.JSONSerializer _jsonSerializer;
-	private JSONObject _unmodifiableJSONObject =
+	private final org.jabsorb.JSONSerializer _jsonSerializer;
+	private final JSONObject _unmodifiableJSONObject =
 		new UnmodifiableJSONObjectImpl();
 
 }

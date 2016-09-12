@@ -1,7 +1,0 @@
-<definition>
-	<command name="assertSelectedLabel">
-		<execute selenium="waitForVisible" />
-
-		<execute selenium="assertSelectedLabel" />
-	</command>
-</definition>

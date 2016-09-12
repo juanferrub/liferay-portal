@@ -14,8 +14,8 @@
 
 package com.liferay.portal.sharepoint.dws;
 
+import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.xml.Element;
-import com.liferay.portal.model.Role;
 
 /**
  * @author Bruno Farache
@@ -37,8 +37,8 @@ public class RoleResponseElement implements ResponseElement {
 		el.addAttribute("Type", _type);
 	}
 
-	private String _description;
-	private String _name;
-	private String _type;
+	private final String _description;
+	private final String _name;
+	private final String _type;
 
 }
